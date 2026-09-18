@@ -1,0 +1,16 @@
+{
+  "model": "facebook/tribev2",
+  "device": "cpu",
+  "duration_seconds": 12,
+  "visual_only": true,
+  "torch": "2.6.0",
+  "elapsed_seconds": 175.2213840484619,
+  "summary": "Temporal mean over all returned 1-second predictions; separate timelines.",
+  "units": "Model output units; not percent BOLD or complexity ratings.",
+  "code_commit": "af58661791a351a448a489042a28f6c37e1c14b7",
+  "weight_revisions": {
+    "models--facebook--vjepa2-vitg-fpc64-256": "875c192b7b704b87d1e1d99345769632dd5f739a",
+    "models--facebook--tribev2": "f894e783020944dcd96e5568550afe2aa9743f9f"
+  },
+  "duplicate_window_cache": "SHA-256 byte identity; native mean-token aggregation"
+}

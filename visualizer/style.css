@@ -1,0 +1,44 @@
+:root {color-scheme: light; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #172637; background: #f2f5f8; font-size: 16px; --line: #dce3eb; --blue: #215bd5;}
+* {box-sizing: border-box} body {margin: 0} [hidden] {display: none !important} a {color: var(--blue); text-underline-offset: 4px} button,input {font: inherit} button,a,input {touch-action: manipulation} button {cursor: pointer; border: 1px solid var(--line); border-radius: 6px; padding: 10px 16px; background: white; color: #172637} button:hover {background: #eaf0fc} button:disabled {opacity: .4; cursor: default} :focus-visible {outline: 3px solid #7c9ffa; outline-offset: 3px}
+header {background: #12243b; color: white; min-height: 76px; display: flex; gap: 24px; align-items: center; justify-content: space-between; padding: 20px 4vw} header a {color: white; font-size: .875rem} .brand {font-size: 1.125rem; font-weight: 750; text-decoration: none; letter-spacing: .04em} .brand span {font-weight: 400; color: #b7c9df; letter-spacing: 0; margin-left: 10px}
+main {max-width: 1700px; padding: 30px 4vw; margin: auto} .toolbar {display: flex; align-items: end; justify-content: space-between; gap: 20px} label {display: block; font-weight: 650; margin-bottom: 8px; font-size: .875rem} label span {color: #52667d; font-weight: 400; margin-left: 10px} .controls,nav {display: flex; gap: 8px} input {width: 150px; min-width: 0; border: 1px solid #9cacbf; padding: 10px 12px; border-radius: 6px; background: white} .controls button {background: var(--blue); color: white; border-color: var(--blue)} #status {font-size: .875rem; color: #52667d; min-height: 1.3em; margin: 18px 0}
+#workspace {display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 20px; align-items: start} .image-panel {border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: white; position: sticky; top: 20px} .image-heading {padding: 16px; display: flex; gap: 16px; align-items: center; justify-content: space-between} .eyebrow {text-transform: uppercase; font-size: .75rem; font-weight: 700; letter-spacing: .1em; margin: 0 0 8px; color: #52667d} h1 {font-size: 1rem; margin: 0; font-weight: 600; overflow-wrap: anywhere} .image-heading a {font-size: .875rem; flex-shrink: 0} .image-stage {min-height: 400px; height: min(66vh, 850px); display: flex; align-items: center; justify-content: center; padding: 12px; border-block: 1px solid var(--line); background: #fafbfd} #image {width: 100%; height: 100%; object-fit: contain} #image-error {text-align: center; padding: 24px; color: #52667d} .image-footer {padding: 14px 22px; display: flex; justify-content: space-between; gap: 12px; font-size: .75rem; color: #52667d}
+aside {min-width: 0}
+.score-panel {border-radius: 8px; background: white; padding: 16px; border: 1px solid var(--line)}
+.score-heading {display: flex; align-items: center; justify-content: space-between; gap: 12px}
+.score-heading h2 {font-size: 1rem; margin: 0 0 4px; padding: 0; border: 0}
+.score-heading strong {font-size: 2rem; letter-spacing: -.04em; font-variant-numeric: tabular-nums}
+.score-subtitle {font-size: .875rem; color: #52667d}
+#histogram {display: block; width: 100%; height: auto; margin-top: 12px; overflow: visible}
+.hist-grid {stroke: #e3e9ef; stroke-width: 1}
+.hist-label {fill: #52667d; font: 12px system-ui, sans-serif}
+.hist-bar {fill: #b1bfce}
+.hist-bar[role="button"] {cursor: pointer; transition: fill .12s ease}
+.hist-bar[role="button"]:hover,.hist-bar[role="button"]:focus-visible {fill: #8c9daf}
+.hist-shade,.hist-mean,.hist-dot {pointer-events: none}
+.hist-shade {fill: #215bd5; fill-opacity: .18}
+.hist-mean {stroke: #154bbf; stroke-width: 2.5}
+.hist-dot {fill: #154bbf}
+.chart-legend {display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: .875rem; color: #3c526e}
+.chart-legend span {display: inline-flex; align-items: center; gap: 6px}
+.chart-legend i {display: inline-block; width: 14px; height: 10px}
+.legend-bars {background: #b1bfce}.legend-line {border-left: 3px solid #154bbf; width: 4px !important}.legend-shade {background: #215bd52e; border: 1px solid #215bd555}
+#rating-spread {font-size: .75rem; color: #52667d; line-height: 1.5; margin: 10px 0 0}
+.dimension-note {font-size: .875rem; line-height: 1.4; color: #52667d; margin: 14px 0 10px}
+#dimensions {display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; align-items: start}
+.dimension {border: 1px solid var(--line); background: white; border-radius: 6px; overflow: hidden}
+.dimension:nth-child(4) {grid-column: 2; grid-row: 1 / 4}
+.dimension h2 {font-size: .875rem; margin: 0; padding: 8px 10px; background: #eaf0f7; border-bottom: 1px solid var(--line)}
+.dimension table {width: 100%; border-collapse: collapse; font-size: .875rem}
+.dimension th,.dimension td {padding: 5px 10px; border-bottom: 1px solid #edf0f4; line-height: 1.25}
+.dimension th {text-align: left; font-weight: 400}
+.dimension td {text-align: right; font-weight: 650; border-left: 1px solid #edf0f4; font-variant-numeric: tabular-nums; width: 46px}
+.dimension tr:nth-child(even) {background: #f8fafc}
+.dimension tr:last-child>* {border-bottom: 0}
+.yes {color: #2053b1}.dimension .no {color: #68798c; font-weight: 400}
+footer {border-top: 1px solid var(--line); margin-top: 32px; padding-top: 20px; font-size: .75rem; color: #52667d; display: flex; justify-content: space-between; gap: 20px}
+@media(max-width: 950px) {#workspace {grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr)} .image-heading {align-items: start; flex-direction: column} .image-stage {min-height: 280px}}
+@media(max-width: 720px) {header {align-items: start} .brand span {display: block; margin: 5px 0 0; font-size: .875rem} main {padding: 24px 16px} .toolbar {align-items: start; flex-wrap: wrap} #workspace {grid-template-columns: 1fr} .image-panel {position: static} .image-stage {height: 55vh; min-height: 250px} footer {flex-direction: column; gap: 8px} .image-footer {flex-wrap: wrap}}
+
+@media(max-width: 1100px) and (min-width: 721px) {#dimensions {grid-template-columns: 1fr} .dimension:nth-child(4) {grid-column: auto; grid-row: auto}}
+@media(max-width: 420px) {#dimensions {grid-template-columns: 1fr} .dimension:nth-child(4) {grid-column: auto; grid-row: auto} .score-heading {flex-wrap: wrap}}

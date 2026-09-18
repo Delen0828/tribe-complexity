@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Explore original MASSVIS images and published visual complexity annotations.">
+  <title>MASSVIS · Complexity explorer</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header><a class="brand" href="./">MASSVIS <span>/ Complexity explorer</span></a><a href="https://kylierlin.github.io/src/files/lin-chi-lbw-2025.pdf" target="_blank" rel="noreferrer">Read the paper ↗</a></header>
+  <main>
+    <div class="toolbar">
+      <form id="lookup"><label for="index">Visualization index <span>0–5799</span></label><div class="controls"><input id="index" name="index" type="number" min="0" max="5799" step="1" value="0" required><button type="submit">Explore →</button></div></form>
+      <nav aria-label="Visualizations"><button id="previous" type="button">← Previous</button><button id="next" type="button">Next →</button></nav>
+    </div>
+    <p id="status" role="status" aria-live="polite">Loading annotations…</p>
+    <div id="workspace" hidden>
+      <section class="image-panel" aria-labelledby="image-title">
+        <div class="image-heading"><div><p class="eyebrow" id="category"></p><h1 id="image-title"></h1></div><a id="original" target="_blank" rel="noreferrer">Open original ↗</a></div>
+        <div class="image-stage"><img id="image" alt=""><p id="image-error" hidden>Original image unavailable in this copy of the dataset.</p></div>
+        <div class="image-footer"><span id="image-id"></span><span id="match"></span></div>
+      </section>
+      <aside aria-label="Complexity and feature labels">
+        <section class="score-panel" aria-labelledby="complexity-title">
+          <div class="score-heading"><div><h2 id="complexity-title">Perceived complexity</h2><span class="score-subtitle">Mean scores across all 5,800 images</span></div><div><strong id="score"></strong><span> / 100</span></div></div>
+          <svg id="histogram" viewBox="0 0 560 180" role="group" aria-label="Distribution of mean complexity scores; select a bar to open the visualization with mean closest to its bin midpoint"></svg>
+          <div class="chart-legend"><span><i class="legend-bars"></i>All images</span><span><i class="legend-line"></i>Current mean</span><span><i class="legend-shade"></i>Mean ±1 SD</span></div>
+          <p id="rating-spread"></p>
+        </section>
+        <p class="dimension-note">Published feature labels, grouped by dimension. These are not separate complexity scores.</p>
+        <div id="dimensions"></div>
+      </aside>
+    </div>
+    <footer>Lin et al. · CHI EA 2025 <span>5,800 annotated visualizations · Original study indices</span></footer>
+  </main>
+</body>
+</html>

@@ -1,0 +1,102 @@
+[
+  {
+    "index": 751,
+    "image_id": "751.png",
+    "filename": "v488_n7413_3_f2.png",
+    "image_path": "data/science/v488_n7413_3_f2.png",
+    "image_match": "exact",
+    "category": "S",
+    "mean_human_complexity_rating": 92.5,
+    "human_rating_count": 10,
+    "human_rating_variance": 82.27777777777777,
+    "human_rating_sd": 9.070709882791851,
+    "text": {
+      "no_text": 0,
+      "axes_labels": 1,
+      "axes_text": 1,
+      "titles": 1,
+      "annotations": 1,
+      "captions": 0,
+      "legend_text": 1,
+      "legend_title": 0,
+      "text_only": 0
+    },
+    "color": {
+      "black_and_white": 0,
+      "background_color": 0,
+      "color_count": 30
+    },
+    "data": {
+      "quantitative": 5,
+      "categorical": 5
+    },
+    "design": {
+      "chart_count": 1,
+      "chart_types_count": 3,
+      "multi_panel": 0,
+      "area": 0,
+      "bar": 0,
+      "circle": 0,
+      "diagram": 0,
+      "distribution": 1,
+      "grid_or_matrix": 0,
+      "line": 1,
+      "map": 0,
+      "point": 1,
+      "table": 0,
+      "text": 0,
+      "trees_or_networks": 0
+    },
+    "sha256": "17e6b2184a0b1ec59d53ada82bfc144dec6572277b859941586e77d0ebe25f88"
+  },
+  {
+    "index": 4849,
+    "image_id": "4849.png",
+    "filename": "whoH08_2.png",
+    "image_path": "data/government/whoH08_2.png",
+    "image_match": "exact",
+    "category": "G",
+    "mean_human_complexity_rating": 1.9000000000000001,
+    "human_rating_count": 10,
+    "human_rating_variance": 8.766666666666666,
+    "human_rating_sd": 2.960855732160327,
+    "text": {
+      "no_text": 0,
+      "axes_labels": 1,
+      "axes_text": 1,
+      "titles": 1,
+      "annotations": 1,
+      "captions": 0,
+      "legend_text": 0,
+      "legend_title": 0,
+      "text_only": 0
+    },
+    "color": {
+      "black_and_white": 0,
+      "background_color": 1,
+      "color_count": 3
+    },
+    "data": {
+      "quantitative": 1,
+      "categorical": 1
+    },
+    "design": {
+      "chart_count": 1,
+      "chart_types_count": 1,
+      "multi_panel": 1,
+      "area": 0,
+      "bar": 1,
+      "circle": 0,
+      "diagram": 0,
+      "distribution": 0,
+      "grid_or_matrix": 0,
+      "line": 0,
+      "map": 0,
+      "point": 0,
+      "table": 0,
+      "text": 0,
+      "trees_or_networks": 0
+    },
+    "sha256": "56bbef64cf8f68301dc2dff608bfbe3a936b730a0e48c9e7860065fcb6ad2f3e"
+  }
+]

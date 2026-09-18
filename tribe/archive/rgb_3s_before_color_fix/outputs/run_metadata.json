@@ -1,18 +1,13 @@
 {
-  "protocol": "paper_3s_t0_bt709_v2",
+  "protocol": "paper_3s_t0_even_crop_v1",
   "model": "facebook/tribev2",
   "device": "cpu",
   "duration_seconds": 3,
   "reported_time_index": 0,
   "reported_time_seconds": 0,
   "fps": 16,
-  "codec": "libx264",
-  "lossless": false,
-  "quantizer": 10,
-  "gop_size": 1,
-  "pixel_format": "yuv420p",
-  "color_space": "bt709",
-  "color_range": "tv",
+  "codec": "libx264rgb",
+  "lossless": true,
   "crop_policy": "Right/bottom edge to even dimensions; no scaling or padding",
   "prepared_inputs": [
     {
@@ -32,8 +27,8 @@
         946,
         902
       ],
-      "video": "inputs/paper_3s_t0_bt709_v2/751.mp4",
-      "video_sha256": "d4971896e8b6d25f95b4f2bf0252bcda3d9f2e21c23b92cbc2d2a97b6f5b31f7"
+      "video": "inputs/paper_3s_t0_even_crop_v1/751.mp4",
+      "video_sha256": "e56584ae53d2d5fd7152f4f19f1b3ed2b4db9385d2ab55cc352d9f79931342d3"
     },
     {
       "index": 4849,
@@ -52,8 +47,8 @@
         920,
         686
       ],
-      "video": "inputs/paper_3s_t0_bt709_v2/4849.mp4",
-      "video_sha256": "0f6697f87e551a6dbc4b0c31995f6ce4f881fa44612d49420fd973e648d7a09a"
+      "video": "inputs/paper_3s_t0_even_crop_v1/4849.mp4",
+      "video_sha256": "098f84b6363eb79aa49c335ce30314ced99ce25e1adbf816703017bbe8f8ef8d"
     }
   ],
   "source_documents": {
@@ -68,7 +63,7 @@
   "duplicate_window_cache": "SHA-256 byte identity; native mean-token aggregation",
   "visual_only": true,
   "torch": "2.6.0",
-  "elapsed_seconds": 148.93658900260925,
+  "elapsed_seconds": 140.19695615768433,
   "summary": "First prediction only (t=0); separate 3-second silent static clips.",
   "units": "Model output units; not percent BOLD or complexity ratings."
 }

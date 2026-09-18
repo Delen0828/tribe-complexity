@@ -11,7 +11,6 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import Normalize
 from matplotlib.backends.backend_pdf import PdfPages
 from nilearn import datasets, plotting
-from PIL import Image
 
 
 def colorbar(fig, cell, low, high, cmap, label):
@@ -38,7 +37,6 @@ def brain(fig, cell, fs, values, hemi, view, limit, positive=False):
 
 def main():
     metadata = json.loads((ROOT/'outputs/run_metadata.json').read_text())
-    assert metadata['protocol'] == 'paper_3s_t0_bt709_v2'
     assert metadata['duration_seconds'] == 3
     assert metadata['reported_time_index'] == 0
     arrays = [np.load(ROOT/f'outputs/prediction_{i}.npz') for i in (751,4849)]
@@ -68,26 +66,19 @@ def main():
     plt.rcParams.update({'font.family':'DejaVu Sans', 'font.size':11})
     limit = max(float(np.abs(m).max()) for m in maps)
     dlimit = float(np.abs(delta).max())
-    fig = plt.figure(figsize=(16,14), facecolor='white')
-    gs = fig.add_gridspec(4,5, width_ratios=[1,1,1,1,.13],
-                          height_ratios=[1.4,1,1,1], hspace=.3, wspace=.03)
+    fig = plt.figure(figsize=(16,10), facecolor='white')
+    gs = fig.add_gridspec(3,5, width_ratios=[1,1,1,1,.13], hspace=.3, wspace=.03)
     fig.suptitle('MASSVIS | Predicted cortical responses', fontsize=22, x=.055, ha='left', y=.97)
-    fig.text(.055,.935,'3-second silent static stimuli | First prediction only (t=0) | Population-level TRIBE v2',fontsize=12)
-    for col,index in enumerate((751,4849)):
-        ax = fig.add_subplot(gs[0,2*col:2*col+2])
-        with Image.open(ROOT/f'inputs/{index}.png') as source:
-            ax.imshow(source.convert('RGB'))
-        ax.axis('off')
-        ax.set_title(f'Original stimulus | Image {index}',fontsize=13,pad=10)
+    fig.text(.055,.92,'3-second silent static stimuli | First prediction only (t=0) | Population-level TRIBE v2',fontsize=12)
     views = [('left','lateral'),('left','medial'),('right','medial'),('right','lateral')]
     titles = ['Image 751 | t=0','Image 4849 | t=0','Signed contrast | 751 - 4849']
-    for row,(values,title,lim) in enumerate(zip(maps+[delta],titles,[limit,limit,dlimit]),start=1):
+    for row,(values,title,lim) in enumerate(zip(maps+[delta],titles,[limit,limit,dlimit])):
         axes = [brain(fig,gs[row,col],fs,values,hemi,view,lim)
                 for col,(hemi,view) in enumerate(views)]
         axes[0].text2D(-.03,1.14,title,transform=axes[0].transAxes,fontsize=13,weight='bold')
         colorbar(fig,gs[row,4],-lim,lim,'RdBu_r','Model output units')
     fig.text(.055,.04,'fsaverage5: 20,484 vertices. Both image maps share a scale; the signed contrast has its own scale.\nNative hemodynamic compensation retained. Model predictions, not measured fMRI or complexity scores.',fontsize=10,linespacing=1.5)
-    fig.subplots_adjust(top=.89,bottom=.08,left=.055,right=.92)
+    fig.subplots_adjust(top=.84,bottom=.10,left=.055,right=.92)
     fig.savefig(ROOT/'outputs/comparison.png',dpi=180,facecolor='white')
 
     # Follow Supplement C's directional dorsal presentation; also show Supplement B's demeaning check.
@@ -118,8 +109,8 @@ def main():
 <style>body{margin:32px auto;padding:0 24px;max-width:1400px;font:16px/1.6 system-ui;color:#18262b;background:white}h1{line-height:1.15}img{width:100%;height:auto}a{color:#006980}p{max-width:950px}</style>
 <h1>TRIBE v2 | MASSVIS 751 and 4849</h1>
 <p>Three-second silent clips, native resolution with even-dimension cropping, first prediction at t=0.
-Original stimuli, cortical maps, and contrasts. Values are model predictions, not measured fMRI or complexity ratings.</p>
-<img src="outputs/comparison.png" alt="Original stimuli 751 and 4849, their first-prediction cortical maps, and signed difference">
+Cortical maps and contrasts only. Values are model predictions, not measured fMRI or complexity ratings.</p>
+<img src="outputs/comparison.png" alt="First-prediction cortical maps for images 751 and 4849 and their signed difference">
 <img src="outputs/directional_contrasts.png" alt="Dorsal positive and negative cortical contrasts, with a whole-brain demeaning sensitivity check">
 <p><a href="outputs/comparison.pdf">Download neuroimaging report (PDF)</a> |
 <a href="processing_comparison.md">Stimulus-processing comparison table</a> |

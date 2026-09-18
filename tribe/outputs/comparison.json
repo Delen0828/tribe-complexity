@@ -1,26 +1,26 @@
 {
-  "spatial_pearson_r": 0.8237049206839259,
-  "mean_absolute_difference": 0.04675750806927681,
-  "root_mean_square_difference": 0.07339298725128174,
-  "mean_signed_difference_751_minus_4849": 0.03151058778166771,
+  "selection": "First prediction at t=0; no temporal averaging",
+  "spatial_pearson_r": 0.7869474764090006,
+  "mean_absolute_difference": 0.056063342839479446,
+  "root_mean_square_difference": 0.08874402940273285,
+  "mean_signed_difference_751_minus_4849": 0.03374167159199715,
+  "demeaned_mean_absolute_difference": 0.05762796103954315,
   "per_image": {
     "751": {
       "shape": [
-        12,
+        3,
         20484
       ],
-      "mean": -0.0076478770934045315,
-      "rms_temporal_mean_map": 0.11259368807077408,
-      "human_complexity": 92.5
+      "selected_map_mean": -0.008967939764261246,
+      "selected_map_rms": 0.1282876580953598
     },
     "4849": {
       "shape": [
-        12,
+        3,
         20484
       ],
-      "mean": -0.03915846347808838,
-      "rms_temporal_mean_map": 0.11758622527122498,
-      "human_complexity": 1.9000000000000001
+      "selected_map_mean": -0.04270961508154869,
+      "selected_map_rms": 0.13031060993671417
     }
   }
 }

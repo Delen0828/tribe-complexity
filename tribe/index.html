@@ -1,17 +1,12 @@
 <!doctype html>
 <html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>TRIBE v2 · MASSVIS comparison</title>
-<style>body{margin:40px auto;padding:0 24px;max-width:1280px;font:16px/1.6 system-ui;color:#18262b;background:#fafafa}h1{line-height:1.15}img{width:100%;height:auto}a{color:#006980}.metrics{display:flex;gap:36px;flex-wrap:wrap}.metrics strong{font-size:28px;display:block}p{max-width:850px}</style>
-<h1>TRIBE v2 · MASSVIS 751 &amp; 4849</h1>
-<p>Pretrained average-subject cortical predictions for identical 12-second silent
-presentations. Human complexity ratings are 92.5 and 1.9 / 100, respectively.</p>
-<div class="metrics"><div><strong>0.824</strong>Spatial correlation</div>
-<div><strong>0.0468</strong>Mean absolute difference</div>
-<div><strong>0.0734</strong>RMS difference</div></div>
-<p>Differences are in model output units. These predictions are neither measured
-fMRI nor validated complexity scores. The two response maps share a color scale;
-the signed difference uses a separate scale.</p>
-<img src="outputs/comparison.png" alt="Both source images, cortical predictions on left and right hemisphere surfaces, their signed difference, and response magnitude over time">
-<p><a href="outputs/comparison.png">Full-resolution image</a> ·
-<a href="outputs/comparison.pdf">PDF</a> · <a href="outputs/comparison.json">Metrics JSON</a> ·
+<title>TRIBE v2 | Cortical maps</title>
+<style>body{margin:32px auto;padding:0 24px;max-width:1400px;font:16px/1.6 system-ui;color:#18262b;background:white}h1{line-height:1.15}img{width:100%;height:auto}a{color:#006980}p{max-width:950px}</style>
+<h1>TRIBE v2 | MASSVIS 751 and 4849</h1>
+<p>Three-second silent clips, native resolution with even-dimension cropping, first prediction at t=0.
+Original stimuli, cortical maps, and contrasts. Values are model predictions, not measured fMRI or complexity ratings.</p>
+<img src="outputs/comparison.png" alt="Original stimuli 751 and 4849, their first-prediction cortical maps, and signed difference">
+<img src="outputs/directional_contrasts.png" alt="Dorsal positive and negative cortical contrasts, with a whole-brain demeaning sensitivity check">
+<p><a href="outputs/comparison.pdf">Download neuroimaging report (PDF)</a> |
+<a href="processing_comparison.md">Stimulus-processing comparison table</a> |
 <a href="README.md">Protocol and reproduction</a></p></html>

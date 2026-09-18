@@ -1,0 +1,10 @@
+{
+  "751": {
+    "ffmpeg_max_frame_mae_8bit": 2.7057486378246445,
+    "macos_native_mae_8bit": 1.352532700802695
+  },
+  "4849": {
+    "ffmpeg_max_frame_mae_8bit": 1.908907973127139,
+    "macos_native_mae_8bit": 1.539653842903621
+  }
+}

@@ -6,9 +6,9 @@ Encoding Model Replicate an fMRI Visualization Study?*, Sections 3.2-3.3. It use
 and **the first predicted cortical response (t=0)** instead of a temporal average.
 
 Open [the cortical report](index.html) or [the two-page PDF](outputs/comparison.pdf).
-The report includes the original PNG stimuli above cortical response maps, a signed contrast, separate positive
+The report contains cortical response maps, a signed contrast, separate positive
 and negative dorsal contrasts, and a whole-brain demeaning sensitivity check.
-There are no time-series charts or metric dashboards.
+There are no source-image panels, time-series charts, or metric dashboards.
 
 The detailed [processing comparison table](processing_comparison.md) distinguishes
 what the paper specifies, what our original run did, and what changed. The original
@@ -23,9 +23,7 @@ artifacts; the top-level scripts and `outputs/` are the current protocol.
 | 4849 | `data/government/whoH08_2.png` | 920 x 686 (one right column and bottom row removed) |
 
 - Hold the RGB image constant for 3 seconds, with no audio or separate task text.
-- Use 16 fps, standard H.264 High profile, YUV420, fixed QP 10, all-intra frames, explicit BT.709 color
-  metadata and limited range. The papers do not specify FPS or codec. Chroma
-  subsampling introduces small pixel differences; this is not lossless RGB.
+- Keep 16 fps and lossless RGB H.264. The papers do not specify FPS or codec.
 - No scaling or padding before encoding; the pretrained vision processor still
   performs its standard spatial preprocessing.
 - Run pretrained `facebook/tribev2`, with video-only events and independent
@@ -66,8 +64,7 @@ conda run -n tribe python -m pip install -e 'tribe/upstream[plotting]' pypdf pym
 `requirements-lock.txt` records installed versions. Model downloads and extracted
 features live under `cache/`; Neuralset also uses `~/.cache/neuralset`. Metadata
 records input/video/PDF hashes, crop boxes, model revisions, and inference settings.
-`verify.py` checks every decoded video frame against color-error tolerances for the expected crop,
-uses AVFoundation on macOS to independently verify native decoding, and checks
+`verify.py` checks every decoded video frame against the exact expected crop,
 absence of audio, duration, predictions, t=0 selection, contrast arithmetic, and
 report contents. Rendered PDF pages are also inspected visually.
 
@@ -75,15 +72,15 @@ report contents. Rendered PDF pages are also inspected visually.
 
 - `processing_comparison.md`: source-referenced methods table and scope limits.
 - `inputs/manifest.json`, `inputs/{751,4849}.png`: original source copies/provenance.
-- `inputs/paper_3s_t0_bt709_v2/`: current cropped PNGs and regenerated videos.
+- `inputs/paper_3s_t0_even_crop_v1/`: current cropped PNGs and regenerated videos.
 - `outputs/prediction_*.npz`: raw 3 x 20,484 predictions and times 0, 1, 2.
 - `outputs/selected_maps.npz`: t=0 maps, signed contrast, demeaned contrast.
-- `outputs/comparison.png`: original stimuli, primary cortical maps, and signed contrast.
+- `outputs/comparison.png`: primary cortical maps and signed contrast.
 - `outputs/directional_contrasts.png`: dorsal direction/de-meaning maps.
 - `outputs/comparison.pdf`: both neuroimaging figures in one report.
 - `outputs/comparison.json`: descriptive spatial metrics for audit, not displayed.
 - `outputs/run_metadata.json`, `outputs/events_*.csv`: run provenance.
-- `predict-colorfix.log`, `verification.log`: execution and verification logs.
+- `predict-paper.log`, `verification.log`: execution and verification logs.
 
 ## Interpretation
 
@@ -103,13 +100,3 @@ Sources: [main paper](../Can_a_Neural_Encoding_Model_Replicate_an_fMRI_Visu.pdf)
 [TRIBE code](https://github.com/facebookresearch/tribev2),
 [weights](https://huggingface.co/facebook/tribev2).
 TRIBE's upstream license is CC BY-NC 4.0.
-
-## MP4 color compatibility fix
-
-The earlier RGB H.264 High 4:4:4 Predictive files decoded accurately in FFmpeg but
-failed the macOS AVFoundation decoder. They have been replaced with widely supported
-YUV420 H.264 files, and predictions were recomputed using a new feature cache.
-The previous RGB run is preserved in `archive/rgb_3s_before_color_fix/`. Older public
-MP4 paths link to the corrected clips. Original source PNGs remain unchanged.
-`outputs/color_validation.json` records decoder-versus-source pixel error;
-`verify_macos.swift` checks the independent macOS decoding path.

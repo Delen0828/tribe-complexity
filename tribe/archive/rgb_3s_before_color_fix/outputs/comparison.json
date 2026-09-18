@@ -1,0 +1,26 @@
+{
+  "selection": "First prediction at t=0; no temporal averaging",
+  "spatial_pearson_r": 0.7876861558299753,
+  "mean_absolute_difference": 0.05582428351044655,
+  "root_mean_square_difference": 0.08855193853378296,
+  "mean_signed_difference_751_minus_4849": 0.033449623733758926,
+  "demeaned_mean_absolute_difference": 0.057470183819532394,
+  "per_image": {
+    "751": {
+      "shape": [
+        3,
+        20484
+      ],
+      "selected_map_mean": -0.009312275797128677,
+      "selected_map_rms": 0.12864111363887787
+    },
+    "4849": {
+      "shape": [
+        3,
+        20484
+      ],
+      "selected_map_mean": -0.0427619069814682,
+      "selected_map_rms": 0.13007529079914093
+    }
+  }
+}

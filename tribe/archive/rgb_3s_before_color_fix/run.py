@@ -18,7 +18,7 @@ from moviepy import ImageClip
 from PIL import Image
 from tribev2 import TribeModel
 
-PROTOCOL = 'paper_3s_t0_bt709_v2'
+PROTOCOL = 'paper_3s_t0_even_crop_v1'
 DURATION = 3
 
 
@@ -48,7 +48,6 @@ def cache_identical_visual_windows():
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--smoke-only', action='store_true')
-    parser.add_argument('--prepare-only', action='store_true')
     parser.add_argument('--device', default='cpu')
     args = parser.parse_args()
     torch.set_num_threads(8)
@@ -60,15 +59,14 @@ def main():
         'data.video_feature.image.device': args.device,
         'data.video_feature.use_audio': False,
     }
-    if not args.prepare_only:
-        model = TribeModel.from_pretrained(
-            'facebook/tribev2', cache_folder=ROOT / f'cache/features/{PROTOCOL}/intra_qp10',
-            device=args.device, config_update=updates,
-        )
-        print('Pretrained TRIBE loaded successfully', flush=True)
-        if args.smoke_only:
-            return
-        assert model.data.video_feature.image.token_aggregation == 'mean'
+    model = TribeModel.from_pretrained(
+        'facebook/tribev2', cache_folder=ROOT / f'cache/features/{PROTOCOL}',
+        device=args.device, config_update=updates,
+    )
+    print('Pretrained TRIBE loaded successfully', flush=True)
+    if args.smoke_only:
+        return
+    assert model.data.video_feature.image.token_aggregation == 'mean'
     rows = json.loads((ROOT / 'inputs/manifest.json').read_text())
     prepared = []
     for row in rows:
@@ -87,24 +85,13 @@ def main():
             frame.save(target / f'{index}.png')
             pixels = np.asarray(frame)
         clip = ImageClip(pixels).with_duration(DURATION)
-        clip.write_videofile(str(video), fps=16, codec='libx264', audio=False,
-                             ffmpeg_params=['-qp', '10', '-g', '1', '-preset', 'slow',
-                                            '-vf', 'scale=in_range=pc:out_range=tv:out_color_matrix=bt709,setparams=range=limited:color_primaries=bt709:color_trc=bt709:colorspace=bt709',
-                                            '-pix_fmt', 'yuv420p', '-profile:v', 'high',
-                                            '-color_range', 'tv', '-colorspace', 'bt709',
-                                            '-color_primaries', 'bt709', '-color_trc', 'bt709',
-                                            '-movflags', '+faststart'], logger=None)
+        clip.write_videofile(str(video), fps=16, codec='libx264rgb', audio=False,
+                             ffmpeg_params=['-crf', '0', '-pix_fmt', 'rgb24'], logger=None)
         clip.close()
-        # Keep previously shared video paths pointing to the current compatible clips.
-        for alias in [ROOT/f'inputs/{index}.mp4', ROOT/f'inputs/paper_3s_t0_even_crop_v1/{index}.mp4']:
-            alias.unlink(missing_ok=True)
-            alias.symlink_to(os.path.relpath(video, alias.parent))
         prepared.append(dict(index=index, source_sha256=row['sha256'],
                              original_size=[w,h], prepared_size=list(frame.size),
                              crop_box=list(crop_box), video=str(video.relative_to(ROOT)),
                              video_sha256=hashlib.sha256(video.read_bytes()).hexdigest()))
-        if args.prepare_only:
-            continue
         events = pd.DataFrame([dict(type='Video', start=0., duration=float(DURATION),
                                     filepath=str(video), timeline=f'{PROTOCOL}_{index}', subject='default')])
         events.to_csv(ROOT / f'outputs/events_{index}.csv', index=False)
@@ -116,15 +103,11 @@ def main():
         np.testing.assert_array_equal(times, np.arange(DURATION))
         np.savez_compressed(ROOT / f'outputs/prediction_{index}.npz', predictions=preds, times=times)
         print(f'Image {index}: {preds.shape}, range {preds.min():.4f} to {preds.max():.4f}', flush=True)
-    if args.prepare_only:
-        print('Prepared both compatible videos', flush=True)
-        return
     (ROOT / 'outputs/run_metadata.json').write_text(json.dumps({
         'protocol': PROTOCOL,
         'model': 'facebook/tribev2', 'device': args.device, 'duration_seconds': DURATION,
         'reported_time_index': 0, 'reported_time_seconds': 0,
-        'fps': 16, 'codec': 'libx264', 'lossless': False, 'quantizer': 10, 'gop_size': 1,
-        'pixel_format': 'yuv420p', 'color_space': 'bt709', 'color_range': 'tv',
+        'fps': 16, 'codec': 'libx264rgb', 'lossless': True,
         'crop_policy': 'Right/bottom edge to even dimensions; no scaling or padding',
         'prepared_inputs': prepared,
         'source_documents': {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in [

@@ -2,3 +2,6 @@ cache/
 upstream/
 *.log
 inputs/*.mp4
+
+tmp/
+inputs/*/*.mp4

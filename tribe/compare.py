@@ -86,7 +86,7 @@ def main():
                 for col,(hemi,view) in enumerate(views)]
         axes[0].text2D(-.03,1.14,title,transform=axes[0].transAxes,fontsize=13,weight='bold')
         colorbar(fig,gs[row,4],-lim,lim,'RdBu_r','Model output units')
-    fig.text(.055,.04,'fsaverage5: 20,484 vertices. Both image maps share a scale; the signed contrast has its own scale.\nNative hemodynamic compensation retained. Model predictions, not measured fMRI or complexity scores.',fontsize=10,linespacing=1.5)
+    # fig.text(.055,.04,'fsaverage5: 20,484 vertices. Both image maps share a scale; the signed contrast has its own scale.\nNative hemodynamic compensation retained. Model predictions, not measured fMRI or complexity scores.',fontsize=10,linespacing=1.5)
     fig.subplots_adjust(top=.89,bottom=.08,left=.055,right=.92)
     fig.savefig(ROOT/'outputs/comparison.png',dpi=180,facecolor='white')
 
@@ -105,7 +105,7 @@ def main():
                     title = '751 > 4849' if direction == 0 else '4849 > 751'
                     ax.text2D(0,1.17,f'{label}\n{title}',transform=ax.transAxes,fontsize=12,weight='bold')
         colorbar(fig2,gs2[row,4],0,shared,'hot','Positive contrast (model units)')
-    fig2.text(.055,.035,'One shared, data-derived scale across both directions and both rows; zero/opposite-sign vertices are uncolored.\nDemeaning subtracts the spatial mean of the signed contrast. One image pair: no group inference or significance threshold.',fontsize=10,linespacing=1.5)
+    # fig2.text(.055,.035,'One shared, data-derived scale across both directions and both rows; zero/opposite-sign vertices are uncolored.\nDemeaning subtracts the spatial mean of the signed contrast. One image pair: no group inference or significance threshold.',fontsize=10,linespacing=1.5)
     fig2.subplots_adjust(top=.80,bottom=.10,left=.055,right=.90)
     fig2.savefig(ROOT/'outputs/directional_contrasts.png',dpi=180,facecolor='white')
     with PdfPages(ROOT/'outputs/comparison.pdf') as pdf:

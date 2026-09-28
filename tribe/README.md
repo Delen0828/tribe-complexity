@@ -39,32 +39,50 @@ artifacts; the top-level scripts and `outputs/` are the current protocol.
   data-derived positive scale, including the demeaned panels, without saturation
   at the supplement's dataset-specific 0.15 limit.
 
-TRIBE's official visual extractor does not accept Apple's MPS device, so this run
-uses CPU. Byte-identical visual windows are cached by SHA-256; mean-token pooling
+TRIBE's official visual extractor supports CUDA and CPU, but not Apple's MPS device.
+Use `--device cuda` on an NVIDIA GPU; the historical macOS run used CPU.
+Byte-identical visual windows are cached by SHA-256; mean-token pooling
 matches the native extractor. No pretrained weights or upstream code are changed.
 A protocol-specific feature cache prevents accidentally reusing 12-second features.
 
 ## Run and verify
 
-The `tribe` conda environment is already installed. From the repository root:
+Dependencies are maintained in the Conda environment `tribe`. Conda supplies
+Python 3.11; the environment's pip installs the verified TRIBE/CUDA packages using
+`requirements-linux-cuda-lock.txt`, referenced by the root `environment.yml`.
+
+Conda is installed through Miniforge at `~/miniforge3`. In a new Bash terminal:
 
 ```sh
-conda run --no-capture-output -n tribe python tribe/run.py --device cpu
-conda run --no-capture-output -n tribe python tribe/compare.py
-conda run --no-capture-output -n tribe python tribe/verify.py
+conda activate tribe
+python tribe/run.py --device cuda
+python tribe/compare.py
+python tribe/verify.py
 ```
 
-For a fresh installation:
+If the current terminal does not recognize `conda`, first run
+`source ~/miniforge3/etc/profile.d/conda.sh`. For scripts without activation, use
+`conda run --no-capture-output -n tribe python tribe/run.py --device cuda`.
+
+To recreate the environment on Linux x86_64, run from the repository root
+(clone upstream only if it is not already present):
 
 ```sh
-conda create -n tribe python=3.11 pip -y
 git clone https://github.com/facebookresearch/tribev2.git tribe/upstream
 git -C tribe/upstream checkout af58661791a351a448a489042a28f6c37e1c14b7
-conda run -n tribe python -m pip install -e 'tribe/upstream[plotting]' pypdf pymupdf
+conda env create -f environment.yml
 ```
 
-`requirements-lock.txt` records installed versions. Model downloads and extracted
-features live under `cache/`; Neuralset also uses `~/.cache/neuralset`. Metadata
+After editing dependency pins, update with
+`conda env update -n tribe -f environment.yml` from the repository root.
+Select `~/miniforge3/envs/tribe/bin/python` as the IDE's Python interpreter.
+
+Use `--device cpu` if CUDA is unavailable. The first inference downloads the model
+weights and visual encoder; subsequent runs reuse the local cache.
+`requirements-lock.txt` is the historical macOS snapshot; use the Linux/CUDA lock
+referenced by `environment.yml` for this environment.
+
+Model downloads and extracted features live under `cache/`; Neuralset also uses `~/.cache/neuralset`. Metadata
 records input/video/PDF hashes, crop boxes, model revisions, and inference settings.
 `verify.py` checks every decoded video frame against color-error tolerances for the expected crop,
 uses AVFoundation on macOS to independently verify native decoding, and checks
@@ -83,7 +101,7 @@ report contents. Rendered PDF pages are also inspected visually.
 - `outputs/comparison.pdf`: both neuroimaging figures in one report.
 - `outputs/comparison.json`: descriptive spatial metrics for audit, not displayed.
 - `outputs/run_metadata.json`, `outputs/events_*.csv`: run provenance.
-- `predict-colorfix.log`, `verification.log`: execution and verification logs.
+- `predict-cuda.log`, `compare-cuda.log`, `verification.log`: local execution and verification logs.
 
 ## Interpretation
 

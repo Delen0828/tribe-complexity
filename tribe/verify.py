@@ -85,6 +85,7 @@ html = (root/'index.html').read_text()
 assert 'metrics' not in html and 'magnitude over time' not in html
 assert np.load(root/'archive/original_12s/outputs/prediction_751.npz')['predictions'].shape == (12,20484)
 (root/'outputs/color_validation.json').write_text(json.dumps(color_checks,indent=2)+'\n')
-print('PASS: source hashes; even crop; all video frames within color-error bounds; native macOS decoding;')
+print('PASS: source hashes; even crop; all video frames within color-error bounds;')
+print('      native macOS decoding: ' + ('PASS' if sys.platform == 'darwin' else 'SKIPPED (requires macOS)'))
 print('      finite 3 x 20,484 predictions; exact t=0 selection; raw/de-meaned contrasts;')
 print('      two-page report with original stimuli and no time-series plots; original run preserved.')

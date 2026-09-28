@@ -1,0 +1,9 @@
+name: tribe
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      - -r tribe/requirements-linux-cuda-lock.txt

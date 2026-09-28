@@ -1,26 +1,26 @@
 {
   "selection": "First prediction at t=0; no temporal averaging",
-  "spatial_pearson_r": 0.7869474764090006,
-  "mean_absolute_difference": 0.056063342839479446,
-  "root_mean_square_difference": 0.08874402940273285,
-  "mean_signed_difference_751_minus_4849": 0.03374167159199715,
-  "demeaned_mean_absolute_difference": 0.05762796103954315,
+  "spatial_pearson_r": 0.7884196125113263,
+  "mean_absolute_difference": 0.05569205805659294,
+  "root_mean_square_difference": 0.08822136372327805,
+  "mean_signed_difference_751_minus_4849": 0.03326239064335823,
+  "demeaned_mean_absolute_difference": 0.05731070786714554,
   "per_image": {
     "751": {
       "shape": [
         3,
         20484
       ],
-      "selected_map_mean": -0.008967939764261246,
-      "selected_map_rms": 0.1282876580953598
+      "selected_map_mean": -0.009196211583912373,
+      "selected_map_rms": 0.12852780520915985
     },
     "4849": {
       "shape": [
         3,
         20484
       ],
-      "selected_map_mean": -0.04270961508154869,
-      "selected_map_rms": 0.13031060993671417
+      "selected_map_mean": -0.04245859757065773,
+      "selected_map_rms": 0.12962092459201813
     }
   }
 }

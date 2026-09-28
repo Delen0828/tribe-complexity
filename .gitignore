@@ -3,3 +3,12 @@ paper-label/*
 *.zip
 .DS_Store
 __pycache__/
+
+# Local inference environment and downloaded model assets
+.venv/
+tribe/upstream/
+tribe/cache/
+tribe/*.log
+
+# Outputs from running the model
+tribe/outputs/

@@ -1,7 +1,7 @@
 {
   "protocol": "paper_3s_t0_bt709_v2",
   "model": "facebook/tribev2",
-  "device": "cpu",
+  "device": "cuda",
   "duration_seconds": 3,
   "reported_time_index": 0,
   "reported_time_seconds": 0,
@@ -33,7 +33,7 @@
         902
       ],
       "video": "inputs/paper_3s_t0_bt709_v2/751.mp4",
-      "video_sha256": "d4971896e8b6d25f95b4f2bf0252bcda3d9f2e21c23b92cbc2d2a97b6f5b31f7"
+      "video_sha256": "c5db4f8fb0acedab6cae8dda946f62946acdb70a7ac507487a50bf28e3a841bc"
     },
     {
       "index": 4849,
@@ -53,7 +53,7 @@
         686
       ],
       "video": "inputs/paper_3s_t0_bt709_v2/4849.mp4",
-      "video_sha256": "0f6697f87e551a6dbc4b0c31995f6ce4f881fa44612d49420fd973e648d7a09a"
+      "video_sha256": "0b89858f6e1e98b66ffbf0d9f17981d14f0bbcd201d635b75929ffde32c43961"
     }
   ],
   "source_documents": {
@@ -67,8 +67,8 @@
   },
   "duplicate_window_cache": "SHA-256 byte identity; native mean-token aggregation",
   "visual_only": true,
-  "torch": "2.6.0",
-  "elapsed_seconds": 148.93658900260925,
+  "torch": "2.6.0+cu124",
+  "elapsed_seconds": 2.933472156524658,
   "summary": "First prediction only (t=0); separate 3-second silent static clips.",
   "units": "Model output units; not percent BOLD or complexity ratings."
 }

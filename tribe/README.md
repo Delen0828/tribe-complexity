@@ -2,7 +2,7 @@
 
 The current experiment follows the stimulus-processing protocol in *Can a Neural
 Encoding Model Replicate an fMRI Visualization Study?*, Sections 3.2-3.3. It uses
-**3-second silent static videos**, **native resolution with even-dimension cropping**,
+**3-second silent static videos**, **proportional fitting into a centered 256 × 256 area with outer padding**,
 and **the first predicted cortical response (t=0)** instead of a temporal average.
 
 Open [the cortical report](index.html) or [the two-page PDF](outputs/comparison.pdf).
@@ -19,15 +19,20 @@ artifacts; the top-level scripts and `outputs/` are the current protocol.
 
 | Image | Source | Prepared dimensions |
 | --- | --- | --- |
-| 751 | `data/science/v488_n7413_3_f2.png` | 946 x 902 (unchanged) |
-| 4849 | `data/government/whoH08_2.png` | 920 x 686 (one right column and bottom row removed) |
+| 751 | `data/science/v488_n7413_3_f2.png` | 292 x 292 canvas |
+| 4849 | `data/government/whoH08_2.png` | 292 x 292 canvas |
 
 - Hold the RGB image constant for 3 seconds, with no audio or separate task text.
 - Use 16 fps, standard H.264 High profile, YUV420, fixed QP 10, all-intra frames, explicit BT.709 color
   metadata and limited range. The papers do not specify FPS or codec. Chroma
   subsampling introduces small pixel differences; this is not lossless RGB.
-- No scaling or padding before encoding; the pretrained vision processor still
-  performs its standard spatial preprocessing.
+- Fit the entire source proportionally within 256 × 256, centered on a 292 × 292
+  RGB canvas. The standard V-JEPA2 processor removes the 18-pixel outer border,
+  preserving the full stimulus and any letterboxing. Padding defaults to white;
+  use `run.py --background "#RRGGBB"` to match the experiment. Normalization
+  remains exclusively in the pretrained processor. This changes the paper’s
+  spatial preparation and standard center-crop behavior; it does not reconstruct
+  original experimental display sizes or positions.
 - Run pretrained `facebook/tribev2`, with video-only events and independent
   timelines. Use the native population-level/average-subject prediction.
 - Preserve native 5-second hemodynamic compensation, 100-second model window,
@@ -83,8 +88,8 @@ weights and visual encoder; subsequent runs reuse the local cache.
 referenced by `environment.yml` for this environment.
 
 Model downloads and extracted features live under `cache/`; Neuralset also uses `~/.cache/neuralset`. Metadata
-records input/video/PDF hashes, crop boxes, model revisions, and inference settings.
-`verify.py` checks every decoded video frame against color-error tolerances for the expected crop,
+records input/video/PDF hashes, stimulus placement and encoder crop boxes, model revisions, and inference settings.
+`verify.py` checks every decoded video frame against color-error tolerances for the expected padded frame,
 uses AVFoundation on macOS to independently verify native decoding, and checks
 absence of audio, duration, predictions, t=0 selection, contrast arithmetic, and
 report contents. Rendered PDF pages are also inspected visually.
@@ -93,7 +98,7 @@ report contents. Rendered PDF pages are also inspected visually.
 
 - `processing_comparison.md`: source-referenced methods table and scope limits.
 - `inputs/manifest.json`, `inputs/{751,4849}.png`: original source copies/provenance.
-- `inputs/paper_3s_t0_bt709_v2/`: current cropped PNGs and regenerated videos.
+- `inputs/paper_3s_t0_bt709_center256_v3/<RGB hex>/`: padded PNGs, videos, and preparation metadata.
 - `outputs/prediction_*.npz`: raw 3 x 20,484 predictions and times 0, 1, 2.
 - `outputs/selected_maps.npz`: t=0 maps, signed contrast, demeaned contrast.
 - `outputs/comparison.png`: original stimuli, primary cortical maps, and signed contrast.
@@ -131,3 +136,104 @@ The previous RGB run is preserved in `archive/rgb_3s_before_color_fix/`. Older p
 MP4 paths link to the corrected clips. Original source PNGs remain unchanged.
 `outputs/color_validation.json` records decoder-versus-source pixel error;
 `verify_macos.swift` checks the independent macOS decoding path.
+
+## Complexity spectrum
+
+Sample one available original stimulus from each of ten equal-width bins of
+`mean_human_complexity_rating` (0–100), predict its response, and render the report:
+
+```sh
+python tribe/compare.py --mode spectrum --predict --device cuda --seed 0
+```
+
+Use `--device cpu` for CPU inference. The report has ten rows ordered from bin 10
+(most complex) to bin 1 (least complex). Each row shows the original stimulus,
+left lateral, left medial, right lateral, and right medial cortical views.
+All maps use t=0 and the same symmetric color scale. Bins are `[0,10)`,
+`[10,20)`, …, `[90,100]`; these are rating intervals, not population deciles.
+Sampling is uniform within each bin among images available locally. An empty bin
+stops the command rather than silently substituting another bin.
+
+To inspect the sample before inference or render existing predictions:
+
+```sh
+python tribe/compare.py --mode spectrum --sample-only --seed 0
+python tribe/compare.py --mode spectrum --seed 0
+```
+
+Outputs default to `tribe/outputs/spectrum/`: `index.html`, `spectrum.png`,
+`spectrum.pdf`, `spectrum_maps.npz`, `selection.json`, source image copies,
+and prediction/provenance files. `--labels PATH` accepts the same CSV schema as
+`label/output/labels.csv`. Use a different `--output-dir PATH` for a different
+seed or label selection; reuse the same options when rendering. The original
+pair report remains available with `python tribe/compare.py`.
+
+## Centered stimulus preprocessing
+
+The new protocol uses a separate feature cache, including the padding color.
+Existing predictions and reports still describe their original preprocessing until
+rerun. `--prepare-only` writes frames, clips, and `preparation_metadata.json` without
+model inference. Test geometry and the actual encoder processor with:
+
+```sh
+python -m unittest discover -s tribe -p test_preprocessing.py
+```
+
+Encoder defaults: [V-JEPA2 processor configuration](https://huggingface.co/facebook/vjepa2-vitg-fpc64-256/blob/main/video_preprocessor_config.json).
+
+## Dataset runs and grouped brain explorer
+
+Activate the `tribe` environment. Sample **10 different stimuli in each of the
+10 fixed complexity bins** (100 total), predict them, and build the web assets:
+
+```sh
+python tribe/dataset.py --scope sample --predict --device cuda --seed 0
+```
+
+Predict all **5,800 annotated MASSVIS stimuli**, reusing the completed sample:
+
+```sh
+python tribe/dataset.py --scope all --predict --device cuda \
+  --reuse-from tribe/outputs/massvis_sample
+```
+
+Omit `--reuse-from` for an independent full run. Rerun either command to resume:
+each completed prediction has an atomic receipt with source/preprocessing identity,
+video/prediction hashes, and timings. Only validated matching results are reused.
+Use a new `--output-dir` for a different seed, selection, or background. The
+full run covers the published annotated dataset; extra unannotated local images
+cannot be assigned complexity bins or feature groups and are excluded.
+
+Other options: `--sample-only` saves selection without inference, `--per-bin N`
+changes sample size, `--background '#RRGGBB'` changes padding, and `--labels PATH`
+uses another compatible label table. Omit `--predict` to rebuild grouped reports
+from existing predictions. Missing source images are listed in selection metadata;
+insufficient sample-bin populations fail instead of silently sampling duplicates.
+
+Serve the repository root with `python -m http.server 8000 --bind 127.0.0.1`, then
+open [the grouped brain explorer](../visualizer/brain.html). It offers five grouping
+attributes: perceived complexity, chart count, distinct-color count, quantitative
+variable count, and categorical variable count. Counts are exact published labels;
+complexity uses `[0,10)`, …, `[90,100]`. Each group shows its size and member images.
+The two map modes are the equal-stimulus mean at t=0 and that mean minus the mean
+of the entire selected set (including the group). All groups share a symmetric
+scale within each mode. These are descriptive model predictions, not measured
+fMRI or significance tests. The balanced sample is not population-weighted.
+
+Outputs go to `tribe/outputs/massvis_sample/` or `massvis_all/`. `explorer.json`
+contains group membership and links to four-view cortical maps; `aggregate_maps.npz`
+contains the numeric group means, contrasts, grand mean, and individual t=0 maps.
+`timing.json` estimates full-dataset prediction time from uncached preparation,
+inference, and saving, plus measured model setup. Feature-cache hits are excluded
+from the per-stimulus estimate; rendering is timed separately. Estimates assume
+the same device and software and exclude downloads and interruptions.
+
+For custom output folders, open `visualizer/brain.html?data=../path/to/explorer.json`.
+Static deployment must include the report folder, `visualizer/`, annotations, and
+original images with their relative paths intact. Generated outputs remain ignored
+by Git and are not automatically published.
+
+```sh
+python -m unittest discover -s tribe -p 'test_*.py'
+python tribe/verify_dataset.py tribe/outputs/massvis_sample
+```

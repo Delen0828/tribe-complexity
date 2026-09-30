@@ -3,6 +3,12 @@ import os
 from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 os.environ['MPLCONFIGDIR'] = str(ROOT / 'cache/matplotlib')
+import argparse
+import csv
+import hashlib
+import shutil
+import subprocess
+import sys
 import json
 import numpy as np
 import matplotlib
@@ -12,6 +18,7 @@ from matplotlib.colors import Normalize
 from matplotlib.backends.backend_pdf import PdfPages
 from nilearn import datasets, plotting
 from PIL import Image
+from preprocessing import PROTOCOL
 
 
 def colorbar(fig, cell, low, high, cmap, label):
@@ -36,9 +43,9 @@ def brain(fig, cell, fs, values, hemi, view, limit, positive=False):
     return ax
 
 
-def main():
+def compare_pair():
     metadata = json.loads((ROOT/'outputs/run_metadata.json').read_text())
-    assert metadata['protocol'] == 'paper_3s_t0_bt709_v2'
+    assert metadata['protocol'] in ('paper_3s_t0_bt709_v2', PROTOCOL)
     assert metadata['duration_seconds'] == 3
     assert metadata['reported_time_index'] == 0
     arrays = [np.load(ROOT/f'outputs/prediction_{i}.npz') for i in (751,4849)]
@@ -125,6 +132,130 @@ Original stimuli, cortical maps, and contrasts. Values are model predictions, no
 <a href="processing_comparison.md">Stimulus-processing comparison table</a> |
 <a href="README.md">Protocol and reproduction</a></p></html>''')
     print(json.dumps(metrics,indent=2))
+
+
+def sample_spectrum(labels, seed):
+    """Sample once per fixed rating interval; include 100 in bin 10."""
+    bins = {i: [] for i in range(1, 11)}
+    with labels.open(newline='') as stream:
+        for row in csv.DictReader(stream):
+            score = float(row['mean_human_complexity_rating'])
+            if not np.isfinite(score) or not 0 <= score <= 100:
+                raise ValueError(f"Invalid complexity rating for image {row['index']}: {score}")
+            source = ROOT.parent / row['image_path']
+            if not row['image_path'] or not source.is_file():
+                continue
+            bucket = min(int(score // 10) + 1, 10)
+            bins[bucket].append(dict(index=int(row['index']), score=score,
+                                     bin=bucket, source=str(source.resolve())))
+    empty = [i for i, rows in bins.items() if not rows]
+    if empty:
+        raise ValueError(f'No available stimuli in complexity bins {empty}; cannot sample all ten.')
+    rng = np.random.default_rng(seed)
+    return [dict(rng.choice(sorted(bins[i], key=lambda row: row['index'])),
+                 eligible_count=len(bins[i])) for i in range(10, 0, -1)]
+
+
+def render_spectrum(rows, output):
+    metadata = json.loads((output / 'run_metadata.json').read_text())
+    if (metadata['protocol'] not in ('paper_3s_t0_bt709_v2', PROTOCOL)
+            or metadata['duration_seconds'] != 3 or metadata['reported_time_index'] != 0):
+        raise ValueError('Spectrum requires the 3-second BT.709 protocol and t=0 predictions.')
+    provenance = {item['index']: item['source_sha256'] for item in metadata['prepared_inputs']}
+    maps = []
+    for row in rows:
+        index = row['index']
+        source = output / 'inputs' / f'{index}.png'
+        if provenance.get(index) != hashlib.sha256(source.read_bytes()).hexdigest():
+            raise ValueError(f'Stimulus provenance mismatch for image {index}')
+        with np.load(output / f'prediction_{index}.npz') as data:
+            predictions = data['predictions']
+            if predictions.shape != (3, 20484) or not np.isfinite(predictions).all():
+                raise ValueError(f'Invalid prediction array for image {index}')
+            np.testing.assert_array_equal(data['times'], [0, 1, 2])
+            maps.append(predictions[0].copy())
+    limit = max(float(np.max(np.abs(maps))), 1e-12)
+    fs = datasets.fetch_surf_fsaverage(mesh='fsaverage5', data_dir=str(ROOT / 'cache/nilearn'))
+    fig = plt.figure(figsize=(19, 28), facecolor='white')
+    gs = fig.add_gridspec(10, 5, width_ratios=[1.25, 1, 1, 1, 1], hspace=.18, wspace=.02)
+    views = [('left', 'lateral'), ('left', 'medial'), ('right', 'lateral'), ('right', 'medial')]
+    fig.suptitle('Perceived complexity | Most to least complex', fontsize=22, y=.99)
+    fig.text(.5, .974, 'One stimulus per 10-point rating bin | 3-second stimuli | First prediction (t=0)',
+             ha='center', fontsize=12)
+    for r, (row, values) in enumerate(zip(rows, maps)):
+        ax = fig.add_subplot(gs[r, 0])
+        with Image.open(output / 'inputs' / f"{row['index']}.png") as source:
+            ax.imshow(source.convert('RGB'))
+        ax.axis('off')
+        ax.set_title(f"Bin {row['bin']}/10 | Rating {row['score']:.1f}/100 | Image {row['index']}", fontsize=10)
+        for c, (hemi, view) in enumerate(views, 1):
+            panel = brain(fig, gs[r, c], fs, values, hemi, view, limit)
+            if r:
+                panel.set_title('')
+    fig.subplots_adjust(top=.953, bottom=.055, left=.025, right=.985)
+    cax = fig.add_axes([.35, .025, .4, .006])
+    fig.colorbar(plt.cm.ScalarMappable(norm=Normalize(-limit, limit), cmap='RdBu_r'),
+                 cax=cax, orientation='horizontal', label='Predicted cortical response (model units; shared scale)')
+    fig.savefig(output / 'spectrum.png', dpi=150, facecolor='white')
+    fig.savefig(output / 'spectrum.pdf', facecolor='white')
+    plt.close(fig)
+    np.savez_compressed(output / 'spectrum_maps.npz', maps=np.asarray(maps),
+                        indices=[r['index'] for r in rows], bins=[r['bin'] for r in rows],
+                        ratings=[r['score'] for r in rows], selected_time_seconds=0.)
+    (output / 'index.html').write_text('''<!doctype html>
+<html lang="en"><meta charset="utf-8"><title>Complexity spectrum</title>
+<style>body{font:16px system-ui;margin:24px}img{width:100%;height:auto}</style>
+<h1>Perceived complexity: most to least complex</h1>
+<p>One sampled stimulus per rating bin. Model predictions at t=0, using a shared color scale.</p>
+<p><a href="spectrum.pdf">Download PDF</a> | <a href="selection.json">Sample selection</a></p>
+<img src="spectrum.png" alt="Ten rows from complexity bin 10 to 1, each showing the original stimulus and left lateral, left medial, right lateral, right medial cortical responses">
+</html>''')
+    print(f"Spectrum report: {output / 'index.html'}")
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--mode', choices=['pair', 'spectrum'], default='pair')
+    parser.add_argument('--labels', type=Path, default=ROOT.parent / 'label/output/labels.csv')
+    parser.add_argument('--seed', type=int, default=0, help='Reproducible spectrum sampling seed')
+    parser.add_argument('--output-dir', type=Path, default=ROOT / 'outputs/spectrum')
+    action = parser.add_mutually_exclusive_group()
+    action.add_argument('--sample-only', action='store_true', help='Save selected stimuli without inference or rendering')
+    action.add_argument('--predict', action='store_true', help='Generate predictions for the selected spectrum before rendering')
+    parser.add_argument('--device', default='cpu', help='Inference device, e.g. cuda or cpu')
+    args = parser.parse_args()
+    if args.mode == 'pair':
+        if args.predict or args.sample_only:
+            parser.error('--predict and --sample-only require --mode spectrum')
+        compare_pair()
+        return
+    output = args.output_dir.resolve()
+    rows = sample_spectrum(args.labels, args.seed)
+    selection = dict(seed=args.seed, labels=str(args.labels.resolve()),
+                     binning='[0,10), [10,20), ..., [90,100]; bin 10 first', rows=rows)
+    selection_path = output / 'selection.json'
+    if selection_path.exists() and json.loads(selection_path.read_text()) != selection:
+        parser.error('Output directory contains a different selection; choose a new --output-dir.')
+    (output / 'inputs').mkdir(parents=True, exist_ok=True)
+    manifest = []
+    for row in rows:
+        target = output / 'inputs' / f"{row['index']}.png"
+        shutil.copyfile(row['source'], target)
+        manifest.append(dict(index=row['index'], sha256=hashlib.sha256(target.read_bytes()).hexdigest()))
+    selection_path.write_text(json.dumps(selection, indent=2) + '\n')
+    manifest_path = output / 'inputs/manifest.json'
+    manifest_path.write_text(json.dumps(manifest, indent=2) + '\n')
+    print(f'Selection saved: {selection_path}', flush=True)
+    if args.sample_only:
+        return
+    if args.predict:
+        subprocess.run([sys.executable, str(ROOT / 'run.py'), '--device', args.device,
+                        '--manifest', str(manifest_path), '--inputs-dir', str(output / 'inputs'),
+                        '--outputs-dir', str(output)], check=True)
+    missing = [row['index'] for row in rows if not (output / f"prediction_{row['index']}.npz").exists()]
+    if missing or not (output / 'run_metadata.json').exists():
+        parser.error(f'Missing spectrum predictions/metadata (image IDs: {missing}). Run with --predict.')
+    render_spectrum(rows, output)
 
 
 if __name__ == '__main__':

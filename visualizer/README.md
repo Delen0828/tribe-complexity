@@ -70,3 +70,33 @@ cloning this repository.
 The compact viewer shows attributes as tables. Its histogram displays all 5,800
 image means, with the current mean and a shaded ±1 standard deviation band
 from the image’s 10 individual human ratings. Sample variance is also displayed.
+
+## Predicted cortical response groups
+
+Open [brain.html](brain.html), also linked from the annotation explorer. Generate
+its assets with `python tribe/dataset.py --scope sample --predict --device cuda`
+from the repository root in the `tribe` environment. The default sample has ten
+stimuli per ten-point complexity bin. Use `--scope all` for all annotated stimuli;
+see [dataset commands](../tribe/README.md#dataset-runs-and-grouped-brain-explorer).
+
+Group by perceived complexity or counts of charts, distinct colors, quantitative
+variables, or categorical variables. Select a group and choose its mean predicted
+response or its difference from the selected-set mean. All views share a scale
+within each mode. Group badges show sample sizes; member thumbnails link back to
+the original image annotations. The whole-dataset option shows an unavailable state
+until those results are generated. No browser-side model inference is performed.
+
+Include `tribe/outputs/massvis_sample/` (and optionally `massvis_all/`) when serving
+or deploying the site. A custom report can be loaded with
+`brain.html?data=../path/to/explorer.json`. Generated results are excluded from Git.
+
+Browser regression checks (optional development dependency):
+
+```sh
+python -m pip install playwright
+python -m playwright install firefox
+python visualizer/test_brain.py
+```
+
+Run with the local server and completed default sample report available. This checks
+all five dimensions, both map modes, pagination, URL state, and mobile layout.

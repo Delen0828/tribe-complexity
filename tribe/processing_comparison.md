@@ -1,3 +1,7 @@
+> Historical comparison: this table describes the previous even-crop run.
+> Current preprocessing fits the full stimulus within a centered 256 × 256 area
+> on a 292 × 292 padded canvas; see [README](README.md#centered-stimulus-preprocessing).
+
 # Stimulus processing: paper, original run, and revised run
 
 Sources: **main paper, Sections 3.2-3.3, pp. 2-3; Section 4.1, p. 3; discussion,

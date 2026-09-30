@@ -10,10 +10,12 @@ from moviepy import VideoFileClip
 from pypdf import PdfReader
 import imageio_ffmpeg
 
+from preprocessing import PROTOCOL, prepare_stimulus
+
 root = Path(__file__).resolve().parent
 rows = json.loads((root/'inputs/manifest.json').read_text())
 meta = json.loads((root/'outputs/run_metadata.json').read_text())
-assert meta['protocol'] == 'paper_3s_t0_bt709_v2'
+assert meta['protocol'] == PROTOCOL
 assert meta['duration_seconds'] == 3 and meta['reported_time_index'] == 0
 predictions = []
 color_checks = {}
@@ -23,10 +25,14 @@ for row, prepared in zip(rows, meta['prepared_inputs']):
     assert hashlib.sha256(source.read_bytes()).hexdigest() == row['sha256']
     original = np.array(Image.open(source).convert('RGB'))
     h,w = original.shape[:2]
-    expected = original[:h-h%2,:w-w%2]
+    background = '#%02x%02x%02x' % tuple(prepared['background_rgb'])
+    expected_image, geometry = prepare_stimulus(Image.fromarray(original), background)
+    expected = np.array(expected_image)
+    for key, value in geometry.items():
+        assert prepared[key] == value
     assert prepared['original_size'] == [w,h]
-    assert prepared['prepared_size'] == [w-w%2,h-h%2]
-    image_path = root/'inputs'/meta['protocol']/row['image_id']
+    assert prepared['prepared_size'] == [292,292]
+    image_path = (root/prepared['video']).with_suffix('.png')
     np.testing.assert_array_equal(np.array(Image.open(image_path)), expected)
     video = root/prepared['video']
     assert hashlib.sha256(video.read_bytes()).hexdigest() == prepared['video_sha256']
@@ -85,7 +91,7 @@ html = (root/'index.html').read_text()
 assert 'metrics' not in html and 'magnitude over time' not in html
 assert np.load(root/'archive/original_12s/outputs/prediction_751.npz')['predictions'].shape == (12,20484)
 (root/'outputs/color_validation.json').write_text(json.dumps(color_checks,indent=2)+'\n')
-print('PASS: source hashes; even crop; all video frames within color-error bounds;')
+print('PASS: source hashes; centered padded stimuli; all video frames within color-error bounds;')
 print('      native macOS decoding: ' + ('PASS' if sys.platform == 'darwin' else 'SKIPPED (requires macOS)'))
 print('      finite 3 x 20,484 predictions; exact t=0 selection; raw/de-meaned contrasts;')
 print('      two-page report with original stimuli and no time-series plots; original run preserved.')

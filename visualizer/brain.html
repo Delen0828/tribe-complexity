@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Compare predicted cortical responses across MASSVIS stimulus groups.">
+  <title>MASSVIS · Predicted brain responses</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="brain.css">
+  <script src="brain.js" defer></script>
+</head>
+<body>
+  <header><a class="brand" href="./">MASSVIS <span>/ Predicted brain responses</span></a><a href="./">Explore annotations ↗</a></header>
+  <main>
+    <div class="brain-intro"><div><p class="eyebrow">TRIBE v2 · Population-level predictions</p><h1>How do stimulus groups compare?</h1><p>Group visualizations by their published annotations and compare the mean predicted cortical response.</p></div><a id="download" hidden>Download aggregate arrays ↗</a></div>
+    <section class="brain-controls" aria-label="Aggregation controls">
+      <div><label for="dataset">Stimuli</label><select id="dataset"><option value="massvis_sample">100-stimulus sample</option><option value="massvis_all">Whole annotated dataset</option></select></div>
+      <div><label for="attribute">Group by</label><select id="attribute" disabled></select></div>
+      <div><label for="statistic">Brain map</label><select id="statistic" disabled><option value="mean">Group mean</option><option value="contrast">Difference from selected-set mean</option></select></div>
+    </section>
+    <p id="brain-status" role="status" aria-live="polite">Loading predictions…</p>
+    <div id="brain-workspace" hidden>
+      <div class="run-summary"><span id="sample-summary"></span><span>t=0 · 3-second stimuli · 20,484 vertices</span></div>
+      <p id="sampling-note" class="brain-note"></p>
+      <section class="group-section" aria-labelledby="group-heading"><h2 id="group-heading">Choose a group</h2><div id="groups" role="group" aria-labelledby="group-heading"></div></section>
+      <section class="brain-card" aria-labelledby="map-title">
+        <div class="map-heading"><div><p id="map-kind" class="eyebrow"></p><h2 id="map-title"></h2></div><strong id="group-count"></strong></div>
+        <p id="map-description"></p>
+        <div class="brain-image-wrap"><img id="brain-map" alt=""><p id="map-error" role="alert" hidden>Cannot load this cortical map.</p></div>
+        <p class="map-scroll-hint">Scroll horizontally to see all four views.</p>
+        <p class="brain-note" id="scale-note"></p>
+      </section>
+      <section class="members-section" aria-labelledby="members-heading"><div class="members-heading"><h2 id="members-heading">Stimuli in this group</h2><span id="member-range"></span></div><div id="members"></div><button id="more-members" type="button" hidden>Show more stimuli</button></section>
+      <details class="method"><summary>Method and runtime</summary><p>Each full stimulus is fitted proportionally inside a centered 256 × 256 area on a 292 × 292 padded canvas. The encoder removes the outer border. Maps use the first predicted response, with equal weight per stimulus.</p><p>These are model predictions, not measured fMRI, percent BOLD, or evidence of a causal feature effect. Feature groups can differ on other attributes. Small groups may be unstable.</p><p id="runtime"></p><p><a id="selection-link">Selection and provenance</a> · <a id="timing-link">Measured timings</a></p></details>
+    </div>
+    <footer>TRIBE v2 · MASSVIS <span>Published counts describe annotations; colors are not recounted from pixels.</span></footer>
+  </main>
+</body>
+</html>

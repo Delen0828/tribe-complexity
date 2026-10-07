@@ -14,17 +14,24 @@ from preprocessing import PROTOCOL, prepare_stimulus
 def verify(output):
     selection = json.loads((output / 'selection.json').read_text())
     report = json.loads((output / 'explorer.json').read_text())
-    rows = selection['rows']
+    selected_rows = selection['rows']
+    included = {r['index'] for r in report['rows']}
+    rows = [r for r in selected_rows if r['index'] in included]
+    if report.get('complete') is False:
+        assert report['selected_count'] == len(selected_rows) > len(rows)
+        assert report['pending_indices'] == [r['index'] for r in selected_rows if r['index'] not in included]
+    else:
+        assert len(rows) == len(selected_rows)
     assert report['protocol'] == selection['protocol'] == PROTOCOL
     assert report['count'] == len(rows) == len({r['index'] for r in rows})
     assert {a['key'] for a in report['attributes']} == set(ATTRIBUTES)
     assert [r['index'] for r in report['rows']] == [r['index'] for r in rows]
-    if selection['scope'] == 'sample':
+    if selection['scope'] == 'sample' and report.get('complete') is not False:
         assert [sum(r['bin'] == b for r in rows) for b in range(10)] == [selection['per_bin']]*10
-    else:
-        assert len(rows) == selection['eligible_count']
+    elif selection['scope'] == 'all':
+        assert len(selected_rows) == selection['eligible_count']
     background = selection['background_rgb']
-    maps, receipts = load_predictions(rows, output, background)
+    maps, receipts = load_predictions(rows, output, background, selection.get('precision','fp32'))
     maximum_mae = 0.
     color_errors = {}
     for row, receipt in zip(rows, receipts):

@@ -161,7 +161,8 @@ python tribe/compare.py --mode spectrum --sample-only --seed 0
 python tribe/compare.py --mode spectrum --seed 0
 ```
 
-Outputs default to `tribe/outputs/spectrum/`: `index.html`, `spectrum.png`,
+Outputs default to `tribe/outputs/spectrum/`: `index.html` (redirect to the shared
+`outputs/web/` viewer), `spectrum.png`,
 `spectrum.pdf`, `spectrum_maps.npz`, `selection.json`, source image copies,
 and prediction/provenance files. `--labels PATH` accepts the same CSV schema as
 `label/output/labels.csv`. Use a different `--output-dir PATH` for a different
@@ -204,6 +205,20 @@ Use a new `--output-dir` for a different seed, selection, or background. The
 full run covers the published annotated dataset; extra unannotated local images
 cannot be assigned complexity bins or feature groups and are excluded.
 
+If inference stops before finishing, the normal report command fails rather than
+silently presenting incomplete results. To inspect completed predictions explicitly:
+
+```sh
+python tribe/dataset.py --scope all --allow-partial
+python tribe/web.py
+```
+
+Partial reports show completed/selected counts and record pending indices in
+`explorer.json`. Every included prediction still passes identity, hash, shape, and
+time checks. Means and contrasts use only completed stimuli, so partial groups
+may be biased. Resume inference and rebuild to replace the partial report with the
+complete dataset. Report-only generation does not rerun the model.
+
 Other options: `--sample-only` saves selection without inference, `--per-bin N`
 changes sample size, `--background '#RRGGBB'` changes padding, and `--labels PATH`
 uses another compatible label table. Omit `--predict` to rebuild grouped reports
@@ -211,16 +226,26 @@ from existing predictions. Missing source images are listed in selection metadat
 insufficient sample-bin populations fail instead of silently sampling duplicates.
 
 Serve the repository root with `python -m http.server 8000 --bind 127.0.0.1`, then
-open [the grouped brain explorer](../visualizer/brain.html). It offers five grouping
+open [the output visualization hub](outputs/web/index.html). The hub discovers grouped
+reports and spectrum reports in sibling output folders, and links the two-stimulus
+comparison. Folders without a supported report are shown as unavailable. The attribute dropdown
+shows a grid with **one column per group and four cortical-view rows**, keeping
+all groups visible together. The wide grid scrolls horizontally to preserve all group columns
+and the four view rows. The [grouped brain explorer](../visualizer/brain.html) uses the same
+layout and also lets you switch between sample and full-dataset results.
+Both offer five grouping
 attributes: perceived complexity, chart count, distinct-color count, quantitative
 variable count, and categorical variable count. Counts are exact published labels;
-complexity uses `[0,10)`, …, `[90,100]`. Each group shows its size and member images.
+complexity uses `[0,10)`, …, `[90,100]`. Each column shows sample size as an array of squares (one square per stimulus)
+above its short attribute label. Select the label to inspect member images below the grid.
 The two map modes are the equal-stimulus mean at t=0 and that mean minus the mean
 of the entire selected set (including the group). All groups share a symmetric
 scale within each mode. These are descriptive model predictions, not measured
 fMRI or significance tests. The balanced sample is not population-weighted.
 
-Outputs go to `tribe/outputs/massvis_sample/` or `massvis_all/`. `explorer.json`
+Outputs go to `tribe/outputs/massvis_sample/` or `massvis_all/`. Each report contains
+data and rendered maps. Shared HTML, JavaScript, and CSS live in
+`tribe/outputs/web/`; legacy folder `index.html` files redirect to that viewer. `explorer.json`
 contains group membership and links to four-view cortical maps; `aggregate_maps.npz`
 contains the numeric group means, contrasts, grand mean, and individual t=0 maps.
 `timing.json` estimates full-dataset prediction time from uncached preparation,
@@ -229,11 +254,87 @@ from the per-stimulus estimate; rendering is timed separately. Estimates assume
 the same device and software and exclude downloads and interruptions.
 
 For custom output folders, open `visualizer/brain.html?data=../path/to/explorer.json`.
-Static deployment must include the report folder, `visualizer/`, annotations, and
-original images with their relative paths intact. Generated outputs remain ignored
+Refresh the hub after adding or moving reports with `python tribe/web.py`.
+For standalone static deployment, serve the `outputs/` directory, including `web/`
+and each report folder with
+`explorer.json`, `brain_maps/`, and `inputs/*.png`, plus the linked downloads
+(`aggregate_maps.npz`, `selection.json`, and `timing.json`). No server-side code,
+annotation viewer, or original dataset paths are needed. Keep the sibling directory layout. Generated outputs remain ignored
 by Git and are not automatically published.
 
 ```sh
 python -m unittest discover -s tribe -p 'test_*.py'
 python tribe/verify_dataset.py tribe/outputs/massvis_sample
 ```
+
+## CPU workers and GPU batching
+
+`--thread N` now means **CPU stimulus-preparation workers only** (default 8).
+GPU concurrency uses `--batch-size N` (default 1); PyTorch's CPU compute pool has
+its own `--cpu-threads N` setting (default 8). All three accept positive integers.
+These options are available in `dataset.py`, `run.py`, and the legacy spectrum
+command. They do not launch multiple GPU model copies.
+
+```sh
+python tribe/dataset.py --scope sample --predict --device cuda \
+  --thread 8 --batch-size 1 --cpu-threads 8
+python tribe/dataset.py --scope all --predict --device cuda \
+  --thread 8 --batch-size 1 --reuse-from tribe/outputs/massvis_sample
+```
+
+A single persistent V-JEPA encoder processes batches of independent stimuli.
+Every prepared video is decoded and checked for identical frames before its
+64-frame window is encoded. Features are pooled over tokens immediately after
+each encoder block, preserving the original embedding and pre-final-normalization
+hidden states. The unused V-JEPA predictor is skipped. Neuralset's original layer
+selection, layer aggregation, temporal sampling, and TRIBE brain model remain in
+use. Pooled feature storage is bounded to the current batch; a final smaller batch
+and mixed resumed/new batches are supported. GPU forward calls remain on one
+execution path with shared weights.
+
+FP32 remains the default. Optional `--precision bf16` enables CUDA autocast for the
+video encoder only; use a separate output directory, for example:
+
+```sh
+python tribe/dataset.py --scope sample --predict --device cuda \
+  --batch-size 2 --precision bf16 --output-dir tribe/outputs/massvis_sample_bf16
+```
+
+BF16 is approximate and opt-in; its identity and feature cache are separate from
+FP32. Existing validated FP32 predictions remain reusable. Do not mix precisions
+within one selection. Reduce `--batch-size` if GPU memory is insufficient. Report
+plotting remains serial because Matplotlib has shared mutable state.
+
+Run metadata records precision, worker counts, requested and actual encoder batch
+sizes, encoder load count, peak CUDA memory, and processing wall time. Runtime
+estimates use wall-clock throughput, not a sum of overlapping per-image work.
+The encoder is loaded lazily, so a fully resumed run need not load it at all.
+
+Benchmark against a completed FP32 reference run (up to two images per complexity
+bin), recording numerical differences, peak memory, and throughput:
+
+```sh
+python tribe/benchmark_gpu.py --reference tribe/outputs/thread_benchmark/thread_8
+```
+
+The earlier CPU-only concurrency comparison took 84.21 seconds for 20 stimuli with
+8 threads versus 84.33 seconds with 1 thread; it used the previous nonpersistent
+encoder and should not be used to estimate the new GPU-batched execution path.
+
+Measured on the RTX 4070 Ti SUPER with the same 20 stimuli as the previous benchmark:
+
+| Encoder execution | 20-stimulus wall time | Peak allocated GPU memory | Estimated 5,800-stimulus time |
+| --- | --- | --- | --- |
+| Persistent FP32, batch 1 (default) | 55.80 s | 5.20 GiB | 4 h 30 m |
+| Persistent FP32, batch 2 | 58.70 s | 5.79 GiB | 4 h 44 m |
+| Persistent FP32, batch 4 | 58.51 s | 6.98 GiB | 4 h 43 m |
+| BF16 autocast, batch 2 (opt-in) | 24.73 s | 7.16 GiB | 1 h 59 m |
+
+All FP32 configurations matched the original predictions within `rtol=1e-5,
+atol=1e-6`; maximum absolute error was below 4.8e-7. BF16 had mean absolute error
+0.00110 and maximum absolute error 0.02228 model units, with minimum per-stimulus
+correlation 0.99970 across all three timepoints. BF16 therefore remains explicitly
+opt-in. Autocast retains FP32 weights and can use more memory than FP32 in this
+implementation. Estimates exclude report rendering and downloads and are based
+on 20 stimuli, not a completed full-dataset run. Raw measurements are in
+`outputs/gpu_benchmark/benchmark.json`.

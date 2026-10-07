@@ -19,6 +19,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 from nilearn import datasets, plotting
 from PIL import Image
 from preprocessing import PROTOCOL
+from parallelism import positive_threads
 
 
 def colorbar(fig, cell, low, high, cmap, label):
@@ -123,6 +124,7 @@ def compare_pair():
 <html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>TRIBE v2 | Cortical maps</title>
 <style>body{margin:32px auto;padding:0 24px;max-width:1400px;font:16px/1.6 system-ui;color:#18262b;background:white}h1{line-height:1.15}img{width:100%;height:auto}a{color:#006980}p{max-width:950px}</style>
+<nav><a href="outputs/web/">All output visualizations</a></nav>
 <h1>TRIBE v2 | MASSVIS 751 and 4849</h1>
 <p>Three-second silent clips, native resolution with even-dimension cropping, first prediction at t=0.
 Original stimuli, cortical maps, and contrasts. Values are model predictions, not measured fMRI or complexity ratings.</p>
@@ -132,6 +134,9 @@ Original stimuli, cortical maps, and contrasts. Values are model predictions, no
 <a href="processing_comparison.md">Stimulus-processing comparison table</a> |
 <a href="README.md">Protocol and reproduction</a></p></html>''')
     print(json.dumps(metrics,indent=2))
+
+    from web import build_site
+    build_site(ROOT / 'outputs')
 
 
 def sample_spectrum(labels, seed):
@@ -210,7 +215,9 @@ def render_spectrum(rows, output):
 <p><a href="spectrum.pdf">Download PDF</a> | <a href="selection.json">Sample selection</a></p>
 <img src="spectrum.png" alt="Ten rows from complexity bin 10 to 1, each showing the original stimulus and left lateral, left medial, right lateral, right medial cortical responses">
 </html>''')
-    print(f"Spectrum report: {output / 'index.html'}")
+    from web import build_site
+    build_site(output.parent)
+    print(f"Spectrum report: {output.parent / 'web/index.html'}")
 
 
 def main():
@@ -223,6 +230,11 @@ def main():
     action.add_argument('--sample-only', action='store_true', help='Save selected stimuli without inference or rendering')
     action.add_argument('--predict', action='store_true', help='Generate predictions for the selected spectrum before rendering')
     parser.add_argument('--device', default='cpu', help='Inference device, e.g. cuda or cpu')
+    parser.add_argument('--thread', type=positive_threads, default=8, help='CPU preparation workers')
+    parser.add_argument('--batch-size', type=positive_threads, default=1,
+                        help='Stimuli per GPU encoder forward (default: 1)')
+    parser.add_argument('--cpu-threads', type=positive_threads, default=8,
+                        help='PyTorch CPU compute threads (default: 8)')
     args = parser.parse_args()
     if args.mode == 'pair':
         if args.predict or args.sample_only:
@@ -251,7 +263,8 @@ def main():
     if args.predict:
         subprocess.run([sys.executable, str(ROOT / 'run.py'), '--device', args.device,
                         '--manifest', str(manifest_path), '--inputs-dir', str(output / 'inputs'),
-                        '--outputs-dir', str(output)], check=True)
+                        '--outputs-dir', str(output), '--thread', str(args.thread),
+                        '--batch-size', str(args.batch_size), '--cpu-threads', str(args.cpu_threads)], check=True)
     missing = [row['index'] for row in rows if not (output / f"prediction_{row['index']}.npz").exists()]
     if missing or not (output / 'run_metadata.json').exists():
         parser.error(f'Missing spectrum predictions/metadata (image IDs: {missing}). Run with --predict.')

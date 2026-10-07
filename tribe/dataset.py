@@ -12,6 +12,8 @@ import time
 
 import numpy as np
 from preprocessing import PROTOCOL
+from parallelism import positive_threads
+from gpu_encoder import prediction_identity
 
 ROOT = Path(__file__).resolve().parent
 ATTRIBUTES = {
@@ -93,14 +95,13 @@ def aggregate_maps(rows, maps):
     return groups, grand_mean
 
 
-def load_predictions(rows, output, background_rgb):
+def load_predictions(rows, output, background_rgb, precision='fp32'):
     maps, receipts = [], []
     for row in rows:
         index = row['index']
         path = output / f'prediction_{index}.npz'
         receipt = json.loads((output / f'prediction_{index}.json').read_text())
-        expected = dict(protocol=PROTOCOL, source_sha256=row['sha256'],
-                        background_rgb=background_rgb, model='facebook/tribev2')
+        expected = prediction_identity(PROTOCOL, row['sha256'], background_rgb, precision)
         if receipt['identity'] != expected or hashlib.sha256(path.read_bytes()).hexdigest() != receipt['prediction_sha256']:
             raise ValueError(f'Stale or corrupted prediction for {index}')
         with np.load(path) as saved:
@@ -113,9 +114,20 @@ def load_predictions(rows, output, background_rgb):
     return np.asarray(maps), receipts
 
 
-def estimate_runtime(receipts, total_count, setup_seconds):
+def estimate_runtime(receipts, total_count, setup_seconds, benchmark=None):
+    if benchmark:
+        mean = benchmark['processing_wall_seconds'] / benchmark['count']
+        return dict(measured_count=benchmark['count'], total_stimuli=total_count,
+                    device=benchmark['device'], thread=benchmark['thread'], setup_seconds=setup_seconds,
+                    batch_size=benchmark.get('batch_size',1), precision=benchmark.get('precision','fp32'),
+                    sampled_processing_seconds=benchmark['processing_wall_seconds'],
+                    mean_seconds_per_stimulus=mean,
+                    full_prediction_seconds=setup_seconds+total_count*mean,
+                    remaining_prediction_seconds=max(0,total_count-len(receipts))*mean,
+                    note='Estimate from measured uncached wall-clock throughput for this recorded execution configuration. '
+                         'Excludes report rendering, downloads, and interruptions.')
     # Cached feature extraction is much faster and cannot estimate a fresh full run.
-    measured = [r for r in receipts if r['encoded_windows'] > 0]
+    measured = [r for r in receipts if r['encoded_windows'] > 0 and r.get('execution') not in ('prefetched', 'pooled_vjepa_v1')]
     if not measured:
         return dict(measured_count=0, total_stimuli=total_count,
                     note='No uncached encoder timings available; no fresh-run estimate.')
@@ -161,6 +173,12 @@ def render_groups(groups, output):
     return limits
 
 
+def export_static_site(output):
+    """Refresh the shared viewer and discover all sibling reports."""
+    from web import build_site
+    build_site(output.parent)
+
+
 def export_report(rows, maps, output, selection, timing, render=True):
     started = time.perf_counter()
     groups, grand_mean = aggregate_maps(rows, maps)
@@ -169,21 +187,38 @@ def export_report(rows, maps, output, selection, timing, render=True):
                         means=np.asarray([g['mean'] for g in groups]),
                         contrasts=np.asarray([g['contrast'] for g in groups]),
                         grand_mean=grand_mean, indices=[r['index'] for r in rows], maps=maps)
+    completed_indices = {row['index'] for row in rows}
     public_groups = [{k: v for k, v in g.items() if k not in ('mean', 'contrast')} for g in groups]
     timing['report_seconds'] = time.perf_counter()-started
     write_json(output / 'timing.json', timing)
     write_json(output / 'explorer.json', dict(
         schema_version=1, protocol=PROTOCOL, scope=selection['scope'], seed=selection['seed'],
-        count=len(rows), eligible_count=selection['eligible_count'], missing_indices=selection['missing_indices'],
+        precision=selection.get('precision','fp32'),
+        count=len(rows), selected_count=len(selection['rows']),
+        complete=len(rows) == len(selection['rows']),
+        pending_indices=[r['index'] for r in selection['rows'] if r['index'] not in completed_indices],
+        eligible_count=selection['eligible_count'], missing_indices=selection['missing_indices'],
         attributes=[dict(key=k, label=v[0]) for k,v in ATTRIBUTES.items()],
         rows=[{k:v for k,v in r.items() if k not in ('source', 'sha256')} for r in rows],
         groups=public_groups, limits=limits, timing=timing,
         aggregation='Equal-weight arithmetic mean across stimuli, first predicted response at t=0.',
-        contrast='Group mean minus the mean of all selected stimuli (including this group).',
-        sampling='Ten-point complexity bins; upper edge excluded except 100. Sampling without replacement.'
+        contrast='Group mean minus the mean of all included stimuli (including this group).',
+        sampling='Partial run: only completed predictions are included.' if len(rows) != len(selection['rows']) else 'Ten-point complexity bins; upper edge excluded except 100. Sampling without replacement.'
                  if selection['scope'] == 'sample' else 'All available annotated stimuli.'))
+    export_static_site(output)
+    print(f'Static report: {output / "index.html"}', flush=True)
     print(f'Explorer data: {output / "explorer.json"}', flush=True)
     print(json.dumps(timing, indent=2), flush=True)
+
+
+def report_rows(rows, output, allow_partial=False):
+    completed = [r for r in rows if (output / f"prediction_{r['index']}.npz").is_file()
+                 and (output / f"prediction_{r['index']}.json").is_file()]
+    if len(completed) != len(rows) and not allow_partial:
+        raise ValueError(f'{len(completed)}/{len(rows)} predictions complete. Resume inference or use --allow-partial.')
+    if not completed:
+        raise ValueError('No completed predictions available to report')
+    return completed
 
 
 def main():
@@ -195,9 +230,18 @@ def main():
     parser.add_argument('--output-dir', type=Path)
     parser.add_argument('--background', default='white')
     parser.add_argument('--device', default='cuda')
+    parser.add_argument('--thread', type=positive_threads, default=8,
+                        help='Concurrent CPU stimulus-preparation workers (default: 8)')
+    parser.add_argument('--batch-size', type=positive_threads, default=1,
+                        help='Stimuli per GPU encoder forward (default: 1)')
+    parser.add_argument('--cpu-threads', type=positive_threads, default=8,
+                        help='PyTorch CPU compute threads (default: 8)')
+    parser.add_argument('--precision', choices=['fp32', 'bf16'], default='fp32')
     action = parser.add_mutually_exclusive_group()
     action.add_argument('--predict', action='store_true', help='Predict missing stimuli, then export the web report')
     action.add_argument('--sample-only', action='store_true', help='Save selection and source manifest only')
+    parser.add_argument('--allow-partial', action='store_true',
+                        help='Report only completed predictions, explicitly labeled as partial')
     parser.add_argument('--reuse-from', type=Path, help='Reuse validated prediction artifacts from a previous dataset run')
     args = parser.parse_args()
     from PIL import ImageColor
@@ -212,6 +256,8 @@ def main():
     selection = dict(scope=args.scope, seed=args.seed, per_bin=args.per_bin if args.scope == 'sample' else None,
                      protocol=PROTOCOL, background_rgb=background, eligible_count=len(eligible),
                      missing_indices=missing, labels_sha256=hashlib.sha256(args.labels.read_bytes()).hexdigest(), rows=rows)
+    if args.precision != 'fp32':
+        selection['precision'] = args.precision
     selection_path = output / 'selection.json'
     if selection_path.exists() and json.loads(selection_path.read_text()) != selection:
         parser.error('Output has a different selection or preprocessing; choose a new --output-dir')
@@ -230,25 +276,30 @@ def main():
     if args.sample_only:
         return
     if args.reuse_from:
-        reuse_predictions(rows, args.reuse_from.resolve(), output, background)
+        reuse_predictions(rows, args.reuse_from.resolve(), output, background, args.precision)
     if args.predict:
         subprocess.run([sys.executable, str(ROOT / 'run.py'), '--device', args.device,
                         '--manifest', str(output / 'inputs/manifest.json'), '--inputs-dir', str(output / 'inputs'),
-                        '--outputs-dir', str(output), '--background', args.background, '--resume'], check=True)
-    maps, receipts = load_predictions(rows, output, background)
-    metadata = json.loads((output / 'run_metadata.json').read_text())
-    timing = estimate_runtime(receipts, len(eligible), metadata['model_load_seconds'])
+                        '--outputs-dir', str(output), '--background', args.background, '--thread', str(args.thread), '--batch-size', str(args.batch_size),
+                        '--cpu-threads', str(args.cpu_threads), '--precision', args.precision, '--resume'], check=True)
+    rows = report_rows(rows, output, args.allow_partial)
+    maps, receipts = load_predictions(rows, output, background, args.precision)
+    metadata_path = output / 'run_metadata.json'
+    metadata = json.loads(metadata_path.read_text()) if metadata_path.exists() else {'model_load_seconds': 0}
+    timing = estimate_runtime(receipts, len(eligible), metadata['model_load_seconds'], metadata.get('benchmark'))
+    if not metadata_path.exists():
+        timing['note'] += ' Model setup timing is unavailable for this interrupted run.'
     export_report(rows, maps, output, selection, timing)
 
 
-def reuse_predictions(rows, source, output, background):
+def reuse_predictions(rows, source, output, background, precision='fp32'):
     """Import valid sampled predictions into a full run, preserving their timing receipts."""
     for row in rows:
         index = row['index']
         receipt_path = source / f'prediction_{index}.json'
         if not receipt_path.is_file() or (output / receipt_path.name).exists():
             continue
-        _, receipts = load_predictions([row], source, background)
+        _, receipts = load_predictions([row], source, background, precision)
         receipt = receipts[0]
         old_video = ROOT / receipt['prepared']['video']
         if hashlib.sha256(old_video.read_bytes()).hexdigest() != receipt['prepared']['video_sha256']:

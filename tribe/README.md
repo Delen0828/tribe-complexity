@@ -233,15 +233,27 @@ shows a grid with **one column per group and four cortical-view rows**, keeping
 all groups visible together. The wide grid scrolls horizontally to preserve all group columns
 and the four view rows. The [grouped brain explorer](../visualizer/brain.html) uses the same
 layout and also lets you switch between sample and full-dataset results.
-Both offer five grouping
-attributes: perceived complexity, chart count, distinct-color count, quantitative
-variable count, and categorical variable count. Counts are exact published labels;
-complexity uses `[0,10)`, …, `[90,100]`. Each column shows sample size as an array of squares (one square per stimulus)
+Both offer all 29 published feature variables, perceived complexity, and source
+category (31 grouping attributes). These include counts of charts, chart types,
+distinct colors, quantitative variables, and categorical variables; all text,
+color, panel, and chart-type presence labels; and Government, Infographic, News,
+and Science source categories. Counts are exact published labels, binary features
+use No/Yes groups, and complexity uses `[0,10)`, …, `[90,100]`.
+Each column shows sample size as an array of squares (one square per stimulus)
 above its short attribute label. Select the label to inspect member images below the grid.
 The two map modes are the equal-stimulus mean at t=0 and that mean minus the mean
 of the entire selected set (including the group). All groups share a symmetric
 scale within each mode. These are descriptive model predictions, not measured
 fMRI or significance tests. The balanced sample is not population-weighted.
+
+Rebuild existing reports to add these grouping attributes without repeating
+inference. Existing selections can gain annotations when their labels, stimuli,
+and prediction settings are unchanged:
+
+```sh
+python tribe/dataset.py --scope sample --seed 0
+python tribe/dataset.py --scope all --allow-partial
+```
 
 Outputs go to `tribe/outputs/massvis_sample/` or `massvis_all/`. Each report contains
 data and rendered maps. Shared HTML, JavaScript, and CSS live in

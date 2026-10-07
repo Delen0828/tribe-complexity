@@ -40,6 +40,8 @@ class WebTests(unittest.TestCase):
             output = Path(tmp) / 'run'
             output.mkdir()
             rows = [dict(index=i, attributes={key: i for key in ATTRIBUTES}) for i in (0, 1)]
+            for row in rows:
+                row['attributes']['category'] = 'S' if row['index'] else 'G'
             with self.assertRaisesRegex(ValueError, 'No completed'):
                 report_rows(rows, output, True)
             (output / 'prediction_0.npz').touch()
@@ -57,9 +59,15 @@ class WebTests(unittest.TestCase):
             self.assertEqual(report['pending_indices'], [1])
             self.assertEqual(report['selected_count'], 2)
             self.assertEqual(report['count'], 1)
+            attributes = {a['key']: a for a in report['attributes']}
+            self.assertEqual(set(attributes), set(ATTRIBUTES))
+            self.assertEqual(attributes['chart_types']['count_labels'], ['chart type', 'chart types'])
+            self.assertEqual(attributes['titles']['kind'], 'binary')
+            self.assertEqual(attributes['category']['kind'], 'category')
+            self.assertEqual(next(g['label'] for g in report['groups'] if g['attribute'] == 'category'), 'Government')
             with np.load(output / 'aggregate_maps.npz') as saved:
                 np.testing.assert_array_equal(saved['grand_mean'], [1., 2.])
-                np.testing.assert_array_equal(saved['contrasts'], np.zeros((5, 2)))
+                np.testing.assert_array_equal(saved['contrasts'], np.zeros((len(ATTRIBUTES), 2)))
 
 
 if __name__ == '__main__':

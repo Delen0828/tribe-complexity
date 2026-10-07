@@ -22,7 +22,64 @@ ATTRIBUTES = {
     'colors': ('Number of distinct colors', 'color.color_count'),
     'quantitative': ('Number of quantitative variables', 'data.quantitative'),
     'categorical': ('Number of categorical variables', 'data.categorical'),
+    'chart_types': ('Number of distinct chart types', 'design.chart_types_count'),
+    'no_text': ('No text', 'text.no_text'),
+    'axes_labels': ('Axis labels', 'text.axes_labels'),
+    'axes_text': ('Axis text', 'text.axes_text'),
+    'titles': ('Titles', 'text.titles'),
+    'annotations': ('Annotations', 'text.annotations'),
+    'captions': ('Captions', 'text.captions'),
+    'legend_text': ('Legend text', 'text.legend_text'),
+    'legend_title': ('Legend titles', 'text.legend_title'),
+    'text_only': ('Text only', 'text.text_only'),
+    'black_and_white': ('Black and white', 'color.black_and_white'),
+    'background_color': ('Non-white background', 'color.background_color'),
+    'multi_panel': ('Multiple panels', 'design.multi_panel'),
+    'area': ('Area chart', 'design.area'),
+    'bar': ('Bar chart', 'design.bar'),
+    'circle': ('Circle chart', 'design.circle'),
+    'diagram': ('Diagram', 'design.diagram'),
+    'distribution': ('Distribution chart', 'design.distribution'),
+    'grid_or_matrix': ('Grid or matrix', 'design.grid_or_matrix'),
+    'line': ('Line chart', 'design.line'),
+    'map': ('Map', 'design.map'),
+    'point': ('Point chart', 'design.point'),
+    'table': ('Table', 'design.table'),
+    'text': ('Text chart', 'design.text'),
+    'trees_or_networks': ('Trees or networks', 'design.trees_or_networks'),
+    'category': ('Source category', 'category'),
 }
+COUNT_LABELS = {
+    'charts': ('chart', 'charts'),
+    'colors': ('color', 'colors'),
+    'quantitative': ('quantitative variable', 'quantitative variables'),
+    'categorical': ('categorical variable', 'categorical variables'),
+    'chart_types': ('chart type', 'chart types'),
+}
+BINARY_ATTRIBUTES = set(ATTRIBUTES) - set(COUNT_LABELS) - {'complexity', 'category'}
+CATEGORY_LABELS = {'G': 'Government', 'I': 'Infographic', 'N': 'News', 'S': 'Science'}
+
+
+def group_label(attribute, value):
+    if attribute == 'complexity':
+        return f'{value*10}–{(value+1)*10}' + (' (inclusive)' if value == 9 else ' (upper excluded)')
+    if attribute == 'category':
+        return CATEGORY_LABELS[value]
+    if attribute in BINARY_ATTRIBUTES:
+        return 'Yes' if value else 'No'
+    return str(value)
+
+
+def attribute_metadata():
+    attributes = []
+    for key, (label, _) in ATTRIBUTES.items():
+        kind = ('bin' if key == 'complexity' else 'category' if key == 'category'
+                else 'binary' if key in BINARY_ATTRIBUTES else 'count')
+        item = dict(key=key, label=label, kind=kind)
+        if key in COUNT_LABELS:
+            item['count_labels'] = COUNT_LABELS[key]
+        attributes.append(item)
+    return attributes
 
 
 def write_json(path, data):
@@ -45,11 +102,18 @@ def load_stimuli(labels):
                 continue
             values = {'complexity': min(int(score // 10), 9)}
             for key, (_, column) in ATTRIBUTES.items():
-                if key != 'complexity':
-                    count = float(raw[column])
-                    if not np.isfinite(count) or count < 0 or not count.is_integer():
+                if key == 'complexity':
+                    continue
+                if key == 'category':
+                    if raw[column] not in CATEGORY_LABELS:
                         raise ValueError(f'Invalid {column} for {index}: {raw[column]}')
-                    values[key] = int(count)
+                    values[key] = raw[column]
+                    continue
+                count = float(raw[column])
+                if (not np.isfinite(count) or count < 0 or not count.is_integer()
+                        or (key in BINARY_ATTRIBUTES and count not in (0, 1))):
+                    raise ValueError(f'Invalid {column} for {index}: {raw[column]}')
+                values[key] = int(count)
             rows.append(dict(index=index, score=score, bin=values['complexity'],
                              attributes=values, image_path=raw['image_path'],
                              source=str(source.resolve()), filename=raw['filename']))
@@ -87,9 +151,7 @@ def aggregate_maps(rows, maps):
         for value in sorted({r['attributes'][attribute] for r in rows}):
             positions = [i for i, r in enumerate(rows) if r['attributes'][attribute] == value]
             mean = maps[positions].mean(axis=0, dtype=np.float64)
-            label = (f'{value*10}–{(value+1)*10}' + (' (inclusive)' if value == 9 else ' (upper excluded)')
-                     if attribute == 'complexity' else str(value))
-            groups.append(dict(attribute=attribute, value=value, label=label,
+            groups.append(dict(attribute=attribute, value=value, label=group_label(attribute, value),
                                indices=[rows[i]['index'] for i in positions],
                                count=len(positions), mean=mean, contrast=mean-grand_mean))
     return groups, grand_mean
@@ -198,7 +260,7 @@ def export_report(rows, maps, output, selection, timing, render=True):
         complete=len(rows) == len(selection['rows']),
         pending_indices=[r['index'] for r in selection['rows'] if r['index'] not in completed_indices],
         eligible_count=selection['eligible_count'], missing_indices=selection['missing_indices'],
-        attributes=[dict(key=k, label=v[0]) for k,v in ATTRIBUTES.items()],
+        attributes=attribute_metadata(),
         rows=[{k:v for k,v in r.items() if k not in ('source', 'sha256')} for r in rows],
         groups=public_groups, limits=limits, timing=timing,
         aggregation='Equal-weight arithmetic mean across stimuli, first predicted response at t=0.',
@@ -219,6 +281,22 @@ def report_rows(rows, output, allow_partial=False):
     if not completed:
         raise ValueError('No completed predictions available to report')
     return completed
+
+
+def compatible_selection(previous, current):
+    """Allow added grouping annotations while preserving every prediction identity."""
+    if previous.keys() != current.keys():
+        return False
+    if any(previous[key] != current[key] for key in current if key != 'rows'):
+        return False
+    if len(previous['rows']) != len(current['rows']):
+        return False
+    for old, new in zip(previous['rows'], current['rows']):
+        if {k: v for k, v in old.items() if k != 'attributes'} != {k: v for k, v in new.items() if k != 'attributes'}:
+            return False
+        if any(new['attributes'].get(key) != value for key, value in old['attributes'].items()):
+            return False
+    return True
 
 
 def main():
@@ -259,7 +337,7 @@ def main():
     if args.precision != 'fp32':
         selection['precision'] = args.precision
     selection_path = output / 'selection.json'
-    if selection_path.exists() and json.loads(selection_path.read_text()) != selection:
+    if selection_path.exists() and not compatible_selection(json.loads(selection_path.read_text()), selection):
         parser.error('Output has a different selection or preprocessing; choose a new --output-dir')
     (output / 'inputs').mkdir(parents=True, exist_ok=True)
     write_json(selection_path, selection)

@@ -22,56 +22,78 @@ def main():
         page.on('pageerror', lambda error: errors.append(str(error)))
         page.goto(args.url)
         page.wait_for_selector('#brain-workspace:visible')
-        assert page.locator('#attribute option').count() == 5
-        assert '100 predictions loaded' in page.locator('#brain-status').inner_text()
+        report = page.evaluate('report')
+        attributes = [a['key'] for a in report['attributes']]
+        assert page.locator('#attribute option').count() == len(attributes) == 31
+        assert f"{report['count']:,} predictions loaded" in page.locator('#brain-status').inner_text()
         assert page.locator('#groups button').count() == 10
-        for attribute in ['complexity','charts','colors','quantitative','categorical']:
+
+        def loaded_maps():
+            # Load off-screen columns too, so every rendered group is checked.
+            page.locator('#groups .group-map').evaluate_all("images => images.forEach(image => image.loading = 'eager')")
+            page.wait_for_function('''() => [...document.querySelectorAll('#groups .group-map')].every(
+                image => image.complete && image.naturalWidth > 1000 && !image.hidden)''')
+            assert page.locator('#groups .map-error:visible').count() == 0
+
+        for attribute in attributes:
             page.select_option('#attribute',attribute)
+            groups = [g for g in report['groups'] if g['attribute'] == attribute]
             buttons = page.locator('#groups button')
-            assert buttons.count() > 0
-            for position in (0,buttons.count()-1):
+            assert buttons.count() == len(groups) > 0
+            assert page.locator('#groups tbody tr').count() == 4
+            assert page.locator('#groups .group-map').count() == len(groups)*4
+            for position, group in enumerate(groups):
+                icons = page.locator('#groups thead .sample-size-icons').nth(position)
+                assert icons.locator('.sample-square').count() == group['count']
+                if attribute == 'category' or attribute in ('titles', 'multi_panel', 'bar'):
+                    assert buttons.nth(position).inner_text() == group['label']
+            for position in sorted({0,buttons.count()-1}):
                 buttons.nth(position).click()
                 assert buttons.nth(position).get_attribute('aria-pressed') == 'true'
-                count = int(page.locator('#group-count').inner_text().split('=')[1])
+                assert page.locator('#groups button[aria-pressed="true"]').count() == 1
+                count = groups[position]['count']
                 assert page.locator('#members a').count() == min(count,24)
-                for statistic in ['mean','contrast']:
-                    page.select_option('#statistic',statistic)
-                    page.wait_for_function('''() => {
-                        const img = document.getElementById('brain-map');
-                        return img.complete && img.naturalWidth > 1000 && !img.hidden;
-                    }''')
-                    assert f'_{statistic}.png' in page.locator('#brain-map').get_attribute('src')
-                    assert page.locator('#map-error').is_hidden()
+                assert f'{count} stimuli shown' in page.locator('#member-range').inner_text()
+            for statistic in ['mean','contrast']:
+                page.select_option('#statistic',statistic)
+                loaded_maps()
+                for source in page.locator('#groups .group-map').evaluate_all('images => images.map(image => image.src)'):
+                    assert f'_{statistic}.png' in source
         # Verify pagination with the largest chart-count group.
         page.select_option('#attribute','charts')
         buttons=page.locator('#groups button')
-        counts=[int(text.split('n=')[1]) for text in buttons.all_inner_texts()]
+        counts=[g['count'] for g in report['groups'] if g['attribute'] == 'charts']
         buttons.nth(counts.index(max(counts))).click()
         if max(counts)>24:
             page.locator('#more-members').click()
             assert page.locator('#members a').count()==min(max(counts),48)
         page.select_option('#attribute','complexity')
         page.select_option('#statistic','mean')
-        page.wait_for_function("document.getElementById('brain-map').complete")
+        loaded_maps()
+        page.locator('.brain-grid-scroll').evaluate('element => element.scrollLeft = 0')
         page.screenshot(path=str(args.screenshots/'desktop.png'),full_page=True)
-        # Refresh restores the selected grouping and statistic from the URL.
-        page.select_option('#attribute','categorical')
+        # Refresh restores a string-valued category group and the map mode.
+        page.select_option('#attribute','category')
+        page.locator('#groups button').last.click()
+        category = page.locator('#groups button[aria-pressed="true"]').get_attribute('data-value')
         page.select_option('#statistic','contrast')
         selected=page.url
         page.reload()
         page.wait_for_selector('#brain-workspace:visible')
-        assert page.locator('#attribute').input_value()=='categorical'
+        assert page.locator('#attribute').input_value()=='category'
         assert page.locator('#statistic').input_value()=='contrast'
+        assert page.locator('#groups button[aria-pressed="true"]').get_attribute('data-value')==category
         assert page.url==selected
-        # Unavailable full results must clear the previous report.
+        # Simulate unavailable results even when a full/partial report exists.
+        page.route('**/massvis_all/explorer.json', lambda route: route.fulfill(status=404, body='Unavailable'))
         page.select_option('#dataset','massvis_all')
-        page.wait_for_function("document.getElementById('brain-status').textContent.includes('Whole-dataset results are unavailable')")
+        page.wait_for_function("document.getElementById('brain-status').textContent.includes('This report is unavailable')")
         assert page.locator('#brain-workspace').is_hidden()
         assert page.locator('#attribute').is_disabled()
         page.select_option('#dataset','massvis_sample')
         page.wait_for_selector('#brain-workspace:visible')
         page.set_viewport_size(dict(width=390,height=844))
-        page.wait_for_function("document.getElementById('brain-map').complete")
+        loaded_maps()
         assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
         page.screenshot(path=str(args.screenshots/'mobile.png'),full_page=True)
         assert not errors, errors
@@ -81,7 +103,7 @@ def main():
         assert page.locator('a[href="brain.html"]').count()==1
         assert page.locator('#index').input_value()=='42'
         browser.close()
-    print(json.dumps(dict(status='PASS', attributes=5, map_modes=2,
+    print(json.dumps(dict(status='PASS', attributes=len(attributes), map_modes=2,
                           checks=['loaded cortical images','member counts and pagination',
                                   'URL restoration','unavailable full-data state',
                                   'mobile overflow','annotation viewer navigation'],

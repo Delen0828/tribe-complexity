@@ -9,6 +9,21 @@ if (localReport) el('dataset-control').hidden = true;
 if (params.get('dataset') === 'massvis_all') el('dataset').value = 'massvis_all';
 
 function asset(path) { return new URL(path, baseURL).href; }
+function groupTitle(attribute, group) {
+  if (attribute.key === 'complexity') {
+    return `${group.value * 10}–${(group.value + 1) * 10} perceived complexity`;
+  }
+  // Keep older five-attribute reports readable when they lack count metadata.
+  const legacyCountLabels = {
+    colors: ['color', 'colors'], charts: ['chart', 'charts'],
+    quantitative: ['quantitative variable', 'quantitative variables'],
+    categorical: ['categorical variable', 'categorical variables'],
+  };
+  const countLabels = attribute.count_labels || legacyCountLabels[attribute.key];
+  return countLabels
+    ? `${group.value} ${countLabels[group.value === 1 ? 0 : 1]}`
+    : group.label;
+}
 function setURL() {
   const url = new URL(location.href);
   if (!localReport) url.searchParams.set('dataset', el('dataset').value);
@@ -44,7 +59,7 @@ function showMembers(reset = true) {
 function showMap() {
   const kind = el('statistic').value;
   const attribute = report.attributes.find(a => a.key === el('attribute').value);
-  const groups = report.groups.filter(g => g.attribute === attribute.key).sort((a, b) => a.value - b.value);
+  const groups = report.groups.filter(g => g.attribute === attribute.key);
   el('map-kind').textContent = kind === 'mean' ? 'Mean predicted response' : 'Difference from included-stimulus mean';
   el('map-title').textContent = attribute.label;
   el('group-count').textContent = `${groups.length} groups × 4 views`;
@@ -80,14 +95,7 @@ function showMap() {
     button.type = 'button';
     button.dataset.value = group.value;
     button.setAttribute('aria-pressed', String(group === selectedGroup));
-    const countLabels = {
-      colors: ['color', 'colors'], charts: ['chart', 'charts'],
-      quantitative: ['quantitative variable', 'quantitative variables'],
-      categorical: ['categorical variable', 'categorical variables'],
-    };
-    button.textContent = attribute.key === 'complexity'
-      ? `${group.value * 10}–${(group.value + 1) * 10} perceived complexity`
-      : `${group.value} ${countLabels[attribute.key][group.value === 1 ? 0 : 1]}`;
+    button.textContent = groupTitle(attribute, group);
     button.setAttribute('aria-label', `${attribute.label}: ${group.label}; ${group.count} stimuli`);
     button.addEventListener('click', () => chooseGroup(group));
     heading.append(sampleSize, button);
@@ -129,7 +137,7 @@ function showMap() {
 function chooseGroup(group) {
   selectedGroup = group;
   for (const button of el('groups').querySelectorAll('button')) {
-    button.setAttribute('aria-pressed', String(Number(button.dataset.value) === group.value));
+    button.setAttribute('aria-pressed', String(button.dataset.value === String(group.value)));
   }
   const attribute = report.attributes.find(a => a.key === group.attribute);
   el('members-heading').textContent = `Stimuli · ${attribute.label}: ${group.label}`;
@@ -182,7 +190,7 @@ async function loadReport() {
     el('sample-summary').textContent = `${report.count.toLocaleString()} of ${report.eligible_count.toLocaleString()} available annotated stimuli · ${report.scope === 'sample' ? `Sample seed ${report.seed}` : 'Whole dataset'}`;
     el('sampling-note').textContent = report.scope === 'sample'
       ? 'Balanced sampling across ten complexity bins; groups summarize this selected sample, not the natural dataset distribution. Bins exclude their upper edge except 100. Squares above each column show its sample size: one square per stimulus.'
-      : 'All available annotated stimuli. Feature groups use exact published counts; group sizes may differ. Bins exclude their upper edge except 100.';
+      : 'All available annotated stimuli. Feature groups use published counts, presence labels, and source categories; group sizes may differ. Bins exclude their upper edge except 100.';
     if (report.complete === false) {
       el('sample-summary').textContent = `Partial run · ${report.count.toLocaleString()} of ${report.selected_count.toLocaleString()} selected stimuli`;
       el('sampling-note').textContent = 'Incomplete inference: only completed predictions are included. These groups may be biased and do not represent the full selection. Contrasts use the mean of completed stimuli.';

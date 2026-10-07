@@ -79,8 +79,11 @@ from the repository root in the `tribe` environment. The default sample has ten
 stimuli per ten-point complexity bin. Use `--scope all` for all annotated stimuli;
 see [dataset commands](../tribe/README.md#dataset-runs-and-grouped-brain-explorer).
 
-Group by perceived complexity or counts of charts, distinct colors, quantitative
-variables, or categorical variables. Select a group and choose its mean predicted
+Group by any of the 29 published feature variables, perceived complexity, or
+source category (31 attributes). Counts include charts, chart types, distinct
+colors, quantitative variables, and categorical variables. Text, color, panel,
+and chart-type presence features use No/Yes groups; source category uses
+Government, Infographic, News, and Science. Select a group and choose its mean predicted
 response or its difference from the selected-set mean. All views share a scale
 within each mode. Group badges show sample sizes; member thumbnails link back to
 the original image annotations. The whole-dataset option shows an unavailable state
@@ -99,4 +102,4 @@ python visualizer/test_brain.py
 ```
 
 Run with the local server and completed default sample report available. This checks
-all five dimensions, both map modes, pagination, URL state, and mobile layout.
+all available grouping attributes, both map modes, pagination, URL state, and mobile layout.

@@ -7,7 +7,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 from moviepy import VideoFileClip
-from dataset import ATTRIBUTES, ROOT, aggregate_maps, load_predictions, write_json
+from dataset import ATTRIBUTES, ROOT, aggregate_maps, load_predictions, view_metadata, write_json
 from preprocessing import PROTOCOL, prepare_stimulus
 
 
@@ -74,13 +74,17 @@ def verify(output):
         np.testing.assert_allclose(saved['means'], [g['mean'] for g in groups])
         np.testing.assert_allclose(saved['contrasts'], [g['contrast'] for g in groups])
     assert len(groups) == len(report['groups'])
+    views = report.get('views', view_metadata('four'))
+    assert views == view_metadata(report.get('view_layout', 'four'))
     for expected, published in zip(groups, report['groups']):
         for key in ('attribute', 'value', 'label', 'indices', 'count'):
             assert published[key] == expected[key]
         for kind in ('mean','contrast'):
-            with Image.open(output / published[f'{kind}_image']) as image:
-                assert image.width >= 1000 and image.height >= 300
-                image.verify()
+            assets = {published[f'{kind}_{view["image_suffix"]}']: view['panels'] for view in views}
+            for path, panels in assets.items():
+                with Image.open(output / path) as image:
+                    assert image.width >= 300 * panels and image.height >= 300
+                    image.verify()
     for kind in ('mean','contrast'):
         assert report['limits'][kind] == max(1e-12,max(float(np.abs(g[kind]).max()) for g in groups))
     for attribute in ATTRIBUTES:

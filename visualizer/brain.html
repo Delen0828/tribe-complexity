@@ -12,11 +12,12 @@
 <body>
   <header><a class="brand" href="./">MASSVIS <span>/ Predicted brain responses</span></a><a href="./">Explore annotations ↗</a></header>
   <main>
-    <div class="brain-intro"><div><p class="eyebrow">TRIBE v2 · Population-level predictions</p><h1>How do stimulus groups compare?</h1><p>Choose an attribute to compare all groups: one column per group, with four cortical views stacked vertically.</p></div><a id="download" hidden>Download aggregate arrays ↗</a></div>
+    <div class="brain-intro"><div><p class="eyebrow">TRIBE v2 · Population-level predictions</p><h1>How do stimulus groups compare?</h1><p>Choose an attribute to compare all groups: one column per group, with your selected cortical views stacked vertically.</p></div><a id="download" hidden>Download aggregate arrays ↗</a></div>
     <section class="brain-controls" aria-label="Aggregation controls">
       <div id="dataset-control"><label for="dataset">Stimuli</label><select id="dataset"><option value="massvis_sample">100-stimulus sample</option><option value="massvis_all">Whole annotated dataset</option></select></div>
       <div><label for="attribute">Group by</label><select id="attribute" disabled></select></div>
       <div><label for="statistic">Brain map</label><select id="statistic" disabled><option value="mean">Group mean</option><option value="contrast">Difference from included-stimulus mean</option></select></div>
+      <div><label for="views">Cortical views</label><select id="views" disabled></select></div>
     </section>
     <p id="brain-status" role="status" aria-live="polite">Loading predictions…</p>
     <div id="brain-workspace" hidden>
@@ -29,7 +30,7 @@
         <div class="brain-color-scale" aria-hidden="true"></div>
         <p class="map-scroll-hint">Scroll horizontally to compare all groups.</p>
         <p class="sample-size-legend"><span class="sample-square" aria-hidden="true"></span>1 square = 1 stimulus</p>
-        <div class="brain-grid-scroll" tabindex="0" role="region" aria-label="Groups across columns, four cortical views down rows">
+        <div class="brain-grid-scroll" tabindex="0" role="region" aria-label="Groups across columns, selected cortical views down rows">
           <table id="groups" class="brain-grid" aria-label="Predicted cortical responses by group and view"></table>
         </div>
       </section>

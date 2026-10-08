@@ -89,6 +89,15 @@ within each mode. Group badges show sample sizes; member thumbnails link back to
 the original image annotations. The whole-dataset option shows an unavailable state
 until those results are generated. No browser-side model inference is performed.
 
+The **Cortical views** selector offers four standard lateral/medial views, one
+inferior/ventral view showing both hemispheres, or all five, according to the
+assets in the report. The selection is saved in the URL (`?views=four`,
+`?views=inferior`, or `?views=all`). Reports render all five by default;
+`tribe/dataset.py --views four` or `--views inferior` renders only that layout.
+Rebuild the full-dataset report from existing predictions with
+`python tribe/dataset.py --scope all --allow-partial --views all` to add the bottom view.
+Older reports continue to display their four standard views.
+
 Include `tribe/outputs/massvis_sample/` (and optionally `massvis_all/`) when serving
 or deploying the site. A custom report can be loaded with
 `brain.html?data=../path/to/explorer.json`. Generated results are excluded from Git.
@@ -102,4 +111,5 @@ python visualizer/test_brain.py
 ```
 
 Run with the local server and completed default sample report available. This checks
-all available grouping attributes, both map modes, pagination, URL state, and mobile layout.
+all available grouping attributes, both map modes, available view layouts,
+pagination, URL state, and mobile layout.

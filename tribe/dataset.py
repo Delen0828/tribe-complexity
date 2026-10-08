@@ -58,6 +58,22 @@ COUNT_LABELS = {
 }
 BINARY_ATTRIBUTES = set(ATTRIBUTES) - set(COUNT_LABELS) - {'complexity', 'category'}
 CATEGORY_LABELS = {'G': 'Government', 'I': 'Infographic', 'N': 'News', 'S': 'Science'}
+STANDARD_VIEWS = [('left', 'lateral'), ('left', 'medial'), ('right', 'lateral'), ('right', 'medial')]
+VIEW_LAYOUTS = ('four', 'inferior', 'all')
+
+
+def view_metadata(layout):
+    if layout not in VIEW_LAYOUTS:
+        raise ValueError(f'Unknown view layout: {layout}')
+    views = []
+    if layout in ('four', 'all'):
+        views.extend(dict(key=f'{hemi}_{view}', label=f'{hemi.capitalize()} {view}',
+                          image_suffix='image', panel=panel, panels=4)
+                     for panel, (hemi, view) in enumerate(STANDARD_VIEWS))
+    if layout in ('inferior', 'all'):
+        views.append(dict(key='inferior', label='Inferior / ventral (both hemispheres)',
+                          image_suffix='inferior_image', panel=0, panels=1))
+    return views
 
 
 def group_label(attribute, value):
@@ -205,7 +221,8 @@ def estimate_runtime(receipts, total_count, setup_seconds, benchmark=None):
                      'Excludes report rendering, downloads, and interruptions; balanced sample, not a confidence interval.')
 
 
-def render_groups(groups, output):
+def render_groups(groups, output, views='all'):
+    view_metadata(views)
     from compare import brain
     from nilearn import datasets
     import matplotlib.pyplot as plt
@@ -215,22 +232,28 @@ def render_groups(groups, output):
     folder.mkdir(exist_ok=True)
     limits = {kind: max(1e-12, max(float(np.abs(g[kind]).max()) for g in groups))
               for kind in ('mean', 'contrast')}
-    views = [('left', 'lateral'), ('left', 'medial'), ('right', 'lateral'), ('right', 'medial')]
+    layouts = []
+    if views in ('four', 'all'):
+        layouts.append(('', STANDARD_VIEWS))
+    if views in ('inferior', 'all'):
+        layouts.append(('_inferior', [('both', 'ventral')]))
     for number, group in enumerate(groups, 1):
         for kind in ('mean', 'contrast'):
-            fig = plt.figure(figsize=(12, 3.4), facecolor='white')
-            gs = fig.add_gridspec(1, 4, wspace=0)
-            limit = limits[kind]
-            for column, (hemi, view) in enumerate(views):
-                brain(fig, gs[0, column], fs, group[kind], hemi, view, limit)
-            fig.subplots_adjust(top=.92, bottom=.28, left=0, right=1)
-            cax = fig.add_axes([.34, .15, .32, .03])
-            fig.colorbar(plt.cm.ScalarMappable(norm=Normalize(-limit, limit), cmap='RdBu_r'),
-                         cax=cax, orientation='horizontal', label='Predicted response (model units)')
-            name = f"{group['attribute']}_{group['value']}_{kind}.png"
-            fig.savefig(folder / name, dpi=110, facecolor='white')
-            plt.close(fig)
-            group[f'{kind}_image'] = f'brain_maps/{name}'
+            for suffix, panels in layouts:
+                fig = plt.figure(figsize=(3 * len(panels), 3.4), facecolor='white')
+                gs = fig.add_gridspec(1, len(panels), wspace=0)
+                limit = limits[kind]
+                for column, (hemi, view) in enumerate(panels):
+                    brain(fig, gs[0, column], fs, group[kind], hemi, view, limit)
+                fig.subplots_adjust(top=.92, bottom=.28, left=0, right=1)
+                cax = fig.add_axes([.14, .15, .72, .03] if suffix else [.34, .15, .32, .03])
+                bar = fig.colorbar(plt.cm.ScalarMappable(norm=Normalize(-limit, limit), cmap='RdBu_r'),
+                                   cax=cax, orientation='horizontal')
+                bar.set_label('Predicted response (model units)', fontsize=8 if suffix else 10)
+                name = f"{group['attribute']}_{group['value']}_{kind}{suffix}.png"
+                fig.savefig(folder / name, dpi=110, facecolor='white')
+                plt.close(fig)
+                group[f'{kind}{suffix}_image'] = f'brain_maps/{name}'
         print(f'Rendered group {number}/{len(groups)}: {group["attribute"]} {group["label"]}', flush=True)
     return limits
 
@@ -241,10 +264,11 @@ def export_static_site(output):
     build_site(output.parent)
 
 
-def export_report(rows, maps, output, selection, timing, render=True):
+def export_report(rows, maps, output, selection, timing, render=True, views='all'):
+    rendered_views = view_metadata(views)
     started = time.perf_counter()
     groups, grand_mean = aggregate_maps(rows, maps)
-    limits = render_groups(groups, output) if render else {}
+    limits = render_groups(groups, output, views=views) if render else {}
     np.savez_compressed(output / 'aggregate_maps.npz',
                         means=np.asarray([g['mean'] for g in groups]),
                         contrasts=np.asarray([g['contrast'] for g in groups]),
@@ -263,6 +287,7 @@ def export_report(rows, maps, output, selection, timing, render=True):
         attributes=attribute_metadata(),
         rows=[{k:v for k,v in r.items() if k not in ('source', 'sha256')} for r in rows],
         groups=public_groups, limits=limits, timing=timing,
+        view_layout=views, views=rendered_views,
         aggregation='Equal-weight arithmetic mean across stimuli, first predicted response at t=0.',
         contrast='Group mean minus the mean of all included stimuli (including this group).',
         sampling='Partial run: only completed predictions are included.' if len(rows) != len(selection['rows']) else 'Ten-point complexity bins; upper edge excluded except 100. Sampling without replacement.'
@@ -315,6 +340,8 @@ def main():
     parser.add_argument('--cpu-threads', type=positive_threads, default=8,
                         help='PyTorch CPU compute threads (default: 8)')
     parser.add_argument('--precision', choices=['fp32', 'bf16'], default='fp32')
+    parser.add_argument('--views', choices=VIEW_LAYOUTS, default='all',
+                        help='Render four standard views, one bilateral inferior/ventral view, or all five (default: all)')
     action = parser.add_mutually_exclusive_group()
     action.add_argument('--predict', action='store_true', help='Predict missing stimuli, then export the web report')
     action.add_argument('--sample-only', action='store_true', help='Save selection and source manifest only')
@@ -367,7 +394,7 @@ def main():
     timing = estimate_runtime(receipts, len(eligible), metadata['model_load_seconds'], metadata.get('benchmark'))
     if not metadata_path.exists():
         timing['note'] += ' Model setup timing is unavailable for this interrupted run.'
-    export_report(rows, maps, output, selection, timing)
+    export_report(rows, maps, output, selection, timing, views=args.views)
 
 
 def reuse_predictions(rows, source, output, background, precision='fp32'):

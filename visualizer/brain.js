@@ -5,10 +5,34 @@ const localReport = document.body.dataset.report;
 const catalogPath = document.body.dataset.catalog;
 let catalog = null;
 const params = new URLSearchParams(location.search);
+const legacyViews = ['Left lateral', 'Left medial', 'Right lateral', 'Right medial'].map((label, panel) => ({
+  key: label.toLowerCase().replace(' ', '_'), label, image_suffix: 'image', panel, panels: 4,
+}));
 if (localReport) el('dataset-control').hidden = true;
 if (params.get('dataset') === 'massvis_all') el('dataset').value = 'massvis_all';
 
 function asset(path) { return new URL(path, baseURL).href; }
+function availableViews() { return report.views || legacyViews; }
+function configureViews(preferred) {
+  const views = availableViews();
+  const hasFour = legacyViews.every(view => views.some(item => item.key === view.key));
+  const hasInferior = views.some(view => view.key === 'inferior');
+  el('views').replaceChildren();
+  for (const [value, label, available] of [
+    ['four', 'Four standard views', hasFour],
+    ['inferior', 'Inferior / ventral · 1 view', hasInferior],
+    ['all', 'All five views', hasFour && hasInferior],
+  ]) {
+    if (!available) continue;
+    const option = document.createElement('option');
+    option.value = value;
+    option.textContent = label;
+    el('views').append(option);
+  }
+  const choices = [...el('views').options].map(option => option.value);
+  const selected = choices.includes(preferred) ? preferred : report.view_layout;
+  if (choices.includes(selected)) el('views').value = selected;
+}
 function groupTitle(attribute, group) {
   if (attribute.key === 'complexity') {
     return `${group.value * 10}–${(group.value + 1) * 10} perceived complexity`;
@@ -29,6 +53,7 @@ function setURL() {
   if (!localReport) url.searchParams.set('dataset', el('dataset').value);
   url.searchParams.set('attribute', el('attribute').value);
   url.searchParams.set('statistic', el('statistic').value);
+  url.searchParams.set('views', el('views').value);
   if (selectedGroup) url.searchParams.set('group', selectedGroup.value);
   history.replaceState(null, '', url);
 }
@@ -60,9 +85,14 @@ function showMap() {
   const kind = el('statistic').value;
   const attribute = report.attributes.find(a => a.key === el('attribute').value);
   const groups = report.groups.filter(g => g.attribute === attribute.key);
+  const layout = el('views').value;
+  const views = availableViews().filter(view => layout === 'all'
+    || (layout === 'inferior' ? view.key === 'inferior' : view.key !== 'inferior'));
   el('map-kind').textContent = kind === 'mean' ? 'Mean predicted response' : 'Difference from included-stimulus mean';
   el('map-title').textContent = attribute.label;
-  el('group-count').textContent = `${groups.length} groups × 4 views`;
+  el('group-count').textContent = `${groups.length} groups × ${views.length} ${views.length === 1 ? 'view' : 'views'}`;
+  document.querySelector('.brain-grid-scroll').setAttribute('aria-label',
+    `Groups across columns, ${views.length} cortical ${views.length === 1 ? 'view' : 'views'} down rows`);
   el('map-description').textContent = kind === 'mean' ? report.aggregation : report.contrast;
   const limit = report.limits[kind];
   el('scale-note').textContent = Number.isFinite(limit)
@@ -102,13 +132,12 @@ function showMap() {
     header.append(heading);
   }
   const body = grid.createTBody();
-  const views = ['Left lateral', 'Left medial', 'Right lateral', 'Right medial'];
-  for (const [viewIndex, view] of views.entries()) {
+  for (const view of views) {
     const row = body.insertRow();
     const label = document.createElement('th');
     label.scope = 'row';
     label.className = 'view-label';
-    label.textContent = view;
+    label.textContent = view.label;
     row.append(label);
     for (const group of groups) {
       const cell = row.insertCell();
@@ -117,16 +146,17 @@ function showMap() {
       const image = document.createElement('img');
       image.className = 'group-map';
       image.loading = 'lazy';
-      // Existing maps contain four equal-width views above a shared color bar.
-      // Show each view in its own viewport without resampling the map assets.
-      image.style.left = `${-100 * viewIndex}%`;
-      image.alt = `${view}: ${kind === 'mean' ? 'group mean' : 'group minus included-stimulus mean'} for ${attribute.label} ${group.label}, ${group.count} stimuli.`;
+      // Use report metadata to crop standard strips or show a single bottom map.
+      image.style.width = `${100 * view.panels}%`;
+      image.style.left = `${-100 * view.panel}%`;
+      image.alt = `${view.label}: ${kind === 'mean' ? 'group mean' : 'group minus included-stimulus mean'} for ${attribute.label} ${group.label}, ${group.count} stimuli.`;
       const error = document.createElement('p');
       error.className = 'map-error';
       error.textContent = 'Cannot load this cortical map.';
       error.hidden = true;
       image.addEventListener('error', () => { image.hidden = true; error.hidden = false; });
-      if (group[`${kind}_image`]) image.src = asset(group[`${kind}_image`]);
+      const path = group[`${kind}_${view.image_suffix}`];
+      if (path) image.src = asset(path);
       else { image.hidden = true; error.hidden = false; }
       frame.append(image, error);
       cell.append(frame);
@@ -158,6 +188,7 @@ async function loadReport() {
   el('download').hidden = true;
   el('attribute').disabled = true;
   el('statistic').disabled = true;
+  el('views').disabled = true;
   el('brain-status').textContent = 'Loading predictions…';
   const defaultPath = catalog
     ? catalog.find(item => item.id === el('dataset').value)?.data
@@ -183,8 +214,10 @@ async function loadReport() {
     }
     if (report.attributes.some(a => a.key === currentParams.get('attribute'))) el('attribute').value = currentParams.get('attribute');
     el('statistic').value = currentParams.get('statistic') === 'contrast' ? 'contrast' : 'mean';
+    configureViews(currentParams.get('views'));
     el('attribute').disabled = false;
     el('statistic').disabled = false;
+    el('views').disabled = false;
     el('brain-workspace').hidden = false;
     el('brain-status').textContent = `${report.count.toLocaleString()} predictions loaded · ${(report.precision || 'fp32').toUpperCase()}.`;
     el('sample-summary').textContent = `${report.count.toLocaleString()} of ${report.eligible_count.toLocaleString()} available annotated stimuli · ${report.scope === 'sample' ? `Sample seed ${report.seed}` : 'Whole dataset'}`;
@@ -221,6 +254,7 @@ el('dataset').addEventListener('change', () => {
 });
 el('attribute').addEventListener('change', () => showGroups());
 el('statistic').addEventListener('change', showMap);
+el('views').addEventListener('change', showMap);
 el('more-members').addEventListener('click', () => showMembers(false));
 async function initialize() {
   if (catalogPath) {

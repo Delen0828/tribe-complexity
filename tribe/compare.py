@@ -17,6 +17,7 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import Normalize
 from matplotlib.backends.backend_pdf import PdfPages
 from nilearn import datasets, plotting
+from nilearn.surface import PolyMesh, load_surf_data
 from PIL import Image
 from preprocessing import PROTOCOL
 from parallelism import positive_threads
@@ -32,15 +33,32 @@ def colorbar(fig, cell, low, high, cmap, label):
 
 def brain(fig, cell, fs, values, hemi, view, limit, positive=False):
     ax = fig.add_subplot(cell, projection='3d')
-    half = values[:10242] if hemi == 'left' else values[10242:]
+    if hemi == 'both':
+        # PolyMesh keeps the inflated hemispheres side by side and preserves
+        # the model's left-then-right vertex order in one inferior projection.
+        mesh = PolyMesh(left=fs['infl_left'], right=fs['infl_right'])
+        half = values
+        background = np.concatenate([load_surf_data(fs[f'sulc_{h}'])
+                                     for h in ('left', 'right')])
+    else:
+        mesh = fs[f'infl_{hemi}']
+        half = values[:10242] if hemi == 'left' else values[10242:]
+        background = fs[f'sulc_{hemi}']
     plotting.plot_surf_stat_map(
-        fs[f'infl_{hemi}'], half, hemi=hemi, view=view,
-        bg_map=fs[f'sulc_{hemi}'], cmap='hot' if positive else 'RdBu_r',
+        mesh, half, hemi=hemi, view=view,
+        bg_map=background, cmap='hot' if positive else 'RdBu_r',
         vmin=0 if positive else -limit, vmax=limit,
         symmetric_cbar=not positive, colorbar=False, axes=ax, figure=fig,
         threshold=1e-12 if positive else None,
     )
-    ax.set_title(f'{hemi.capitalize()} {view}', fontsize=10, pad=0)
+    if hemi == 'both' and view == 'ventral':
+        # Keep anterior at the top, with hemispheres side by side. Looking
+        # from below puts anatomical right on the left of the image.
+        ax.view_init(elev=-90, azim=90)
+        for x, label in ((.26, 'R'), (.74, 'L')):
+            ax.text2D(x, .04, label, transform=ax.transAxes, ha='center', fontsize=8)
+    title = 'Inferior / ventral · both hemispheres' if hemi == 'both' else f'{hemi.capitalize()} {view}'
+    ax.set_title(title, fontsize=8 if hemi == 'both' else 10, pad=0)
     return ax
 
 

@@ -2,7 +2,7 @@
 .brain-intro h1 {font-size:clamp(1.5rem,3vw,2.2rem);letter-spacing:-.035em;font-weight:700}
 .brain-intro p:not(.eyebrow) {color:#52667d;line-height:1.6;margin-bottom:0;max-width:750px}
 .brain-intro>a {flex-shrink:0;font-size:.875rem}
-.brain-controls {display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:20px;background:white;border:1px solid var(--line);border-radius:10px;padding:20px}
+.brain-controls {display:grid;grid-template-columns:1fr 1fr 1.3fr 1.1fr;gap:20px;background:white;border:1px solid var(--line);border-radius:10px;padding:20px}
 select {font:inherit;width:100%;max-width:100%;padding:11px 32px 11px 12px;background:white;color:#172637;border:1px solid #9cacbf;border-radius:6px}
 #brain-status {font-size:.875rem;color:#52667d;min-height:1.4em;margin:16px 0}
 .run-summary {display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:.875rem;font-weight:600}
@@ -18,7 +18,7 @@ select {font:inherit;width:100%;max-width:100%;padding:11px 32px 11px 12px;backg
 .brain-grid button {width:100%;min-height:60px;font-size:.875rem}
 .brain-grid button[aria-pressed="true"] {background:#163e83;color:white;border-color:#163e83}
 .cortical-view {position:relative;overflow:hidden;aspect-ratio:1 / .82;background:white}
-.group-map {position:absolute;top:0;width:400%;max-width:none;height:auto;display:block}
+.group-map {position:absolute;top:0;width:100%;max-width:none;height:auto;display:block}
 .brain-color-scale {width:320px;max-width:100%;height:12px;margin:12px 0;background:linear-gradient(to right,#053061,#2166ac,#4393c3,#92c5de,#d1e5f0,#f7f7f7,#fddbc7,#f4a582,#d6604d,#b2182b,#67001f)}
 .map-error {padding:24px 12px;color:#9a3030;font-size:.875rem}
 #scale-note {margin-bottom:0}
@@ -31,7 +31,7 @@ select {font:inherit;width:100%;max-width:100%;padding:11px 32px 11px 12px;backg
 
 .map-scroll-hint {display:block;font-size:.8rem;color:#52667d}
 @media(max-width:800px) {.map-scroll-hint {display:block}}
-body[data-report] .brain-controls {grid-template-columns:1fr 1.3fr}
+body[data-report] .brain-controls {grid-template-columns:1fr 1.3fr 1.1fr}
 @media(max-width:800px) {body[data-report] .brain-controls {grid-template-columns:1fr}}
 
 main {max-width:none}

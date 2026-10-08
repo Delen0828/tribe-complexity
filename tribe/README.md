@@ -225,13 +225,28 @@ uses another compatible label table. Omit `--predict` to rebuild grouped reports
 from existing predictions. Missing source images are listed in selection metadata;
 insufficient sample-bin populations fail instead of silently sampling duplicates.
 
+Choose rendered views with `--views four` (left/right lateral and medial),
+`--views inferior` (one bottom view showing both hemispheres), or `--views all`
+(all five, the default). The **Cortical views** browser selector switches between
+the layouts included in the report, and saves the choice in `?views=inferior`,
+`?views=four`, or `?views=all`. To add the bottom view to existing predictions:
+
+```sh
+python tribe/dataset.py --scope all --allow-partial --views all
+```
+
+This rebuilds the maps without running inference. Use `--views inferior` to render
+only the single bilateral ventral map per group and map mode. Reports generated
+with a single layout offer that layout in the browser; older reports retain their
+four standard views until rebuilt. All layouts use the same scale within each map mode.
+
 Serve the repository root with `python -m http.server 8000 --bind 127.0.0.1`, then
 open [the output visualization hub](outputs/web/index.html). The hub discovers grouped
 reports and spectrum reports in sibling output folders, and links the two-stimulus
 comparison. Folders without a supported report are shown as unavailable. The attribute dropdown
-shows a grid with **one column per group and four cortical-view rows**, keeping
+shows a grid with **one column per group and one, four, or five cortical-view rows**, keeping
 all groups visible together. The wide grid scrolls horizontally to preserve all group columns
-and the four view rows. The [grouped brain explorer](../visualizer/brain.html) uses the same
+and the selected view rows. The [grouped brain explorer](../visualizer/brain.html) uses the same
 layout and also lets you switch between sample and full-dataset results.
 Both offer all 29 published feature variables, perceived complexity, and source
 category (31 grouping attributes). These include counts of charts, chart types,
@@ -258,7 +273,7 @@ python tribe/dataset.py --scope all --allow-partial
 Outputs go to `tribe/outputs/massvis_sample/` or `massvis_all/`. Each report contains
 data and rendered maps. Shared HTML, JavaScript, and CSS live in
 `tribe/outputs/web/`; legacy folder `index.html` files redirect to that viewer. `explorer.json`
-contains group membership and links to four-view cortical maps; `aggregate_maps.npz`
+contains group membership, available view layouts, and links to cortical maps; `aggregate_maps.npz`
 contains the numeric group means, contrasts, grand mean, and individual t=0 maps.
 `timing.json` estimates full-dataset prediction time from uncached preparation,
 inference, and saving, plus measured model setup. Feature-cache hits are excluded

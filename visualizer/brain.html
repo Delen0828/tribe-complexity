@@ -3,18 +3,18 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Compare predicted cortical responses across MASSVIS stimulus groups.">
+  <meta name="description" content="Compare predicted cortical responses across MassVis, Kylie, and Hayeong stimulus groups.">
   <title>MASSVIS · Predicted brain responses</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="brain.css">
   <script src="brain.js" defer></script>
 </head>
 <body>
-  <header><a class="brand" href="./">MASSVIS <span>/ Predicted brain responses</span></a><a href="./">Explore annotations ↗</a></header>
+  <header><a id="report-brand" class="brand" href="./">MASSVIS <span>/ Predicted brain responses</span></a><a href="./">Explore annotations ↗</a></header>
   <main>
-    <div class="brain-intro"><div><p class="eyebrow">TRIBE v2 · Population-level predictions</p><h1>How do stimulus groups compare?</h1><p>Choose an attribute to compare all groups: one column per group, with your selected cortical views stacked vertically.</p></div><a id="download" hidden>Download aggregate arrays ↗</a></div>
+    <div class="brain-intro"><div><p class="eyebrow">TRIBE v2 · Population-level predictions</p><h1 id="report-title">How do stimulus groups compare?</h1><p id="report-intro">Choose an attribute to compare all groups: one column per group, with your selected cortical views stacked vertically.</p></div><a id="download" hidden>Download aggregate arrays ↗</a></div>
     <section class="brain-controls" aria-label="Aggregation controls">
-      <div id="dataset-control"><label for="dataset">Stimuli</label><select id="dataset"><option value="massvis_sample">100-stimulus sample</option><option value="massvis_all">Whole annotated dataset</option></select></div>
+      <div id="dataset-control"><label for="dataset">Stimuli</label><select id="dataset"><option value="massvis_sample">MassVis · 100-stimulus sample</option><option value="massvis_all">MassVis · Whole annotated dataset</option><option value="kylie">Kylie · All stimuli</option><option value="kylie_bar">Kylie · Bar variants</option><option value="kylie_area">Kylie · Area variants</option><option value="hayeong">Hayeong · All stimuli</option><option value="hayeong_color">Hayeong · Color</option><option value="hayeong_hand_drawn">Hayeong · Hand-drawn</option><option value="hayeong_cartoon_image">Hayeong · Cartoon/image</option></select></div>
       <div><label for="attribute">Group by</label><select id="attribute" disabled></select></div>
       <div><label for="statistic">Brain map</label><select id="statistic" disabled><option value="mean">Group mean</option><option value="contrast">Difference from included-stimulus mean</option></select></div>
       <div><label for="views">Cortical views</label><select id="views" disabled></select></div>
@@ -37,7 +37,7 @@
       <section class="members-section" aria-labelledby="members-heading"><div class="members-heading"><h2 id="members-heading">Stimuli in this group</h2><span id="member-range"></span></div><div id="members"></div><button id="more-members" type="button" hidden>Show more stimuli</button></section>
       <details class="method"><summary>Method and runtime</summary><p>Each full stimulus is fitted proportionally inside a centered 256 × 256 area on a 292 × 292 padded canvas. The encoder removes the outer border. Maps use the first predicted response, with equal weight per stimulus.</p><p>These are model predictions, not measured fMRI, percent BOLD, or evidence of a causal feature effect. Feature groups can differ on other attributes. Small groups may be unstable.</p><p id="runtime"></p><p><a id="selection-link">Selection and provenance</a> · <a id="timing-link">Measured timings</a></p></details>
     </div>
-    <footer>TRIBE v2 · MASSVIS <span>Published counts describe annotations; colors are not recounted from pixels.</span></footer>
+    <footer>TRIBE v2 · Stimulus comparisons <span>Group labels come from study metadata and source stimuli.</span></footer>
   </main>
 </body>
 </html>

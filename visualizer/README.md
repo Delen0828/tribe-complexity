@@ -73,6 +73,14 @@ from the image’s 10 individual human ratings. Sample variance is also displaye
 
 ## Predicted cortical response groups
 
+The stimulus selector also supports Kylie and Hayeong. Generate them with
+`python tribe/run.py --dataset kylie --device cuda` and
+`python tribe/run.py --dataset hayeong --device cuda`. The
+[output hub](../tribe/outputs/web/index.html) links separate pages for each
+study and comparison; the [study guide](../tribe/studies/README.md) explains
+their design, labels, matching, and commands. Kylie thumbnails show measured
+human complexity means; Hayeong thumbnails show condition labels.
+
 Open [brain.html](brain.html), also linked from the annotation explorer. Generate
 its assets with `python tribe/dataset.py --scope sample --predict --device cuda`
 from the repository root in the `tribe` environment. The default sample has ten

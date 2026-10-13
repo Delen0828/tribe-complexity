@@ -1,0 +1,773 @@
+{
+  "title": "Hayeong \u00b7 Visualization style and color",
+  "rows": [
+    {
+      "index": 1,
+      "source": "data/Hayeong/extracted/tvcg-mm-3634785/visulization stimuli/experiment_1/cartoon-style/building_standard.png",
+      "filename": "building_standard.png",
+      "sha256": "4242b98155e1ce988c422dacb1c15defe0715e8b4a77d9c672cbc66dc508ec0b",
+      "attributes": {
+        "experiment": 1,
+        "topic": "building",
+        "style": "cartoon",
+        "condition": "cartoon_standard"
+      },
+      "label": "Experiment 1 \u00b7 building \u00b7 cartoon \u00b7 standard",
+      "score_label": "Experiment 1 \u00b7 cartoon \u00b7 standard"
+    },
+    {
+      "index": 2,
+      "source": "data/Hayeong/extracted/tvcg-mm-3634785/visulization stimuli/experiment_1/cartoon-style/home_decor.png",
+      "filename": "home_decor.png",
+      "sha256": "ce2f50845e16325bf87b42a1045b43a1679a76ce31a1e99dba1e85d57ff9781b",
+      "attributes": {
+        "experiment": 1,
+        "topic": "home",
+        "style": "cartoon",
+        "condition": "cartoon_embellished"
+      },
+      "label": "Experiment 1 \u00b7 home \u00b7 cartoon \u00b7 embellished",
+      "score_label": "Experiment 1 \u00b7 cartoon \u00b7 embellished"
+    },
+    {
+      "index": 3,
+      "source": "data/Hayeong/extracted/tvcg-mm-3634785/visulization stimuli/experiment_1/cartoon-style/home_standard.png",
+      "filename": "home_standard.png",
+      "sha256": "33004e02678df331bd8dbba103640a47b2794f7363b5844ffe80c5a225a16afc",
+      "attributes": {
+        "experiment": 1,
+        "topic": "home",
+        "style": "cartoon",
+        "condition": "cartoon_standard"
+      },
+      "label": "Experiment 1 \u00b7 home \u00b7 cartoon \u00b7 standard",
+      "score_label": "Experiment 1 \u00b7 cartoon \u00b7 standard"
+    },
+    {
+      "index": 4,
+      "source": "data/Hayeong/extracted/tvcg-mm-3634785/visulization stimuli/experiment_1/cartoon-style/lgbt_decor.png",
+      "filename": "lgbt_decor.png",
+      "sha256": "520226bd1ce74617df3dd9444564821c8f57d9b25b92f878c5bca65aea4eae1e",
+      "attributes": {
+        "experiment": 1,
+        "topic": "lgbt",
+        "style": "cartoon",
+        "condition": "cartoon_embellished"
+      },
+      "label": "Experiment 1 \u00b7 lgbt \u00b7 cartoon \u00b7 embellished",
+      "score_label": "Experiment 1 \u00b7 cartoon \u00b7 embellished"
+    },
+    {
+      "index": 5,
+      "source": "data/Hayeong/extracted/tvcg-mm-3634785/visulization stimuli/experiment_1/cartoon-style/lgbt_size.png",
+      "filename": "lgbt_size.png",
+      "sha256": "7f235bb8fa51ab3ca9de345575755f12bef8819ebdbc87f0665dbf8361032e33",
+      "attributes": {
+        "experiment": 1,
+        "topic": "lgbt",
+        "style": "cartoon",
+        "condition": "cartoon_standard"
+      },
+      "label": "Experiment 1 \u00b7 lgbt \u00b7 cartoon \u00b7 standard",
+      "score_label": "Experiment 1 \u00b7 cartoon \u00b7 standard"
+    },
+    {
+      "index": 6,
+      "source": "data/Hayeong/extracted/tvcg-mm-3634785/visulization stimuli/experiment_1/cartoon-style/scaffold_embellished.png",
+      "filename": "scaffold_embellished.png",
+      "sha256": "44385602b6ce4bd869b94bdd3b7c76f28d7cc8a7ea6a26ac435cca4a7de2673f",
+      "attributes": {
+        "experiment": 1,
+        "topic": "scaffold",
+        "style": "cartoon",
+        "condition": "cartoon_embellished"
+      },
+      "label": "Experiment 1 \u00b7 scaffold \u00b7 cartoon \u00b7 embellished",
+      "score_label": "Experiment 1 \u00b7 cartoon \u00b7 embellished"
+    },
+    {
+      "index": 7,
+      "source": "data/Hayeong/extracted/tvcg-mm-3634785/visulization stimuli/experiment_1/cartoon-style/trump_decor.png",
+      "filename": "trump_decor.png",
+      "sha256": "46bb48e7fa8ea7762be40c61b607b6974ea1740fc300ecda9ee126ad5daa3215",
+      "attributes": {
+        "experiment": 1,
+        "topic": "trump",
+        "style": "cartoon",
+        "condition": "cartoon_embellished"
+      },
+      "label": "Experiment 1 \u00b7 trump \u00b7 cartoon \u00b7 embellished",
+      "score_label": "Experiment 1 \u00b7 cartoon \u00b7 embellished"
+    },
+    {
+      "index": 8,
+      "source": "data/Hayeong/extracted/tvcg-mm-3634785/visulization stimuli/experiment_1/cartoon-style/trump_deploy.png",
+      "filename": "trump_deploy.png",
+      "sha256": "1295b03b2fb00e0d8ee1d8143f3b9eca223f49642165b3acaa71726703f6ed43",
+      "attributes": {
+        "experiment": 1,
+        "topic": "trump",
+        "style": "cartoon",
+        "condition": "cartoon_standard"
+      },
+      "label": "Experiment 1 \u00b7 trump \u00b7 cartoon \u00b7 standard",
+      "score_label": "Experiment 1 \u00b7 cartoon \u00b7 standard"
+    },
+    {
+      "index": 9,
+      "source": "data/Hayeong/extracted/tvcg-mm-3634785/visulization stimuli/experiment_1/image-style/covid_deploy.png",
+      "filename": "covid_deploy.png",
+      "sha256": "28760505458c55aa10025a066c048ae00f81f28820570d26d7cb2d2037545de2",
+      "attributes": {
+        "experiment": 1,
+        "topic": "covid",
+        "style": "image",
+        "condition": "image_standard"
+      },
+      "label": "Experiment 1 \u00b7 covid \u00b7 image \u00b7 standard",
+      "score_label": "Experiment 1 \u00b7 image \u00b7 standard"
+    },
+    {
+      "index": 10,
+      "source": "data/Hayeong/extracted/tvcg-mm-3634785/visulization stimuli/experiment_1/image-style/covid_embellished.png",
+      "filename": "covid_embellished.png",
+      "sha256": "fea0bca9ae064dc149d839808f7fecdaf41ae795a6c7384f1e63363438b3c242",
+      "attributes": {
+        "experiment": 1,
+        "topic": "covid",
+        "style": "image",
+        "condition": "image_embellished"
+      },
+      "label": "Experiment 1 \u00b7 covid \u00b7 image \u00b7 embellished",
+      "score_label": "Experiment 1 \u00b7 image \u00b7 embellished"
+    },
+    {
+      "index": 11,
+      "source": "data/Hayeong/extracted/tvcg-mm-3634785/visulization stimuli/experiment_1/image-style/emission_deploy.png",
+      "filename": "emission_deploy.png",
+      "sha256": "02a6718738da7fcb369d42f9134ca7e81d5c398a7dae77808999eeba8b54e830",
+      "attributes": {
+        "experiment": 1,
+        "topic": "emission",
+        "style": "image",
+        "condition": "image_standard"
+      },
+      "label": "Experiment 1 \u00b7 emission \u00b7 image \u00b7 standard",
+      "score_label": "Experiment 1 \u00b7 image \u00b7 standard"
+    },
+    {
+      "index": 12,
+      "source": "data/Hayeong/extracted/tvcg-mm-3634785/visulization stimuli/experiment_1/image-style/emission_embellished.png",
+      "filename": "emission_embellished.png",
+      "sha256": "d86839acecd0711aadac923a9e1a84c1e84cf51d9e665b66ff00b843b8f7b7e4",
+      "attributes": {
+        "experiment": 1,
+        "topic": "emission",
+        "style": "image",
+        "condition": "image_embellished"
+      },
+      "label": "Experiment 1 \u00b7 emission \u00b7 image \u00b7 embellished",
+      "score_label": "Experiment 1 \u00b7 image \u00b7 embellished"
+    },
+    {
+      "index": 13,
+      "source": "data/Hayeong/extracted/tvcg-mm-3634785/visulization stimuli/experiment_1/image-style/fifa_embellished.png",
+      "filename": "fifa_embellished.png",
+      "sha256": "7042d043fb22e30e7c6d76a2fd866a049c5a9e863538b67068d458fca2b7b96d",
+      "attributes": {
+        "experiment": 1,
+        "topic": "fifa",
+        "style": "image",
+        "condition": "image_embellished"
+      },
+      "label": "Experiment 1 \u00b7 fifa \u00b7 image \u00b7 embellished",
+      "score_label": "Experiment 1 \u00b7 image \u00b7 embellished"
+    },
+    {
+      "index": 14,
+      "source": "data/Hayeong/extracted/tvcg-mm-3634785/visulization stimuli/experiment_1/image-style/fifa_standard.png",
+      "filename": "fifa_standard.png",
+      "sha256": "1d626453d605e2e50447893a794c2c2974138c9e370c0e2daeecd08152a18694",
+      "attributes": {
+        "experiment": 1,
+        "topic": "fifa",
+        "style": "image",
+        "condition": "image_standard"
+      },
+      "label": "Experiment 1 \u00b7 fifa \u00b7 image \u00b7 standard",
+      "score_label": "Experiment 1 \u00b7 image \u00b7 standard"
+    },
+    {
+      "index": 15,
+      "source": "data/Hayeong/extracted/tvcg-mm-3634785/visulization stimuli/experiment_1/image-style/medal_decor.png",
+      "filename": "medal_decor.png",
+      "sha256": "7c6a89a49e0dad290c427e820df59421036f22c52ca9a453443fe029a6343296",
+      "attributes": {
+        "experiment": 1,
+        "topic": "medal",
+        "style": "image",
+        "condition": "image_embellished"
+      },
+      "label": "Experiment 1 \u00b7 medal \u00b7 image \u00b7 embellished",
+      "score_label": "Experiment 1 \u00b7 image \u00b7 embellished"
+    },
+    {
+      "index": 16,
+      "source": "data/Hayeong/extracted/tvcg-mm-3634785/visulization stimuli/experiment_1/image-style/medal_deploy.png",
+      "filename": "medal_deploy.png",
+      "sha256": "4c19e8c738e77959a67e1a51ea69628100a805955d4d3d2b01368b62695b3cd4",
+      "attributes": {
+        "experiment": 1,
+        "topic": "medal",
+        "style": "image",
+        "condition": "image_standard"
+      },
+      "label": "Experiment 1 \u00b7 medal \u00b7 image \u00b7 standard",
+      "score_label": "Experiment 1 \u00b7 image \u00b7 standard"
+    },
+    {
+      "index": 17,
+      "source": "data/Hayeong/extracted/tvcg-mm-3634785/visulization stimuli/experimet_2/emission/emission_font_color.png",
+      "filename": "emission_font_color.png",
+      "sha256": "f79626df1aa79b973c4cd3612ee09a419356436446f06c83ea4efb44f6225625",
+      "attributes": {
+        "experiment": 2,
+        "topic": "emission",
+        "condition": "font_color",
+        "palette": "color",
+        "style": "font"
+      },
+      "label": "Experiment 2 \u00b7 emission \u00b7 Hand-drawn font \u00b7 color",
+      "score_label": "Experiment 2 \u00b7 Hand-drawn font \u00b7 color"
+    },
+    {
+      "index": 18,
+      "source": "data/Hayeong/extracted/tvcg-mm-3634785/visulization stimuli/experimet_2/emission/emission_handrawn_blackwhite.png",
+      "filename": "emission_handrawn_blackwhite.png",
+      "sha256": "335be79a64d3898cc0d0c0802ea7c7dc0b4acdf4ce86b1a246ca5aedc9b03acc",
+      "attributes": {
+        "experiment": 2,
+        "topic": "emission",
+        "condition": "handdrawn_blackwhite",
+        "palette": "blackwhite",
+        "style": "handdrawn"
+      },
+      "label": "Experiment 2 \u00b7 emission \u00b7 Hand-drawn \u00b7 black and white",
+      "score_label": "Experiment 2 \u00b7 Hand-drawn \u00b7 black and white"
+    },
+    {
+      "index": 19,
+      "source": "data/Hayeong/extracted/tvcg-mm-3634785/visulization stimuli/experimet_2/emission/emission_handrawn_color.png",
+      "filename": "emission_handrawn_color.png",
+      "sha256": "3e478fa7a1a64acc924a8c447a9dca8586d71e6bb21630d9273b9092d63573b9",
+      "attributes": {
+        "experiment": 2,
+        "topic": "emission",
+        "condition": "handdrawn_color",
+        "palette": "color",
+        "style": "handdrawn"
+      },
+      "label": "Experiment 2 \u00b7 emission \u00b7 Hand-drawn \u00b7 color",
+      "score_label": "Experiment 2 \u00b7 Hand-drawn \u00b7 color"
+    },
+    {
+      "index": 20,
+      "source": "data/Hayeong/extracted/tvcg-mm-3634785/visulization stimuli/experimet_2/emission/emission_image_color.png",
+      "filename": "emission_image_color.png",
+      "sha256": "411836d3c8beaae0c7427c8866ab1c00a2486ee80f7da05f831d3cb058426351",
+      "attributes": {
+        "experiment": 2,
+        "topic": "emission",
+        "condition": "image_color",
+        "palette": "color",
+        "style": "image"
+      },
+      "label": "Experiment 2 \u00b7 emission \u00b7 Image bars \u00b7 color",
+      "score_label": "Experiment 2 \u00b7 Image bars \u00b7 color"
+    },
+    {
+      "index": 21,
+      "source": "data/Hayeong/extracted/tvcg-mm-3634785/visulization stimuli/experimet_2/emission/emission_standard_blackwhite.png",
+      "filename": "emission_standard_blackwhite.png",
+      "sha256": "bc3fd5ef3b71457f9f49980d1eda7009669a49d15f9e60e2fbe427e8fcbaaf22",
+      "attributes": {
+        "experiment": 2,
+        "topic": "emission",
+        "condition": "standard_blackwhite",
+        "palette": "blackwhite",
+        "style": "standard"
+      },
+      "label": "Experiment 2 \u00b7 emission \u00b7 Standard \u00b7 black and white",
+      "score_label": "Experiment 2 \u00b7 Standard \u00b7 black and white"
+    },
+    {
+      "index": 22,
+      "source": "data/Hayeong/extracted/tvcg-mm-3634785/visulization stimuli/experimet_2/emission/emission_standard_color.png",
+      "filename": "emission_standard_color.png",
+      "sha256": "f0f553c7db919c09e5f53f5cecf59cf502779869e52b46e98203936f4db04f75",
+      "attributes": {
+        "experiment": 2,
+        "topic": "emission",
+        "condition": "standard_color",
+        "palette": "color",
+        "style": "standard"
+      },
+      "label": "Experiment 2 \u00b7 emission \u00b7 Standard \u00b7 color",
+      "score_label": "Experiment 2 \u00b7 Standard \u00b7 color"
+    },
+    {
+      "index": 23,
+      "source": "data/Hayeong/extracted/tvcg-mm-3634785/visulization stimuli/experimet_2/ice/ice_font_color.png",
+      "filename": "ice_font_color.png",
+      "sha256": "5b723603bbacbc093beb7cfa832512f5d8a1f7934af02507f73401c3b99fe33a",
+      "attributes": {
+        "experiment": 2,
+        "topic": "ice",
+        "condition": "font_color",
+        "palette": "color",
+        "style": "font"
+      },
+      "label": "Experiment 2 \u00b7 ice \u00b7 Hand-drawn font \u00b7 color",
+      "score_label": "Experiment 2 \u00b7 Hand-drawn font \u00b7 color"
+    },
+    {
+      "index": 24,
+      "source": "data/Hayeong/extracted/tvcg-mm-3634785/visulization stimuli/experimet_2/ice/ice_handrawn_blackwhite.png",
+      "filename": "ice_handrawn_blackwhite.png",
+      "sha256": "9f8a10b6cfb52c02bf821b78792157ffd8be5c8e7ed2b734ea8f4d8a49de45ce",
+      "attributes": {
+        "experiment": 2,
+        "topic": "ice",
+        "condition": "handdrawn_blackwhite",
+        "palette": "blackwhite",
+        "style": "handdrawn"
+      },
+      "label": "Experiment 2 \u00b7 ice \u00b7 Hand-drawn \u00b7 black and white",
+      "score_label": "Experiment 2 \u00b7 Hand-drawn \u00b7 black and white"
+    },
+    {
+      "index": 25,
+      "source": "data/Hayeong/extracted/tvcg-mm-3634785/visulization stimuli/experimet_2/ice/ice_handrawn_color.png",
+      "filename": "ice_handrawn_color.png",
+      "sha256": "4ab9c456a42a9c3a1d18d3eda0b4f983f1c2a200f9019eca0481e6f71b8135fd",
+      "attributes": {
+        "experiment": 2,
+        "topic": "ice",
+        "condition": "handdrawn_color",
+        "palette": "color",
+        "style": "handdrawn"
+      },
+      "label": "Experiment 2 \u00b7 ice \u00b7 Hand-drawn \u00b7 color",
+      "score_label": "Experiment 2 \u00b7 Hand-drawn \u00b7 color"
+    },
+    {
+      "index": 26,
+      "source": "data/Hayeong/extracted/tvcg-mm-3634785/visulization stimuli/experimet_2/ice/ice_image_color.png",
+      "filename": "ice_image_color.png",
+      "sha256": "61e18930fb17584a65116ea78fd3431434f0107df81b15cdf74a8e0a0af7a8e8",
+      "attributes": {
+        "experiment": 2,
+        "topic": "ice",
+        "condition": "image_color",
+        "palette": "color",
+        "style": "image"
+      },
+      "label": "Experiment 2 \u00b7 ice \u00b7 Image bars \u00b7 color",
+      "score_label": "Experiment 2 \u00b7 Image bars \u00b7 color"
+    },
+    {
+      "index": 27,
+      "source": "data/Hayeong/extracted/tvcg-mm-3634785/visulization stimuli/experimet_2/ice/ice_standard.png",
+      "filename": "ice_standard.png",
+      "sha256": "74b33c4b3b617040a2ecee7b37005f758829e44c9ee06cecdba9beab254e2b60",
+      "attributes": {
+        "experiment": 2,
+        "topic": "ice",
+        "condition": "standard_blackwhite",
+        "palette": "blackwhite",
+        "style": "standard"
+      },
+      "label": "Experiment 2 \u00b7 ice \u00b7 Standard \u00b7 black and white",
+      "score_label": "Experiment 2 \u00b7 Standard \u00b7 black and white"
+    },
+    {
+      "index": 28,
+      "source": "data/Hayeong/extracted/tvcg-mm-3634785/visulization stimuli/experimet_2/ice/ice_standard_color.png",
+      "filename": "ice_standard_color.png",
+      "sha256": "24f07cd2ecf27dbf8adef2ceeb02720fa7d5c1547d6d2ff2da36ffeb19681e67",
+      "attributes": {
+        "experiment": 2,
+        "topic": "ice",
+        "condition": "standard_color",
+        "palette": "color",
+        "style": "standard"
+      },
+      "label": "Experiment 2 \u00b7 ice \u00b7 Standard \u00b7 color",
+      "score_label": "Experiment 2 \u00b7 Standard \u00b7 color"
+    },
+    {
+      "index": 29,
+      "source": "data/Hayeong/extracted/tvcg-mm-3634785/visulization stimuli/experimet_2/medal/handrawn_medal.png",
+      "filename": "handrawn_medal.png",
+      "sha256": "090e85f76d13142165ff599d683eedb290e2f58da8d31cb94ca8c45fbf9566d9",
+      "attributes": {
+        "experiment": 2,
+        "topic": "medal",
+        "condition": "handdrawn_color",
+        "palette": "color",
+        "style": "handdrawn"
+      },
+      "label": "Experiment 2 \u00b7 medal \u00b7 Hand-drawn \u00b7 color",
+      "score_label": "Experiment 2 \u00b7 Hand-drawn \u00b7 color"
+    },
+    {
+      "index": 30,
+      "source": "data/Hayeong/extracted/tvcg-mm-3634785/visulization stimuli/experimet_2/medal/medal_blackwhite.png",
+      "filename": "medal_blackwhite.png",
+      "sha256": "48cfb95a48515b41e762f90c210d02eed516d9a499e22153a9fca1d9e9a8e94b",
+      "attributes": {
+        "experiment": 2,
+        "topic": "medal",
+        "condition": "handdrawn_blackwhite",
+        "palette": "blackwhite",
+        "style": "handdrawn"
+      },
+      "label": "Experiment 2 \u00b7 medal \u00b7 Hand-drawn \u00b7 black and white",
+      "score_label": "Experiment 2 \u00b7 Hand-drawn \u00b7 black and white"
+    },
+    {
+      "index": 31,
+      "source": "data/Hayeong/extracted/tvcg-mm-3634785/visulization stimuli/experimet_2/medal/medal_color_font.png",
+      "filename": "medal_color_font.png",
+      "sha256": "b065fd29e6c9de7f0831225d3aaf0ddba2eb145cf0ab8227aca3760fd6e8c815",
+      "attributes": {
+        "experiment": 2,
+        "topic": "medal",
+        "condition": "font_color",
+        "palette": "color",
+        "style": "font"
+      },
+      "label": "Experiment 2 \u00b7 medal \u00b7 Hand-drawn font \u00b7 color",
+      "score_label": "Experiment 2 \u00b7 Hand-drawn font \u00b7 color"
+    },
+    {
+      "index": 32,
+      "source": "data/Hayeong/extracted/tvcg-mm-3634785/visulization stimuli/experimet_2/medal/medal_og_final.png",
+      "filename": "medal_og_final.png",
+      "sha256": "675efd4554473b5e116809bbd6bc006219b29559a5f174e5db7df02db91513f8",
+      "attributes": {
+        "experiment": 2,
+        "topic": "medal",
+        "condition": "image_color",
+        "palette": "color",
+        "style": "image"
+      },
+      "label": "Experiment 2 \u00b7 medal \u00b7 Image bars \u00b7 color",
+      "score_label": "Experiment 2 \u00b7 Image bars \u00b7 color"
+    },
+    {
+      "index": 33,
+      "source": "data/Hayeong/extracted/tvcg-mm-3634785/visulization stimuli/experimet_2/medal/medal_standard_blackwhite.png",
+      "filename": "medal_standard_blackwhite.png",
+      "sha256": "c15d1c71ab97f7b529c3c91bb58acd258287ce3a29991e632852a112b74f7fe9",
+      "attributes": {
+        "experiment": 2,
+        "topic": "medal",
+        "condition": "standard_blackwhite",
+        "palette": "blackwhite",
+        "style": "standard"
+      },
+      "label": "Experiment 2 \u00b7 medal \u00b7 Standard \u00b7 black and white",
+      "score_label": "Experiment 2 \u00b7 Standard \u00b7 black and white"
+    },
+    {
+      "index": 34,
+      "source": "data/Hayeong/extracted/tvcg-mm-3634785/visulization stimuli/experimet_2/medal/medal_standard_color.png",
+      "filename": "medal_standard_color.png",
+      "sha256": "08fa96ea31a8b2cb671f80f0f28521e8cde976db8f008f7cdcc5ab1eeb4cb4ee",
+      "attributes": {
+        "experiment": 2,
+        "topic": "medal",
+        "condition": "standard_color",
+        "palette": "color",
+        "style": "standard"
+      },
+      "label": "Experiment 2 \u00b7 medal \u00b7 Standard \u00b7 color",
+      "score_label": "Experiment 2 \u00b7 Standard \u00b7 color"
+    },
+    {
+      "index": 35,
+      "source": "data/Hayeong/extracted/tvcg-mm-3634785/visulization stimuli/experimet_2/trump/trump_font_color.png",
+      "filename": "trump_font_color.png",
+      "sha256": "36643062358d250aa3d236e4238743f3609a59ee4030fde004105557b297d507",
+      "attributes": {
+        "experiment": 2,
+        "topic": "trump",
+        "condition": "font_color",
+        "palette": "color",
+        "style": "font"
+      },
+      "label": "Experiment 2 \u00b7 trump \u00b7 Hand-drawn font \u00b7 color",
+      "score_label": "Experiment 2 \u00b7 Hand-drawn font \u00b7 color"
+    },
+    {
+      "index": 36,
+      "source": "data/Hayeong/extracted/tvcg-mm-3634785/visulization stimuli/experimet_2/trump/trump_handrawn_blackwhite.png",
+      "filename": "trump_handrawn_blackwhite.png",
+      "sha256": "eda46ff4a4510ff4b3e0d50fba9ee0306b3b5ec36c502190ffebb8eeff2db4a0",
+      "attributes": {
+        "experiment": 2,
+        "topic": "trump",
+        "condition": "handdrawn_blackwhite",
+        "palette": "blackwhite",
+        "style": "handdrawn"
+      },
+      "label": "Experiment 2 \u00b7 trump \u00b7 Hand-drawn \u00b7 black and white",
+      "score_label": "Experiment 2 \u00b7 Hand-drawn \u00b7 black and white"
+    },
+    {
+      "index": 37,
+      "source": "data/Hayeong/extracted/tvcg-mm-3634785/visulization stimuli/experimet_2/trump/trump_handrawn_color.png",
+      "filename": "trump_handrawn_color.png",
+      "sha256": "59ebf7d30fd282d5eace54b7cf35e0f87631bf7f987210712050c788136e3424",
+      "attributes": {
+        "experiment": 2,
+        "topic": "trump",
+        "condition": "handdrawn_color",
+        "palette": "color",
+        "style": "handdrawn"
+      },
+      "label": "Experiment 2 \u00b7 trump \u00b7 Hand-drawn \u00b7 color",
+      "score_label": "Experiment 2 \u00b7 Hand-drawn \u00b7 color"
+    },
+    {
+      "index": 38,
+      "source": "data/Hayeong/extracted/tvcg-mm-3634785/visulization stimuli/experimet_2/trump/trump_image_color.png",
+      "filename": "trump_image_color.png",
+      "sha256": "e8c4b82afc051d9ed23dd92b803b460cfa6b39f755d64ed760aa281228bcfa57",
+      "attributes": {
+        "experiment": 2,
+        "topic": "trump",
+        "condition": "image_color",
+        "palette": "color",
+        "style": "image"
+      },
+      "label": "Experiment 2 \u00b7 trump \u00b7 Image bars \u00b7 color",
+      "score_label": "Experiment 2 \u00b7 Image bars \u00b7 color"
+    },
+    {
+      "index": 39,
+      "source": "data/Hayeong/extracted/tvcg-mm-3634785/visulization stimuli/experimet_2/trump/trump_standard_blackwhite.png",
+      "filename": "trump_standard_blackwhite.png",
+      "sha256": "8c710eba0e73c62fed8f31ffa9adce46e5a10b0e3f16e60618b4afa01f37b871",
+      "attributes": {
+        "experiment": 2,
+        "topic": "trump",
+        "condition": "standard_blackwhite",
+        "palette": "blackwhite",
+        "style": "standard"
+      },
+      "label": "Experiment 2 \u00b7 trump \u00b7 Standard \u00b7 black and white",
+      "score_label": "Experiment 2 \u00b7 Standard \u00b7 black and white"
+    },
+    {
+      "index": 40,
+      "source": "data/Hayeong/extracted/tvcg-mm-3634785/visulization stimuli/experimet_2/trump/trump_standard_color.png",
+      "filename": "trump_standard_color.png",
+      "sha256": "af68cbbdc388a84b05be3064633736e644a9933df851561480d4f50dea7f0ae9",
+      "attributes": {
+        "experiment": 2,
+        "topic": "trump",
+        "condition": "standard_color",
+        "palette": "color",
+        "style": "standard"
+      },
+      "label": "Experiment 2 \u00b7 trump \u00b7 Standard \u00b7 color",
+      "score_label": "Experiment 2 \u00b7 Standard \u00b7 color"
+    }
+  ],
+  "attributes": [
+    {
+      "key": "condition",
+      "label": "Study condition",
+      "kind": "category",
+      "values": {
+        "cartoon_standard": "Cartoon topics \u00b7 standard",
+        "cartoon_embellished": "Cartoon topics \u00b7 embellished",
+        "image_standard": "Image topics \u00b7 standard",
+        "image_embellished": "Image topics \u00b7 embellished",
+        "standard_blackwhite": "Standard \u00b7 black and white",
+        "standard_color": "Standard \u00b7 color",
+        "font_color": "Hand-drawn font \u00b7 color",
+        "handdrawn_blackwhite": "Hand-drawn \u00b7 black and white",
+        "handdrawn_color": "Hand-drawn \u00b7 color",
+        "image_color": "Image bars \u00b7 color"
+      }
+    },
+    {
+      "key": "experiment",
+      "label": "Experiment",
+      "kind": "category",
+      "values": {
+        "1": "Experiment 1",
+        "2": "Experiment 2"
+      }
+    }
+  ],
+  "description": "Experiment 1 compares standard and embellished charts in cartoon/image topic sets. Experiment 2 contains six drawing, font, image, and color conditions for each of four topics.",
+  "sampling": "All 40 actual visualization stimuli. Eight experiment-1 response-summary PNGs are excluded. Style/color labels come from the supplement folders, filenames, survey, and inspected originals; no complexity ratings are invented.",
+  "aliases": [
+    {
+      "filename": "ice_standard.png",
+      "condition": "standard_blackwhite",
+      "reason": "Explicit irregular-name mapping, checked against the six-stimulus topic sets and original PNGs."
+    },
+    {
+      "filename": "handrawn_medal.png",
+      "condition": "handdrawn_color",
+      "reason": "Explicit irregular-name mapping, checked against the six-stimulus topic sets and original PNGs."
+    },
+    {
+      "filename": "medal_blackwhite.png",
+      "condition": "handdrawn_blackwhite",
+      "reason": "Explicit irregular-name mapping, checked against the six-stimulus topic sets and original PNGs."
+    },
+    {
+      "filename": "medal_color_font.png",
+      "condition": "font_color",
+      "reason": "Explicit irregular-name mapping, checked against the six-stimulus topic sets and original PNGs."
+    },
+    {
+      "filename": "medal_og_final.png",
+      "condition": "image_color",
+      "reason": "Explicit irregular-name mapping, checked against the six-stimulus topic sets and original PNGs."
+    }
+  ],
+  "comparisons": [
+    {
+      "id": "color",
+      "title": "Hayeong \u00b7 Color comparison",
+      "indices": [
+        18,
+        19,
+        21,
+        22,
+        24,
+        25,
+        27,
+        28,
+        29,
+        30,
+        33,
+        34,
+        36,
+        37,
+        39,
+        40
+      ],
+      "attributes": [
+        {
+          "key": "palette",
+          "label": "Color",
+          "kind": "category",
+          "values": {
+            "blackwhite": "Black and white",
+            "color": "Color"
+          }
+        },
+        {
+          "key": "condition",
+          "label": "Style and color",
+          "kind": "category",
+          "values": {
+            "standard_blackwhite": "Standard \u00b7 black and white",
+            "standard_color": "Standard \u00b7 color",
+            "handdrawn_blackwhite": "Hand-drawn \u00b7 black and white",
+            "handdrawn_color": "Hand-drawn \u00b7 color"
+          }
+        }
+      ],
+      "description": "Black-and-white versus color in experiment 2, balanced over four topics and standard/hand-drawn styles (eight stimuli per palette). Switch grouping to inspect the four style \u00d7 color cells. Font-only and image conditions are excluded."
+    },
+    {
+      "id": "hand_drawn",
+      "title": "Hayeong \u00b7 Hand-drawn comparison",
+      "indices": [
+        17,
+        19,
+        22,
+        23,
+        25,
+        28,
+        29,
+        31,
+        34,
+        35,
+        37,
+        40
+      ],
+      "attributes": [
+        {
+          "key": "condition",
+          "label": "Drawing and typography",
+          "kind": "category",
+          "values": {
+            "standard_color": "Standard bars + plain font",
+            "font_color": "Standard bars + hand-drawn font",
+            "handdrawn_color": "Hand-drawn bars + hand-drawn font"
+          }
+        }
+      ],
+      "description": "Three color conditions for the same four topics: standard bars/plain font, standard bars/hand-drawn font, and hand-drawn bars/hand-drawn font. The middle condition separates typography from bar rendering."
+    },
+    {
+      "id": "cartoon_image",
+      "title": "Hayeong \u00b7 Cartoon/image comparison",
+      "indices": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "attributes": [
+        {
+          "key": "style",
+          "label": "Experiment 1 style",
+          "kind": "category",
+          "values": {
+            "cartoon": "Cartoon style",
+            "image": "Image style"
+          }
+        },
+        {
+          "key": "condition",
+          "label": "Style and embellishment",
+          "kind": "category",
+          "values": {
+            "cartoon_standard": "Cartoon topics \u00b7 standard",
+            "cartoon_embellished": "Cartoon topics \u00b7 embellished",
+            "image_standard": "Image topics \u00b7 standard",
+            "image_embellished": "Image topics \u00b7 embellished"
+          }
+        }
+      ],
+      "description": "Experiment 1: standard and embellished versions within cartoon/image topic sets. Cartoon and image styles use different topics; the between-style difference also includes topic differences and does not isolate a style effect."
+    }
+  ],
+  "schema_version": 1,
+  "dataset": "hayeong",
+  "archive": "data/Hayeong/tvcg-mm-3634785.zip",
+  "archive_sha256": "d5f968f2f73b8701bd4edd3840120a43a1c261be605a1d8994d932fe7a8dd7ff"
+}

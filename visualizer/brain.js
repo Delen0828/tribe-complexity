@@ -9,7 +9,9 @@ const legacyViews = ['Left lateral', 'Left medial', 'Right lateral', 'Right medi
   key: label.toLowerCase().replace(' ', '_'), label, image_suffix: 'image', panel, panels: 4,
 }));
 if (localReport) el('dataset-control').hidden = true;
-if (params.get('dataset') === 'massvis_all') el('dataset').value = 'massvis_all';
+if ([...el('dataset').options].some(option => option.value === params.get('dataset'))) {
+  el('dataset').value = params.get('dataset');
+}
 
 function asset(path) { return new URL(path, baseURL).href; }
 function availableViews() { return report.views || legacyViews; }
@@ -65,15 +67,17 @@ function showMembers(reset = true) {
     const row = rowsByIndex.get(index);
     const link = document.createElement('a');
     link.className = 'member';
-    link.href = (localReport || catalogPath) ? asset(`inputs/${index}.png`) : `./?index=${index}`;
+    link.href = (localReport || catalogPath || report.dataset && report.dataset !== 'massvis')
+      ? asset(`inputs/${index}.png`) : `./?index=${index}`;
     const image = document.createElement('img');
     image.src = asset(`inputs/${index}.png`);
     image.alt = row.filename;
     image.loading = 'lazy';
     const title = document.createElement('strong');
-    title.textContent = `Image ${index}`;
+    title.textContent = row.label || `Image ${index}`;
     const detail = document.createElement('span');
-    detail.textContent = `Complexity ${row.score.toFixed(1)} / 100`;
+    detail.textContent = row.score_label || (Number.isFinite(row.score)
+      ? `Complexity ${row.score.toFixed(1)} / 100` : row.filename);
     link.append(image, title, detail);
     el('members').append(link);
   }
@@ -204,6 +208,10 @@ async function loadReport() {
     if (data.schema_version !== 1 || !data.groups.length || data.rows.length !== data.count) throw new Error('Invalid report format');
     report = data;
     baseURL = url;
+    el('report-title').textContent = report.title || 'How do stimulus groups compare?';
+    el('report-intro').textContent = report.description || 'Choose an attribute to compare all groups: one column per group, with your selected cortical views stacked vertically.';
+    document.title = report.title || 'MASSVIS · Predicted brain responses';
+    el('report-brand').textContent = report.dataset && report.dataset !== 'massvis' ? 'TRIBE / Controlled studies' : 'MASSVIS / Predicted brain responses';
     const currentParams = new URLSearchParams(location.search);
     el('attribute').replaceChildren();
     for (const attribute of report.attributes) {
@@ -220,8 +228,10 @@ async function loadReport() {
     el('views').disabled = false;
     el('brain-workspace').hidden = false;
     el('brain-status').textContent = `${report.count.toLocaleString()} predictions loaded · ${(report.precision || 'fp32').toUpperCase()}.`;
-    el('sample-summary').textContent = `${report.count.toLocaleString()} of ${report.eligible_count.toLocaleString()} available annotated stimuli · ${report.scope === 'sample' ? `Sample seed ${report.seed}` : 'Whole dataset'}`;
-    el('sampling-note').textContent = report.scope === 'sample'
+    el('sample-summary').textContent = report.scope === 'study'
+      ? `${report.count.toLocaleString()} study stimuli · ${report.title}`
+      : `${report.count.toLocaleString()} of ${report.eligible_count.toLocaleString()} available annotated stimuli · ${report.scope === 'sample' ? `Sample seed ${report.seed}` : 'Whole dataset'}`;
+    el('sampling-note').textContent = report.scope === 'study' ? report.sampling : report.scope === 'sample'
       ? 'Balanced sampling across ten complexity bins; groups summarize this selected sample, not the natural dataset distribution. Bins exclude their upper edge except 100. Squares above each column show its sample size: one square per stimulus.'
       : 'All available annotated stimuli. Feature groups use published counts, presence labels, and source categories; group sizes may differ. Bins exclude their upper edge except 100.';
     if (report.complete === false) {

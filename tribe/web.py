@@ -44,10 +44,16 @@ def build_site(outputs):
         if report_path.is_file():
             report = json.loads(report_path.read_text())
             partial = report.get('complete') is False
-            label = f'{name} · {report["count"]:,} stimuli' + (' · partial' if partial else '')
+            label = f'{report.get("title") or name} · {report["count"]:,} stimuli' + (' · partial' if partial else '')
             reports.append(dict(id=name, label=label, data=prefix + 'explorer.json'))
             target = 'brain.html?dataset=' + quote(name, safe='')
             detail = 'Grouped cortical means, contrasts, and member images.'
+            if report.get('scope') == 'study':
+                target = 'study-' + quote(name, safe='') + '.html'
+                study_html = html.replace('data-catalog="reports.json"',
+                                          f'data-report="{escape(prefix + "explorer.json", quote=True)}"')
+                (web / ('study-' + name + '.html')).write_text(study_html)
+                detail = escape(report.get('description') or detail)
         elif (folder / 'spectrum.png').is_file():
             target = 'spectrum-' + quote(name, safe='') + '.html'
             content = ('<p>One stimulus per rating bin, with shared-scale cortical predictions at t=0.</p>'

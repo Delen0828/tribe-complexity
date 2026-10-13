@@ -1,4 +1,4 @@
-"""Predict average-subject cortical responses to matched static MASSVIS stimuli."""
+"""Predict average-subject cortical responses using the MassVis static-stimulus protocol."""
 import os
 from pathlib import Path
 
@@ -82,6 +82,10 @@ def prepare_input(row, args, target, background_rgb):
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument('--dataset', choices=['kylie', 'hayeong'],
+                        help='Prepare a study, predict its stimuli, and build separate comparison pages')
+    parser.add_argument('--report-only', action='store_true', help='Rebuild study pages from existing predictions')
+    parser.add_argument('--views', choices=['four', 'inferior', 'all'], default='all')
     parser.add_argument('--smoke-only', action='store_true')
     parser.add_argument('--prepare-only', action='store_true')
     parser.add_argument('--device', default='cpu')
@@ -96,15 +100,26 @@ def main():
                         help='Reuse predictions only when their receipt and file hashes validate')
     parser.add_argument('--manifest', type=Path, default=ROOT / 'inputs/manifest.json')
     parser.add_argument('--inputs-dir', type=Path, default=ROOT / 'inputs')
-    parser.add_argument('--outputs-dir', type=Path, default=ROOT / 'outputs')
+    parser.add_argument('--outputs-dir', type=Path)
     parser.add_argument('--background', default='white',
                         help='Padding color (Pillow name or #RRGGBB); match experiment background')
     args = parser.parse_args()
+    if args.report_only and not args.dataset:
+        parser.error('--report-only requires --dataset')
+    if args.dataset:
+        if args.smoke_only:
+            parser.error('--smoke-only cannot be combined with --dataset')
+        from study import run_study
+        run_study(args.dataset, output=args.outputs_dir, predict=not args.report_only,
+                  prepare_only=args.prepare_only, background=args.background,
+                  device=args.device, thread=args.thread, batch_size=args.batch_size,
+                  cpu_threads=args.cpu_threads, precision=args.precision, views=args.views)
+        return
     # Validate the color before loading models or writing outputs.
     _, geometry = prepare_stimulus(Image.new('RGB', (1, 1)), args.background)
     background_key = ''.join(f'{c:02x}' for c in geometry['background_rgb'])
     args.inputs_dir = args.inputs_dir.resolve()
-    args.outputs_dir = args.outputs_dir.resolve()
+    args.outputs_dir = (args.outputs_dir or ROOT / 'outputs').resolve()
     args.outputs_dir.mkdir(parents=True, exist_ok=True)
     torch.set_num_threads(args.cpu_threads)
     encoder = BatchedEncoder(args.device, args.precision)

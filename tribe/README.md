@@ -1,5 +1,11 @@
 # TRIBE v2: MASSVIS 751 and 4849
 
+Kylie and Hayeong now use the same simulation protocol and cortical viewer.
+Run `python tribe/run.py --dataset kylie --device cuda` and
+`python tribe/run.py --dataset hayeong --device cuda` to prepare, predict, and
+render their separate comparison pages. See [study organization and commands](studies/README.md)
+for archive interpretation, comparison membership, and validation.
+
 The current experiment follows the stimulus-processing protocol in *Can a Neural
 Encoding Model Replicate an fMRI Visualization Study?*, Sections 3.2-3.3. It uses
 **3-second silent static videos**, **proportional fitting into a centered 256 × 256 area with outer padding**,

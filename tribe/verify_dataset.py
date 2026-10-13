@@ -7,7 +7,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 from moviepy import VideoFileClip
-from dataset import ATTRIBUTES, ROOT, aggregate_maps, load_predictions, view_metadata, write_json
+from dataset import ROOT, aggregate_maps, attribute_metadata, load_predictions, view_metadata, write_json
 from preprocessing import PROTOCOL, prepare_stimulus
 
 
@@ -24,7 +24,8 @@ def verify(output):
         assert len(rows) == len(selected_rows)
     assert report['protocol'] == selection['protocol'] == PROTOCOL
     assert report['count'] == len(rows) == len({r['index'] for r in rows})
-    assert {a['key'] for a in report['attributes']} == set(ATTRIBUTES)
+    attributes = selection.get('attributes', attribute_metadata())
+    assert report['attributes'] == json.loads(json.dumps(attributes))
     assert [r['index'] for r in report['rows']] == [r['index'] for r in rows]
     if selection['scope'] == 'sample' and report.get('complete') is not False:
         assert [sum(r['bin'] == b for r in rows) for b in range(10)] == [selection['per_bin']]*10
@@ -66,7 +67,7 @@ def verify(output):
                     mean_absolute_error=float(error.mean()),
                     percentile_99_absolute_error=float(np.percentile(error,99)))
                 maximum_mae = max(maximum_mae, float(error.mean()))
-    groups, grand = aggregate_maps(rows, maps)
+    groups, grand = aggregate_maps(rows, maps, attributes)
     with np.load(output / 'aggregate_maps.npz') as saved:
         np.testing.assert_array_equal(saved['indices'], [r['index'] for r in rows])
         np.testing.assert_array_equal(saved['maps'], maps)
@@ -87,11 +88,12 @@ def verify(output):
                     image.verify()
     for kind in ('mean','contrast'):
         assert report['limits'][kind] == max(1e-12,max(float(np.abs(g[kind]).max()) for g in groups))
-    for attribute in ATTRIBUTES:
+    for definition in attributes:
+        attribute = definition['key']
         selected = [g for g in groups if g['attribute'] == attribute]
         assert sum(g['count'] for g in selected) == len(rows)
         np.testing.assert_allclose(sum(g['mean']*g['count'] for g in selected)/len(rows), grand, atol=1e-12)
-    result = dict(status='PASS', predictions=len(rows), groups=len(groups), attributes=len(ATTRIBUTES),
+    result = dict(status='PASS', predictions=len(rows), groups=len(groups), attributes=len(attributes),
                   video_frames_checked=3*len(rows), maximum_video_frame_mae=maximum_mae,
                   color_errors=color_errors,
                   checks=['source and prediction hashes', 'finite 3x20484 arrays and times 0,1,2',

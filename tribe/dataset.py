@@ -156,18 +156,26 @@ def select_stimuli(rows, scope, per_bin=10, seed=0):
     return selected
 
 
-def aggregate_maps(rows, maps):
+def aggregate_maps(rows, maps, attributes=None):
     """Equal stimulus weight, t=0; counts are exact labels, not inferred from pixels."""
     maps = np.asarray(maps)
     if maps.ndim != 2 or len(rows) != len(maps) or not np.isfinite(maps).all():
         raise ValueError('Invalid map matrix')
     grand_mean = maps.mean(axis=0, dtype=np.float64)
     groups = []
-    for attribute in ATTRIBUTES:
-        for value in sorted({r['attributes'][attribute] for r in rows}):
+    for definition in attributes or attribute_metadata():
+        attribute = definition['key']
+        values = sorted({r['attributes'][attribute] for r in rows})
+        labels = definition.get('values', {})
+        if labels:
+            if any(str(value) not in labels for value in values):
+                raise ValueError(f'Unknown group value for {attribute}')
+            values.sort(key=lambda value: list(labels).index(str(value)))
+        for value in values:
             positions = [i for i, r in enumerate(rows) if r['attributes'][attribute] == value]
             mean = maps[positions].mean(axis=0, dtype=np.float64)
-            groups.append(dict(attribute=attribute, value=value, label=group_label(attribute, value),
+            groups.append(dict(attribute=attribute, value=value,
+                               label=labels[str(value)] if labels else group_label(attribute, value),
                                indices=[rows[i]['index'] for i in positions],
                                count=len(positions), mean=mean, contrast=mean-grand_mean))
     return groups, grand_mean
@@ -267,7 +275,8 @@ def export_static_site(output):
 def export_report(rows, maps, output, selection, timing, render=True, views='all'):
     rendered_views = view_metadata(views)
     started = time.perf_counter()
-    groups, grand_mean = aggregate_maps(rows, maps)
+    attributes = selection.get('attributes', attribute_metadata())
+    groups, grand_mean = aggregate_maps(rows, maps, attributes)
     limits = render_groups(groups, output, views=views) if render else {}
     np.savez_compressed(output / 'aggregate_maps.npz',
                         means=np.asarray([g['mean'] for g in groups]),
@@ -275,6 +284,9 @@ def export_report(rows, maps, output, selection, timing, render=True, views='all
                         grand_mean=grand_mean, indices=[r['index'] for r in rows], maps=maps)
     completed_indices = {row['index'] for row in rows}
     public_groups = [{k: v for k, v in g.items() if k not in ('mean', 'contrast')} for g in groups]
+    sampling = selection.get('sampling') or (
+        'Ten-point complexity bins; upper edge excluded except 100. Sampling without replacement.'
+        if selection['scope'] == 'sample' else 'All available annotated stimuli.')
     timing['report_seconds'] = time.perf_counter()-started
     write_json(output / 'timing.json', timing)
     write_json(output / 'explorer.json', dict(
@@ -284,14 +296,15 @@ def export_report(rows, maps, output, selection, timing, render=True, views='all
         complete=len(rows) == len(selection['rows']),
         pending_indices=[r['index'] for r in selection['rows'] if r['index'] not in completed_indices],
         eligible_count=selection['eligible_count'], missing_indices=selection['missing_indices'],
-        attributes=attribute_metadata(),
+        attributes=attributes,
+        dataset=selection.get('dataset', 'massvis'), title=selection.get('title'),
+        description=selection.get('description'),
         rows=[{k:v for k,v in r.items() if k not in ('source', 'sha256')} for r in rows],
         groups=public_groups, limits=limits, timing=timing,
         view_layout=views, views=rendered_views,
         aggregation='Equal-weight arithmetic mean across stimuli, first predicted response at t=0.',
         contrast='Group mean minus the mean of all included stimuli (including this group).',
-        sampling='Partial run: only completed predictions are included.' if len(rows) != len(selection['rows']) else 'Ten-point complexity bins; upper edge excluded except 100. Sampling without replacement.'
-                 if selection['scope'] == 'sample' else 'All available annotated stimuli.'))
+        sampling='Partial run: only completed predictions are included.' if len(rows) != len(selection['rows']) else sampling))
     export_static_site(output)
     print(f'Static report: {output / "index.html"}', flush=True)
     print(f'Explorer data: {output / "explorer.json"}', flush=True)
@@ -326,6 +339,7 @@ def compatible_selection(previous, current):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--dataset', choices=['massvis', 'kylie', 'hayeong'], default='massvis')
     parser.add_argument('--scope', choices=['sample', 'all'], default='sample')
     parser.add_argument('--per-bin', type=int, default=10)
     parser.add_argument('--seed', type=int, default=0)
@@ -349,6 +363,14 @@ def main():
                         help='Report only completed predictions, explicitly labeled as partial')
     parser.add_argument('--reuse-from', type=Path, help='Reuse validated prediction artifacts from a previous dataset run')
     args = parser.parse_args()
+    if args.dataset != 'massvis':
+        from study import run_study
+        run_study(args.dataset, output=args.output_dir, predict=args.predict,
+                  sample_only=args.sample_only, allow_partial=args.allow_partial,
+                  background=args.background, device=args.device, thread=args.thread,
+                  batch_size=args.batch_size, cpu_threads=args.cpu_threads,
+                  precision=args.precision, views=args.views)
+        return
     from PIL import ImageColor
     background = list(ImageColor.getrgb(args.background))
     if len(background) != 3:

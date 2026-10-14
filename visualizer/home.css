@@ -1,0 +1,9 @@
+.home {max-width:1080px;margin:60px auto}
+.home h1 {font-size:2.4rem;letter-spacing:-.04em;margin-bottom:32px}
+.home-section + .home-section {margin-top:44px}
+.home-section > h2 {font-size:1.1rem;margin:0 0 16px;color:#52667d}
+.home-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.home-grid a {position:relative;min-height:200px;border:1px solid var(--line);border-radius:12px;padding:28px;background:white;text-decoration:none;color:#172637;transition:border-color .15s,transform .15s}
+.home-grid a:hover {border-color:#215bd5;transform:translateY(-2px)}
+.home-grid span {font-size:.8rem;color:#52667d}.home-grid h3 {font-size:1.5rem;margin-top:36px}.home-grid b {position:absolute;right:28px;top:28px;font-size:1.5rem;color:#215bd5}
+@media(max-width:640px) {.home {margin:20px auto}.home-grid {grid-template-columns:1fr}.home-grid a {min-height:160px}}

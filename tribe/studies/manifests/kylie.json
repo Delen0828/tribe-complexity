@@ -22,6 +22,11 @@
         "bar": "Bar",
         "area": "Area"
       }
+    },
+    {
+      "key": "complexity",
+      "label": "Perceived complexity",
+      "kind": "bin"
     }
   ],
   "rows": [
@@ -33,7 +38,8 @@
       "attributes": {
         "topic": "covid",
         "chart_type": "area",
-        "design_variant": 0
+        "design_variant": 0,
+        "complexity": 2
       },
       "label": "Covid \u00b7 area \u00b7 design 00",
       "score": 24.625,
@@ -84,7 +90,8 @@
       "attributes": {
         "topic": "covid",
         "chart_type": "area",
-        "design_variant": 1
+        "design_variant": 1,
+        "complexity": 4
       },
       "label": "Covid \u00b7 area \u00b7 design 01",
       "score": 42.029411764705884,
@@ -135,7 +142,8 @@
       "attributes": {
         "topic": "covid",
         "chart_type": "area",
-        "design_variant": 2
+        "design_variant": 2,
+        "complexity": 3
       },
       "label": "Covid \u00b7 area \u00b7 design 02",
       "score": 31.59375,
@@ -186,7 +194,8 @@
       "attributes": {
         "topic": "covid",
         "chart_type": "area",
-        "design_variant": 3
+        "design_variant": 3,
+        "complexity": 4
       },
       "label": "Covid \u00b7 area \u00b7 design 03",
       "score": 48.46875,
@@ -237,7 +246,8 @@
       "attributes": {
         "topic": "covid",
         "chart_type": "area",
-        "design_variant": 4
+        "design_variant": 4,
+        "complexity": 4
       },
       "label": "Covid \u00b7 area \u00b7 design 04",
       "score": 42.61290322580645,
@@ -288,7 +298,8 @@
       "attributes": {
         "topic": "covid",
         "chart_type": "area",
-        "design_variant": 5
+        "design_variant": 5,
+        "complexity": 5
       },
       "label": "Covid \u00b7 area \u00b7 design 05",
       "score": 54.90625,
@@ -339,7 +350,8 @@
       "attributes": {
         "topic": "covid",
         "chart_type": "bar",
-        "design_variant": 0
+        "design_variant": 0,
+        "complexity": 1
       },
       "label": "Covid \u00b7 bar \u00b7 design 00",
       "score": 14.875,
@@ -390,7 +402,8 @@
       "attributes": {
         "topic": "covid",
         "chart_type": "bar",
-        "design_variant": 1
+        "design_variant": 1,
+        "complexity": 2
       },
       "label": "Covid \u00b7 bar \u00b7 design 01",
       "score": 22.15625,
@@ -441,7 +454,8 @@
       "attributes": {
         "topic": "covid",
         "chart_type": "bar",
-        "design_variant": 2
+        "design_variant": 2,
+        "complexity": 3
       },
       "label": "Covid \u00b7 bar \u00b7 design 02",
       "score": 33.03125,
@@ -492,7 +506,8 @@
       "attributes": {
         "topic": "covid",
         "chart_type": "bar",
-        "design_variant": 3
+        "design_variant": 3,
+        "complexity": 2
       },
       "label": "Covid \u00b7 bar \u00b7 design 03",
       "score": 24.0625,
@@ -543,7 +558,8 @@
       "attributes": {
         "topic": "covid",
         "chart_type": "bar",
-        "design_variant": 4
+        "design_variant": 4,
+        "complexity": 2
       },
       "label": "Covid \u00b7 bar \u00b7 design 04",
       "score": 25.548387096774192,
@@ -594,7 +610,8 @@
       "attributes": {
         "topic": "covid",
         "chart_type": "bar",
-        "design_variant": 5
+        "design_variant": 5,
+        "complexity": 5
       },
       "label": "Covid \u00b7 bar \u00b7 design 05",
       "score": 52.3125,
@@ -645,7 +662,8 @@
       "attributes": {
         "topic": "penguins",
         "chart_type": "area",
-        "design_variant": 0
+        "design_variant": 0,
+        "complexity": 2
       },
       "label": "Penguins \u00b7 area \u00b7 design 00",
       "score": 24.774193548387096,
@@ -696,7 +714,8 @@
       "attributes": {
         "topic": "penguins",
         "chart_type": "area",
-        "design_variant": 1
+        "design_variant": 1,
+        "complexity": 4
       },
       "label": "Penguins \u00b7 area \u00b7 design 01",
       "score": 45.90625,
@@ -747,7 +766,8 @@
       "attributes": {
         "topic": "penguins",
         "chart_type": "area",
-        "design_variant": 2
+        "design_variant": 2,
+        "complexity": 4
       },
       "label": "Penguins \u00b7 area \u00b7 design 02",
       "score": 40.41935483870968,
@@ -798,7 +818,8 @@
       "attributes": {
         "topic": "penguins",
         "chart_type": "area",
-        "design_variant": 3
+        "design_variant": 3,
+        "complexity": 4
       },
       "label": "Penguins \u00b7 area \u00b7 design 03",
       "score": 42.4375,
@@ -849,7 +870,8 @@
       "attributes": {
         "topic": "penguins",
         "chart_type": "area",
-        "design_variant": 4
+        "design_variant": 4,
+        "complexity": 5
       },
       "label": "Penguins \u00b7 area \u00b7 design 04",
       "score": 52.53125,
@@ -900,7 +922,8 @@
       "attributes": {
         "topic": "penguins",
         "chart_type": "area",
-        "design_variant": 5
+        "design_variant": 5,
+        "complexity": 4
       },
       "label": "Penguins \u00b7 area \u00b7 design 05",
       "score": 49.9375,
@@ -951,7 +974,8 @@
       "attributes": {
         "topic": "penguins",
         "chart_type": "bar",
-        "design_variant": 0
+        "design_variant": 0,
+        "complexity": 1
       },
       "label": "Penguins \u00b7 bar \u00b7 design 00",
       "score": 12.1875,
@@ -1002,7 +1026,8 @@
       "attributes": {
         "topic": "penguins",
         "chart_type": "bar",
-        "design_variant": 1
+        "design_variant": 1,
+        "complexity": 1
       },
       "label": "Penguins \u00b7 bar \u00b7 design 01",
       "score": 16.035714285714285,
@@ -1053,7 +1078,8 @@
       "attributes": {
         "topic": "penguins",
         "chart_type": "bar",
-        "design_variant": 2
+        "design_variant": 2,
+        "complexity": 2
       },
       "label": "Penguins \u00b7 bar \u00b7 design 02",
       "score": 25.03448275862069,
@@ -1104,7 +1130,8 @@
       "attributes": {
         "topic": "penguins",
         "chart_type": "bar",
-        "design_variant": 3
+        "design_variant": 3,
+        "complexity": 2
       },
       "label": "Penguins \u00b7 bar \u00b7 design 03",
       "score": 21.1875,
@@ -1155,7 +1182,8 @@
       "attributes": {
         "topic": "penguins",
         "chart_type": "bar",
-        "design_variant": 4
+        "design_variant": 4,
+        "complexity": 3
       },
       "label": "Penguins \u00b7 bar \u00b7 design 04",
       "score": 31.838709677419356,
@@ -1206,7 +1234,8 @@
       "attributes": {
         "topic": "penguins",
         "chart_type": "bar",
-        "design_variant": 5
+        "design_variant": 5,
+        "complexity": 4
       },
       "label": "Penguins \u00b7 bar \u00b7 design 05",
       "score": 48.121212121212125,
@@ -1315,6 +1344,11 @@
             "4": "Design 04",
             "5": "Design 05"
           }
+        },
+        {
+          "key": "complexity",
+          "label": "Perceived complexity",
+          "kind": "bin"
         }
       ],
       "description": "Six bar-chart variants, each averaged over COVID-19 and penguins. Every design group contains the same two topics."
@@ -1349,6 +1383,11 @@
             "4": "Design 04",
             "5": "Design 05"
           }
+        },
+        {
+          "key": "complexity",
+          "label": "Perceived complexity",
+          "kind": "bin"
         }
       ],
       "description": "Six area-chart variants, each averaged over COVID-19 and penguins. Every design group contains the same two topics."

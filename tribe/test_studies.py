@@ -10,7 +10,7 @@ from zipfile import ZipFile
 import numpy as np
 from dataset import aggregate_maps, export_report
 from preprocessing import PROTOCOL
-from studies import REPOSITORY, extract_archive, prepare_manifest
+from studies import REPOSITORY, extract_archive, prepare_manifest, study_variables
 from study import save_selection
 
 
@@ -50,6 +50,8 @@ class StudyTests(unittest.TestCase):
             rows = [r for r in self.hayeong['rows'] if r['index'] in comparison['indices']]
             self.assertEqual(len(rows), count)
             for definition in comparison['attributes']:
+                if definition['kind'] in ('binary', 'bin'):
+                    continue
                 values = {r['attributes'][definition['key']] for r in rows}
                 populations = [sum(r['attributes'][definition['key']] == v for r in rows) for v in values]
                 self.assertEqual(len(set(populations)), 1)
@@ -59,6 +61,41 @@ class StudyTests(unittest.TestCase):
                                      {'emission', 'ice', 'medal', 'trump'})
         self.assertIn('different topics', comparisons['cartoon_image']['description'])
 
+    def test_perceived_complexity_uses_human_ratings_and_includes_100(self):
+        definition = next(a for a in self.kylie['attributes'] if a['key'] == 'complexity')
+        self.assertEqual((definition['label'], definition['kind']), ('Perceived complexity', 'bin'))
+        for row in self.kylie['rows']:
+            self.assertLessEqual(row['attributes']['complexity'] * 10, row['score'])
+            self.assertLess(row['score'], (row['attributes']['complexity'] + 1) * 10)
+        boundaries = [dict(attributes={}, score=score) for score in (0, 10, 99.9, 100)]
+        updated, _ = study_variables('kylie', boundaries, [])
+        self.assertEqual([row['attributes']['complexity'] for row in updated], [0, 1, 9, 9])
+        self.assertTrue(all(not row['attributes'] for row in boundaries))
+        for comparison in self.kylie['comparisons']:
+            self.assertIn('complexity', [a['key'] for a in comparison['attributes']])
+
+    def test_hayeong_features_distinguish_bar_font_color_and_illustration(self):
+        keys = ['has_color', 'bar_is_hand_drawn', 'font_is_hand_drawn', 'is_comic', 'bar_is_image']
+        self.assertEqual([a['key'] for a in self.hayeong['attributes'][:5]], keys)
+        by_filename = {row['filename']: row['attributes'] for row in self.hayeong['rows']}
+        expected = {
+            'building_standard.png': [0, 0, 0, 0, 0],
+            'scaffold_embellished.png': [1, 1, 1, 1, 0],
+            'covid_embellished.png': [1, 0, 0, 0, 1],
+            'emission_font_color.png': [1, 0, 1, 0, 0],
+            'emission_handrawn_blackwhite.png': [0, 1, 1, 1, 0],
+            'emission_handrawn_color.png': [1, 1, 1, 1, 0],
+            'emission_standard_blackwhite.png': [0, 0, 0, 0, 0],
+            'emission_standard_color.png': [1, 0, 0, 0, 0],
+            'emission_image_color.png': [1, 0, 0, 0, 1],
+            'medal_color_font.png': [1, 0, 1, 0, 0],
+        }
+        for filename, values in expected.items():
+            with self.subTest(filename=filename):
+                self.assertEqual([by_filename[filename][key] for key in keys], values)
+        for comparison in self.hayeong['comparisons']:
+            self.assertEqual([a['key'] for a in comparison['attributes'][:5]], keys)
+
     def test_custom_aggregation_and_separate_pages_without_fake_scores(self):
         manifest = self.hayeong
         rows = manifest['rows']
@@ -67,7 +104,7 @@ class StudyTests(unittest.TestCase):
         for definition in manifest['attributes']:
             selected = [g for g in groups if g['attribute'] == definition['key']]
             np.testing.assert_allclose(sum(g['mean'] * g['count'] for g in selected) / len(rows), grand)
-            np.testing.assert_allclose(sum(g['contrast'] * g['count'] for g in selected), [0, 0])
+            np.testing.assert_allclose(sum(g['contrast'] * g['count'] for g in selected), [0, 0], atol=1e-12)
         with tempfile.TemporaryDirectory() as tmp:
             output = Path(tmp) / 'hayeong'
             output.mkdir()
@@ -80,18 +117,23 @@ class StudyTests(unittest.TestCase):
             self.assertEqual(report['sampling'], manifest['sampling'])
             self.assertEqual(report['attributes'], manifest['attributes'])
             self.assertNotIn('score', report['rows'][0])
-            page = output.parent / 'web/study-hayeong.html'
-            self.assertIn('data-report="../hayeong/explorer.json"', page.read_text())
-            self.assertNotIn('data-catalog=', page.read_text())
-            self.assertIn('study-hayeong.html', (output / 'index.html').read_text())
+            self.assertFalse((output.parent / 'web').exists())
+            self.assertFalse((output / 'brain_maps').exists())
 
     def test_selection_refuses_changed_source_or_protocol(self):
         rows = [dict(row, source=str(REPOSITORY / row['source'])) for row in self.kylie['rows'][:1]]
-        selection = dict(rows=rows, protocol=PROTOCOL, background_rgb=[255] * 3)
+        selection = dict(rows=rows, protocol=PROTOCOL, background_rgb=[255] * 3, attributes=[])
         with tempfile.TemporaryDirectory() as tmp:
             output = Path(tmp)
             save_selection(output, selection)
             save_selection(output, selection)
+            additions = copy.deepcopy(selection)
+            additions['attributes'] = [dict(key='complexity', label='Perceived complexity', kind='bin')]
+            save_selection(output, additions)
+            changed_definition = copy.deepcopy(additions)
+            changed_definition['attributes'][0]['kind'] = 'count'
+            with self.assertRaisesRegex(ValueError, 'Different selection'):
+                save_selection(output, changed_definition)
             changed = copy.deepcopy(selection)
             changed['background_rgb'] = [0] * 3
             with self.assertRaisesRegex(ValueError, 'Different selection'):

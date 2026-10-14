@@ -1,0 +1,18 @@
+.dataset-controls {display:flex;align-items:end;flex-wrap:wrap;gap:16px}
+.arunkumar select {font:inherit;max-width:100%;min-width:0;border:1px solid #9cacbf;border-radius:6px;background:white;color:#172637;padding:10px 12px}
+.arunkumar #dimensions {margin-top:10px}
+.arunkumar .dimension:nth-child(3) {grid-column:2;grid-row:1 / 3}
+.arunkumar .dimension td {width:auto;max-width:220px;overflow-wrap:anywhere}
+.arunkumar .dimension th {width:52%}
+.hist-boundary {stroke:#a65d18;stroke-width:1.5;stroke-dasharray:4 3;pointer-events:none}
+.hist-boundary-label {fill:#85501e;font:11px system-ui,sans-serif;pointer-events:none}
+.hist-interval {fill:#52667d;font:600 12px system-ui,sans-serif;pointer-events:none}
+.hist-interval.current {fill:#154bbf;font-weight:800}
+.legend-boundary {border-top:2px dashed #a65d18;height:0 !important}
+#rating-intervals {display:flex;flex-wrap:wrap;gap:6px 12px;list-style:none;padding:0;margin:12px 0 0;font-size:.75rem;color:#52667d}
+#rating-intervals li {padding:4px 6px;border-radius:4px}
+#rating-intervals li.current {background:#eaf0fc;color:#154bbf;font-weight:650}
+#group-ratings {font-size:.75rem;color:#52667d;line-height:1.5;margin:6px 0 0}
+.arunkumar .dimension-note {margin-bottom:0}
+@media(max-width:1100px) and (min-width:721px), (max-width:420px) {.arunkumar .dimension:nth-child(3) {grid-column:auto;grid-row:auto}}
+@media(max-width:720px) {.dataset-controls {width:100%}.arunkumar .toolbar {gap:12px}.arunkumar #experiment {width:100%}.dataset-controls > div {width:100%}}

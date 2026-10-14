@@ -10,7 +10,12 @@
         "experiment": 1,
         "topic": "building",
         "style": "cartoon",
-        "condition": "cartoon_standard"
+        "condition": "cartoon_standard",
+        "has_color": 0,
+        "bar_is_hand_drawn": 0,
+        "font_is_hand_drawn": 0,
+        "is_comic": 0,
+        "bar_is_image": 0
       },
       "label": "Experiment 1 \u00b7 building \u00b7 cartoon \u00b7 standard",
       "score_label": "Experiment 1 \u00b7 cartoon \u00b7 standard"
@@ -24,7 +29,12 @@
         "experiment": 1,
         "topic": "home",
         "style": "cartoon",
-        "condition": "cartoon_embellished"
+        "condition": "cartoon_embellished",
+        "has_color": 1,
+        "bar_is_hand_drawn": 1,
+        "font_is_hand_drawn": 1,
+        "is_comic": 1,
+        "bar_is_image": 0
       },
       "label": "Experiment 1 \u00b7 home \u00b7 cartoon \u00b7 embellished",
       "score_label": "Experiment 1 \u00b7 cartoon \u00b7 embellished"
@@ -38,7 +48,12 @@
         "experiment": 1,
         "topic": "home",
         "style": "cartoon",
-        "condition": "cartoon_standard"
+        "condition": "cartoon_standard",
+        "has_color": 0,
+        "bar_is_hand_drawn": 0,
+        "font_is_hand_drawn": 0,
+        "is_comic": 0,
+        "bar_is_image": 0
       },
       "label": "Experiment 1 \u00b7 home \u00b7 cartoon \u00b7 standard",
       "score_label": "Experiment 1 \u00b7 cartoon \u00b7 standard"
@@ -52,7 +67,12 @@
         "experiment": 1,
         "topic": "lgbt",
         "style": "cartoon",
-        "condition": "cartoon_embellished"
+        "condition": "cartoon_embellished",
+        "has_color": 1,
+        "bar_is_hand_drawn": 1,
+        "font_is_hand_drawn": 1,
+        "is_comic": 1,
+        "bar_is_image": 0
       },
       "label": "Experiment 1 \u00b7 lgbt \u00b7 cartoon \u00b7 embellished",
       "score_label": "Experiment 1 \u00b7 cartoon \u00b7 embellished"
@@ -66,7 +86,12 @@
         "experiment": 1,
         "topic": "lgbt",
         "style": "cartoon",
-        "condition": "cartoon_standard"
+        "condition": "cartoon_standard",
+        "has_color": 0,
+        "bar_is_hand_drawn": 0,
+        "font_is_hand_drawn": 0,
+        "is_comic": 0,
+        "bar_is_image": 0
       },
       "label": "Experiment 1 \u00b7 lgbt \u00b7 cartoon \u00b7 standard",
       "score_label": "Experiment 1 \u00b7 cartoon \u00b7 standard"
@@ -80,7 +105,12 @@
         "experiment": 1,
         "topic": "scaffold",
         "style": "cartoon",
-        "condition": "cartoon_embellished"
+        "condition": "cartoon_embellished",
+        "has_color": 1,
+        "bar_is_hand_drawn": 1,
+        "font_is_hand_drawn": 1,
+        "is_comic": 1,
+        "bar_is_image": 0
       },
       "label": "Experiment 1 \u00b7 scaffold \u00b7 cartoon \u00b7 embellished",
       "score_label": "Experiment 1 \u00b7 cartoon \u00b7 embellished"
@@ -94,7 +124,12 @@
         "experiment": 1,
         "topic": "trump",
         "style": "cartoon",
-        "condition": "cartoon_embellished"
+        "condition": "cartoon_embellished",
+        "has_color": 1,
+        "bar_is_hand_drawn": 1,
+        "font_is_hand_drawn": 1,
+        "is_comic": 1,
+        "bar_is_image": 0
       },
       "label": "Experiment 1 \u00b7 trump \u00b7 cartoon \u00b7 embellished",
       "score_label": "Experiment 1 \u00b7 cartoon \u00b7 embellished"
@@ -108,7 +143,12 @@
         "experiment": 1,
         "topic": "trump",
         "style": "cartoon",
-        "condition": "cartoon_standard"
+        "condition": "cartoon_standard",
+        "has_color": 0,
+        "bar_is_hand_drawn": 0,
+        "font_is_hand_drawn": 0,
+        "is_comic": 0,
+        "bar_is_image": 0
       },
       "label": "Experiment 1 \u00b7 trump \u00b7 cartoon \u00b7 standard",
       "score_label": "Experiment 1 \u00b7 cartoon \u00b7 standard"
@@ -122,7 +162,12 @@
         "experiment": 1,
         "topic": "covid",
         "style": "image",
-        "condition": "image_standard"
+        "condition": "image_standard",
+        "has_color": 0,
+        "bar_is_hand_drawn": 0,
+        "font_is_hand_drawn": 0,
+        "is_comic": 0,
+        "bar_is_image": 0
       },
       "label": "Experiment 1 \u00b7 covid \u00b7 image \u00b7 standard",
       "score_label": "Experiment 1 \u00b7 image \u00b7 standard"
@@ -136,7 +181,12 @@
         "experiment": 1,
         "topic": "covid",
         "style": "image",
-        "condition": "image_embellished"
+        "condition": "image_embellished",
+        "has_color": 1,
+        "bar_is_hand_drawn": 0,
+        "font_is_hand_drawn": 0,
+        "is_comic": 0,
+        "bar_is_image": 1
       },
       "label": "Experiment 1 \u00b7 covid \u00b7 image \u00b7 embellished",
       "score_label": "Experiment 1 \u00b7 image \u00b7 embellished"
@@ -150,7 +200,12 @@
         "experiment": 1,
         "topic": "emission",
         "style": "image",
-        "condition": "image_standard"
+        "condition": "image_standard",
+        "has_color": 0,
+        "bar_is_hand_drawn": 0,
+        "font_is_hand_drawn": 0,
+        "is_comic": 0,
+        "bar_is_image": 0
       },
       "label": "Experiment 1 \u00b7 emission \u00b7 image \u00b7 standard",
       "score_label": "Experiment 1 \u00b7 image \u00b7 standard"
@@ -164,7 +219,12 @@
         "experiment": 1,
         "topic": "emission",
         "style": "image",
-        "condition": "image_embellished"
+        "condition": "image_embellished",
+        "has_color": 1,
+        "bar_is_hand_drawn": 0,
+        "font_is_hand_drawn": 0,
+        "is_comic": 0,
+        "bar_is_image": 1
       },
       "label": "Experiment 1 \u00b7 emission \u00b7 image \u00b7 embellished",
       "score_label": "Experiment 1 \u00b7 image \u00b7 embellished"
@@ -178,7 +238,12 @@
         "experiment": 1,
         "topic": "fifa",
         "style": "image",
-        "condition": "image_embellished"
+        "condition": "image_embellished",
+        "has_color": 1,
+        "bar_is_hand_drawn": 0,
+        "font_is_hand_drawn": 0,
+        "is_comic": 0,
+        "bar_is_image": 1
       },
       "label": "Experiment 1 \u00b7 fifa \u00b7 image \u00b7 embellished",
       "score_label": "Experiment 1 \u00b7 image \u00b7 embellished"
@@ -192,7 +257,12 @@
         "experiment": 1,
         "topic": "fifa",
         "style": "image",
-        "condition": "image_standard"
+        "condition": "image_standard",
+        "has_color": 0,
+        "bar_is_hand_drawn": 0,
+        "font_is_hand_drawn": 0,
+        "is_comic": 0,
+        "bar_is_image": 0
       },
       "label": "Experiment 1 \u00b7 fifa \u00b7 image \u00b7 standard",
       "score_label": "Experiment 1 \u00b7 image \u00b7 standard"
@@ -206,7 +276,12 @@
         "experiment": 1,
         "topic": "medal",
         "style": "image",
-        "condition": "image_embellished"
+        "condition": "image_embellished",
+        "has_color": 1,
+        "bar_is_hand_drawn": 0,
+        "font_is_hand_drawn": 0,
+        "is_comic": 0,
+        "bar_is_image": 1
       },
       "label": "Experiment 1 \u00b7 medal \u00b7 image \u00b7 embellished",
       "score_label": "Experiment 1 \u00b7 image \u00b7 embellished"
@@ -220,7 +295,12 @@
         "experiment": 1,
         "topic": "medal",
         "style": "image",
-        "condition": "image_standard"
+        "condition": "image_standard",
+        "has_color": 0,
+        "bar_is_hand_drawn": 0,
+        "font_is_hand_drawn": 0,
+        "is_comic": 0,
+        "bar_is_image": 0
       },
       "label": "Experiment 1 \u00b7 medal \u00b7 image \u00b7 standard",
       "score_label": "Experiment 1 \u00b7 image \u00b7 standard"
@@ -235,7 +315,12 @@
         "topic": "emission",
         "condition": "font_color",
         "palette": "color",
-        "style": "font"
+        "style": "font",
+        "has_color": 1,
+        "bar_is_hand_drawn": 0,
+        "font_is_hand_drawn": 1,
+        "is_comic": 0,
+        "bar_is_image": 0
       },
       "label": "Experiment 2 \u00b7 emission \u00b7 Hand-drawn font \u00b7 color",
       "score_label": "Experiment 2 \u00b7 Hand-drawn font \u00b7 color"
@@ -250,7 +335,12 @@
         "topic": "emission",
         "condition": "handdrawn_blackwhite",
         "palette": "blackwhite",
-        "style": "handdrawn"
+        "style": "handdrawn",
+        "has_color": 0,
+        "bar_is_hand_drawn": 1,
+        "font_is_hand_drawn": 1,
+        "is_comic": 1,
+        "bar_is_image": 0
       },
       "label": "Experiment 2 \u00b7 emission \u00b7 Hand-drawn \u00b7 black and white",
       "score_label": "Experiment 2 \u00b7 Hand-drawn \u00b7 black and white"
@@ -265,7 +355,12 @@
         "topic": "emission",
         "condition": "handdrawn_color",
         "palette": "color",
-        "style": "handdrawn"
+        "style": "handdrawn",
+        "has_color": 1,
+        "bar_is_hand_drawn": 1,
+        "font_is_hand_drawn": 1,
+        "is_comic": 1,
+        "bar_is_image": 0
       },
       "label": "Experiment 2 \u00b7 emission \u00b7 Hand-drawn \u00b7 color",
       "score_label": "Experiment 2 \u00b7 Hand-drawn \u00b7 color"
@@ -280,7 +375,12 @@
         "topic": "emission",
         "condition": "image_color",
         "palette": "color",
-        "style": "image"
+        "style": "image",
+        "has_color": 1,
+        "bar_is_hand_drawn": 0,
+        "font_is_hand_drawn": 0,
+        "is_comic": 0,
+        "bar_is_image": 1
       },
       "label": "Experiment 2 \u00b7 emission \u00b7 Image bars \u00b7 color",
       "score_label": "Experiment 2 \u00b7 Image bars \u00b7 color"
@@ -295,7 +395,12 @@
         "topic": "emission",
         "condition": "standard_blackwhite",
         "palette": "blackwhite",
-        "style": "standard"
+        "style": "standard",
+        "has_color": 0,
+        "bar_is_hand_drawn": 0,
+        "font_is_hand_drawn": 0,
+        "is_comic": 0,
+        "bar_is_image": 0
       },
       "label": "Experiment 2 \u00b7 emission \u00b7 Standard \u00b7 black and white",
       "score_label": "Experiment 2 \u00b7 Standard \u00b7 black and white"
@@ -310,7 +415,12 @@
         "topic": "emission",
         "condition": "standard_color",
         "palette": "color",
-        "style": "standard"
+        "style": "standard",
+        "has_color": 1,
+        "bar_is_hand_drawn": 0,
+        "font_is_hand_drawn": 0,
+        "is_comic": 0,
+        "bar_is_image": 0
       },
       "label": "Experiment 2 \u00b7 emission \u00b7 Standard \u00b7 color",
       "score_label": "Experiment 2 \u00b7 Standard \u00b7 color"
@@ -325,7 +435,12 @@
         "topic": "ice",
         "condition": "font_color",
         "palette": "color",
-        "style": "font"
+        "style": "font",
+        "has_color": 1,
+        "bar_is_hand_drawn": 0,
+        "font_is_hand_drawn": 1,
+        "is_comic": 0,
+        "bar_is_image": 0
       },
       "label": "Experiment 2 \u00b7 ice \u00b7 Hand-drawn font \u00b7 color",
       "score_label": "Experiment 2 \u00b7 Hand-drawn font \u00b7 color"
@@ -340,7 +455,12 @@
         "topic": "ice",
         "condition": "handdrawn_blackwhite",
         "palette": "blackwhite",
-        "style": "handdrawn"
+        "style": "handdrawn",
+        "has_color": 0,
+        "bar_is_hand_drawn": 1,
+        "font_is_hand_drawn": 1,
+        "is_comic": 1,
+        "bar_is_image": 0
       },
       "label": "Experiment 2 \u00b7 ice \u00b7 Hand-drawn \u00b7 black and white",
       "score_label": "Experiment 2 \u00b7 Hand-drawn \u00b7 black and white"
@@ -355,7 +475,12 @@
         "topic": "ice",
         "condition": "handdrawn_color",
         "palette": "color",
-        "style": "handdrawn"
+        "style": "handdrawn",
+        "has_color": 1,
+        "bar_is_hand_drawn": 1,
+        "font_is_hand_drawn": 1,
+        "is_comic": 1,
+        "bar_is_image": 0
       },
       "label": "Experiment 2 \u00b7 ice \u00b7 Hand-drawn \u00b7 color",
       "score_label": "Experiment 2 \u00b7 Hand-drawn \u00b7 color"
@@ -370,7 +495,12 @@
         "topic": "ice",
         "condition": "image_color",
         "palette": "color",
-        "style": "image"
+        "style": "image",
+        "has_color": 1,
+        "bar_is_hand_drawn": 0,
+        "font_is_hand_drawn": 0,
+        "is_comic": 0,
+        "bar_is_image": 1
       },
       "label": "Experiment 2 \u00b7 ice \u00b7 Image bars \u00b7 color",
       "score_label": "Experiment 2 \u00b7 Image bars \u00b7 color"
@@ -385,7 +515,12 @@
         "topic": "ice",
         "condition": "standard_blackwhite",
         "palette": "blackwhite",
-        "style": "standard"
+        "style": "standard",
+        "has_color": 0,
+        "bar_is_hand_drawn": 0,
+        "font_is_hand_drawn": 0,
+        "is_comic": 0,
+        "bar_is_image": 0
       },
       "label": "Experiment 2 \u00b7 ice \u00b7 Standard \u00b7 black and white",
       "score_label": "Experiment 2 \u00b7 Standard \u00b7 black and white"
@@ -400,7 +535,12 @@
         "topic": "ice",
         "condition": "standard_color",
         "palette": "color",
-        "style": "standard"
+        "style": "standard",
+        "has_color": 1,
+        "bar_is_hand_drawn": 0,
+        "font_is_hand_drawn": 0,
+        "is_comic": 0,
+        "bar_is_image": 0
       },
       "label": "Experiment 2 \u00b7 ice \u00b7 Standard \u00b7 color",
       "score_label": "Experiment 2 \u00b7 Standard \u00b7 color"
@@ -415,7 +555,12 @@
         "topic": "medal",
         "condition": "handdrawn_color",
         "palette": "color",
-        "style": "handdrawn"
+        "style": "handdrawn",
+        "has_color": 1,
+        "bar_is_hand_drawn": 1,
+        "font_is_hand_drawn": 1,
+        "is_comic": 1,
+        "bar_is_image": 0
       },
       "label": "Experiment 2 \u00b7 medal \u00b7 Hand-drawn \u00b7 color",
       "score_label": "Experiment 2 \u00b7 Hand-drawn \u00b7 color"
@@ -430,7 +575,12 @@
         "topic": "medal",
         "condition": "handdrawn_blackwhite",
         "palette": "blackwhite",
-        "style": "handdrawn"
+        "style": "handdrawn",
+        "has_color": 0,
+        "bar_is_hand_drawn": 1,
+        "font_is_hand_drawn": 1,
+        "is_comic": 1,
+        "bar_is_image": 0
       },
       "label": "Experiment 2 \u00b7 medal \u00b7 Hand-drawn \u00b7 black and white",
       "score_label": "Experiment 2 \u00b7 Hand-drawn \u00b7 black and white"
@@ -445,7 +595,12 @@
         "topic": "medal",
         "condition": "font_color",
         "palette": "color",
-        "style": "font"
+        "style": "font",
+        "has_color": 1,
+        "bar_is_hand_drawn": 0,
+        "font_is_hand_drawn": 1,
+        "is_comic": 0,
+        "bar_is_image": 0
       },
       "label": "Experiment 2 \u00b7 medal \u00b7 Hand-drawn font \u00b7 color",
       "score_label": "Experiment 2 \u00b7 Hand-drawn font \u00b7 color"
@@ -460,7 +615,12 @@
         "topic": "medal",
         "condition": "image_color",
         "palette": "color",
-        "style": "image"
+        "style": "image",
+        "has_color": 1,
+        "bar_is_hand_drawn": 0,
+        "font_is_hand_drawn": 0,
+        "is_comic": 0,
+        "bar_is_image": 1
       },
       "label": "Experiment 2 \u00b7 medal \u00b7 Image bars \u00b7 color",
       "score_label": "Experiment 2 \u00b7 Image bars \u00b7 color"
@@ -475,7 +635,12 @@
         "topic": "medal",
         "condition": "standard_blackwhite",
         "palette": "blackwhite",
-        "style": "standard"
+        "style": "standard",
+        "has_color": 0,
+        "bar_is_hand_drawn": 0,
+        "font_is_hand_drawn": 0,
+        "is_comic": 0,
+        "bar_is_image": 0
       },
       "label": "Experiment 2 \u00b7 medal \u00b7 Standard \u00b7 black and white",
       "score_label": "Experiment 2 \u00b7 Standard \u00b7 black and white"
@@ -490,7 +655,12 @@
         "topic": "medal",
         "condition": "standard_color",
         "palette": "color",
-        "style": "standard"
+        "style": "standard",
+        "has_color": 1,
+        "bar_is_hand_drawn": 0,
+        "font_is_hand_drawn": 0,
+        "is_comic": 0,
+        "bar_is_image": 0
       },
       "label": "Experiment 2 \u00b7 medal \u00b7 Standard \u00b7 color",
       "score_label": "Experiment 2 \u00b7 Standard \u00b7 color"
@@ -505,7 +675,12 @@
         "topic": "trump",
         "condition": "font_color",
         "palette": "color",
-        "style": "font"
+        "style": "font",
+        "has_color": 1,
+        "bar_is_hand_drawn": 0,
+        "font_is_hand_drawn": 1,
+        "is_comic": 0,
+        "bar_is_image": 0
       },
       "label": "Experiment 2 \u00b7 trump \u00b7 Hand-drawn font \u00b7 color",
       "score_label": "Experiment 2 \u00b7 Hand-drawn font \u00b7 color"
@@ -520,7 +695,12 @@
         "topic": "trump",
         "condition": "handdrawn_blackwhite",
         "palette": "blackwhite",
-        "style": "handdrawn"
+        "style": "handdrawn",
+        "has_color": 0,
+        "bar_is_hand_drawn": 1,
+        "font_is_hand_drawn": 1,
+        "is_comic": 1,
+        "bar_is_image": 0
       },
       "label": "Experiment 2 \u00b7 trump \u00b7 Hand-drawn \u00b7 black and white",
       "score_label": "Experiment 2 \u00b7 Hand-drawn \u00b7 black and white"
@@ -535,7 +715,12 @@
         "topic": "trump",
         "condition": "handdrawn_color",
         "palette": "color",
-        "style": "handdrawn"
+        "style": "handdrawn",
+        "has_color": 1,
+        "bar_is_hand_drawn": 1,
+        "font_is_hand_drawn": 1,
+        "is_comic": 1,
+        "bar_is_image": 0
       },
       "label": "Experiment 2 \u00b7 trump \u00b7 Hand-drawn \u00b7 color",
       "score_label": "Experiment 2 \u00b7 Hand-drawn \u00b7 color"
@@ -550,7 +735,12 @@
         "topic": "trump",
         "condition": "image_color",
         "palette": "color",
-        "style": "image"
+        "style": "image",
+        "has_color": 1,
+        "bar_is_hand_drawn": 0,
+        "font_is_hand_drawn": 0,
+        "is_comic": 0,
+        "bar_is_image": 1
       },
       "label": "Experiment 2 \u00b7 trump \u00b7 Image bars \u00b7 color",
       "score_label": "Experiment 2 \u00b7 Image bars \u00b7 color"
@@ -565,7 +755,12 @@
         "topic": "trump",
         "condition": "standard_blackwhite",
         "palette": "blackwhite",
-        "style": "standard"
+        "style": "standard",
+        "has_color": 0,
+        "bar_is_hand_drawn": 0,
+        "font_is_hand_drawn": 0,
+        "is_comic": 0,
+        "bar_is_image": 0
       },
       "label": "Experiment 2 \u00b7 trump \u00b7 Standard \u00b7 black and white",
       "score_label": "Experiment 2 \u00b7 Standard \u00b7 black and white"
@@ -580,13 +775,63 @@
         "topic": "trump",
         "condition": "standard_color",
         "palette": "color",
-        "style": "standard"
+        "style": "standard",
+        "has_color": 1,
+        "bar_is_hand_drawn": 0,
+        "font_is_hand_drawn": 0,
+        "is_comic": 0,
+        "bar_is_image": 0
       },
       "label": "Experiment 2 \u00b7 trump \u00b7 Standard \u00b7 color",
       "score_label": "Experiment 2 \u00b7 Standard \u00b7 color"
     }
   ],
   "attributes": [
+    {
+      "key": "has_color",
+      "label": "has_color",
+      "kind": "binary",
+      "values": {
+        "0": "No",
+        "1": "Yes"
+      }
+    },
+    {
+      "key": "bar_is_hand_drawn",
+      "label": "bar_is_hand_drawn",
+      "kind": "binary",
+      "values": {
+        "0": "No",
+        "1": "Yes"
+      }
+    },
+    {
+      "key": "font_is_hand_drawn",
+      "label": "font_is_hand_drawn",
+      "kind": "binary",
+      "values": {
+        "0": "No",
+        "1": "Yes"
+      }
+    },
+    {
+      "key": "is_comic",
+      "label": "is_comic",
+      "kind": "binary",
+      "values": {
+        "0": "No",
+        "1": "Yes"
+      }
+    },
+    {
+      "key": "bar_is_image",
+      "label": "bar_is_image",
+      "kind": "binary",
+      "values": {
+        "0": "No",
+        "1": "Yes"
+      }
+    },
     {
       "key": "condition",
       "label": "Study condition",
@@ -667,6 +912,51 @@
       ],
       "attributes": [
         {
+          "key": "has_color",
+          "label": "has_color",
+          "kind": "binary",
+          "values": {
+            "0": "No",
+            "1": "Yes"
+          }
+        },
+        {
+          "key": "bar_is_hand_drawn",
+          "label": "bar_is_hand_drawn",
+          "kind": "binary",
+          "values": {
+            "0": "No",
+            "1": "Yes"
+          }
+        },
+        {
+          "key": "font_is_hand_drawn",
+          "label": "font_is_hand_drawn",
+          "kind": "binary",
+          "values": {
+            "0": "No",
+            "1": "Yes"
+          }
+        },
+        {
+          "key": "is_comic",
+          "label": "is_comic",
+          "kind": "binary",
+          "values": {
+            "0": "No",
+            "1": "Yes"
+          }
+        },
+        {
+          "key": "bar_is_image",
+          "label": "bar_is_image",
+          "kind": "binary",
+          "values": {
+            "0": "No",
+            "1": "Yes"
+          }
+        },
+        {
           "key": "palette",
           "label": "Color",
           "kind": "category",
@@ -708,6 +998,51 @@
       ],
       "attributes": [
         {
+          "key": "has_color",
+          "label": "has_color",
+          "kind": "binary",
+          "values": {
+            "0": "No",
+            "1": "Yes"
+          }
+        },
+        {
+          "key": "bar_is_hand_drawn",
+          "label": "bar_is_hand_drawn",
+          "kind": "binary",
+          "values": {
+            "0": "No",
+            "1": "Yes"
+          }
+        },
+        {
+          "key": "font_is_hand_drawn",
+          "label": "font_is_hand_drawn",
+          "kind": "binary",
+          "values": {
+            "0": "No",
+            "1": "Yes"
+          }
+        },
+        {
+          "key": "is_comic",
+          "label": "is_comic",
+          "kind": "binary",
+          "values": {
+            "0": "No",
+            "1": "Yes"
+          }
+        },
+        {
+          "key": "bar_is_image",
+          "label": "bar_is_image",
+          "kind": "binary",
+          "values": {
+            "0": "No",
+            "1": "Yes"
+          }
+        },
+        {
           "key": "condition",
           "label": "Drawing and typography",
           "kind": "category",
@@ -742,6 +1077,51 @@
         16
       ],
       "attributes": [
+        {
+          "key": "has_color",
+          "label": "has_color",
+          "kind": "binary",
+          "values": {
+            "0": "No",
+            "1": "Yes"
+          }
+        },
+        {
+          "key": "bar_is_hand_drawn",
+          "label": "bar_is_hand_drawn",
+          "kind": "binary",
+          "values": {
+            "0": "No",
+            "1": "Yes"
+          }
+        },
+        {
+          "key": "font_is_hand_drawn",
+          "label": "font_is_hand_drawn",
+          "kind": "binary",
+          "values": {
+            "0": "No",
+            "1": "Yes"
+          }
+        },
+        {
+          "key": "is_comic",
+          "label": "is_comic",
+          "kind": "binary",
+          "values": {
+            "0": "No",
+            "1": "Yes"
+          }
+        },
+        {
+          "key": "bar_is_image",
+          "label": "bar_is_image",
+          "kind": "binary",
+          "values": {
+            "0": "No",
+            "1": "Yes"
+          }
+        },
         {
           "key": "style",
           "label": "Experiment 1 style",

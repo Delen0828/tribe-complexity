@@ -1,4 +1,4 @@
-"""Archive interpretation and reproducible manifests for the two controlled studies."""
+"""Supplement interpretation and reproducible study manifests."""
 import csv
 import hashlib
 import json
@@ -45,6 +45,43 @@ EXP2_CONDITIONS = [
     ('handdrawn_blackwhite', 'Hand-drawn · black and white'),
     ('handdrawn_color', 'Hand-drawn · color'),
     ('image_color', 'Image bars · color')]
+
+PERCEIVED_COMPLEXITY = dict(key='complexity', label='Perceived complexity', kind='bin')
+HAYEONG_FEATURES = [dict(key=key, label=key, kind='binary', values={'0': 'No', '1': 'Yes'})
+                   for key in ('has_color', 'bar_is_hand_drawn', 'font_is_hand_drawn',
+                               'is_comic', 'bar_is_image')]
+
+
+def study_variables(dataset, rows, attributes):
+    """Expose stimulus features, including for selections saved before these fields existed."""
+    if dataset not in ('kylie', 'hayeong'):
+        return rows, attributes
+    updated = []
+    for row in rows:
+        values = dict(row['attributes'])
+        if dataset == 'kylie':
+            score = float(row['score'])
+            if not math.isfinite(score) or not 0 <= score <= 100:
+                raise ValueError('Invalid published complexity rating')
+            values['complexity'] = min(int(score // 10), 9)
+        else:
+            style = values['style']
+            if values['experiment'] == 1:
+                embellished = values['condition'].endswith('_embellished')
+                comic = style == 'cartoon' and embellished
+                flags = (embellished, comic, comic, comic, style == 'image' and embellished)
+            else:
+                hand_drawn = style == 'handdrawn'
+                flags = (values['palette'] == 'color', hand_drawn,
+                         style in ('font', 'handdrawn'), hand_drawn, style == 'image')
+            values.update((definition['key'], int(flag))
+                          for definition, flag in zip(HAYEONG_FEATURES, flags))
+        updated.append(dict(row, attributes=values))
+    additions = [PERCEIVED_COMPLEXITY] if dataset == 'kylie' else HAYEONG_FEATURES
+    keys = {definition['key'] for definition in additions}
+    existing = [definition for definition in attributes if definition['key'] not in keys]
+    definitions = existing + additions if dataset == 'kylie' else additions + existing
+    return updated, definitions
 
 
 def extract_archive(path, target):
@@ -196,14 +233,24 @@ def hayeong_manifest(root):
 
 
 def prepare_manifest(dataset):
-    folder, filename = ARCHIVES[dataset]
-    archive = REPOSITORY / 'data' / folder / filename
-    extracted = archive.parent / 'extracted'
-    extract_archive(archive, extracted)
-    result = (kylie_manifest if dataset == 'kylie' else hayeong_manifest)(extracted)
-    result.update(schema_version=1, dataset=dataset,
-                  archive=str(archive.relative_to(REPOSITORY)),
-                  archive_sha256=hashlib.sha256(archive.read_bytes()).hexdigest())
+    if dataset == 'arunkumar':
+        from .arunkumar import arunkumar_manifest
+        result = arunkumar_manifest(REPOSITORY / 'data/Arunkumar')
+        provenance = {}
+    else:
+        folder, filename = ARCHIVES[dataset]
+        archive = REPOSITORY / 'data' / folder / filename
+        extracted = archive.parent / 'extracted'
+        extract_archive(archive, extracted)
+        result = (kylie_manifest if dataset == 'kylie' else hayeong_manifest)(extracted)
+        provenance = dict(archive=str(archive.relative_to(REPOSITORY)),
+                          archive_sha256=hashlib.sha256(archive.read_bytes()).hexdigest())
+    result['rows'], result['attributes'] = study_variables(dataset, result['rows'], result['attributes'])
+    for comparison in result['comparisons']:
+        included = set(comparison['indices'])
+        _, comparison['attributes'] = study_variables(
+            dataset, [row for row in result['rows'] if row['index'] in included], comparison['attributes'])
+    result.update(schema_version=1, dataset=dataset, **provenance)
     MANIFESTS.mkdir(exist_ok=True)
     path = MANIFESTS / f'{dataset}.json'
     path.write_text(json.dumps(result, indent=2, allow_nan=False) + '\n')

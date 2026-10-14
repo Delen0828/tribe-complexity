@@ -1,123 +1,114 @@
-# MASSVIS complexity explorer
+# TRIBE visualizer
 
-Explore 5,800 MASSVIS visualizations with the annotations from Lin et al.,
-[*What Makes a Visualization Visually Complex?* (CHI EA 2025)](https://kylierlin.github.io/src/files/lin-chi-lbw-2025.pdf).
-
-The dataset contains one overall **mean human complexity rating (0–100)** and
-feature labels in **Text, Color, Data, and Design**. These feature groups are
-not independently rated complexity scores. This project joins the published
-annotations to your local images; it does not infer labels from pixels.
-
-## Run locally
-
-From the repository root, using Python 3.9 or later:
+From the repository root:
 
 ```sh
-python3 label/build.py
-python3 -m http.server 8000 --bind 127.0.0.1
+./start-visualizer.sh
 ```
 
-Open **http://localhost:8000/visualizer/**. Enter an index from **0 to 5799**,
-or use Previous / Next. A specific visualization can be linked with
-`http://localhost:8000/visualizer/?index=42`.
-
-Keep the server rooted at this repository so the website can access both
-`label/output/` and `data/`. Opening `index.html` directly with `file://` does
-not support fetching the annotations. No Node installation, third-party
-Python packages, API keys, backend application, or build framework is needed.
-
-## Files
-
-| Path | Purpose |
-| --- | --- |
-| `data/` | Original MASSVIS images, referenced in place |
-| `paper-label/` | Original supplementary materials; not needed to rebuild after extraction |
-| `label/source/annotations.csv` | One unchanged copy of the published 5,800-row annotation table |
-| `label/source/ratings.csv` | Individual scores without participant identifiers; used for rating variance |
-| `label/build.py` | Validate annotations, resolve image paths, generate exports |
-| `label/output/labels.json` | Typed, grouped records used by the website |
-| `label/output/labels.csv` | Flat export with dimension-prefixed feature columns |
-| `label/output/report.json` | Source checksum, filename aliases, missing and unlabeled images |
-| `label/README.md` | Definitions, derivations, provenance, optional model dependencies |
-| `visualizer/` | Static HTML, CSS, and JavaScript |
-
-All **5,800 annotations match local images**. Six filename aliases are explicitly
-documented in the supplement's own cleaning script. The local image collection
-contains **162 additional images without published annotations**; their paths
-are listed in the report. They are not assigned invented study IDs or ratings.
-
-The index is the numeric part of the paper's `image_id` (for example, `42.png`),
-not an image's position in a directory or the digits in its original filename.
-
-## Validation
+The launcher selects the active Python environment, a local `.venv`, or the
+existing `tribe` Conda environment, checks backend/rendering dependencies, builds
+missing annotation exports, and opens **http://127.0.0.1:8000/visualizer/**.
+Keep the terminal open; **Ctrl+C** stops the server. It can also be called by its
+absolute path from another directory.
 
 ```sh
-python3 -m unittest discover -s label -p 'test_*.py'
-node --check visualizer/app.js  # optional JavaScript syntax check
+./start-visualizer.sh --port 8001           # If port 8000 is already occupied
+./start-visualizer.sh --no-open             # Remote/headless machine
+./start-visualizer.sh --python /path/to/environment/bin/python
 ```
 
-The builder validates the complete ID set, binary and count values, rating
-ranges, chart-type counts, panel complements, and unique image assignments.
-Exports are deterministic. Missing images are reported and displayed as
-unavailable; ambiguous matches stop the build.
+The same Python server serves the frontend and `/api/` on the selected port.
+There is no separate frontend process or Node build. Open the URL printed by
+the launcher: a static server or IDE preview can show the page but cannot answer
+analysis requests. On a remote machine, forward the selected port in your IDE
+and open that forwarded URL. Missing dependencies are reported before startup;
+create the environment with `conda env create -f environment.yml` if needed.
 
-For static hosting, serve `visualizer/`, `label/output/labels.json`, and `data/`
-with their relative directory structure intact. The visualizer itself has no
-runtime service dependency. Original data and archive files remain excluded
-from Git by the existing `.gitignore`; obtain the dataset separately when
-cloning this repository.
+To check communication, open `/api/reports` on the same host and port (for
+example, `http://127.0.0.1:8000/api/reports`). It should return a JSON list.
+An HTML response or a 404 indicates the wrong server; connection refusal means
+the server is stopped or the port is wrong. A JSON `Predictions unavailable`
+error from `/api/report` means the backend is reachable but that study has no
+usable saved predictions. The launcher uses existing predictions; generate
+missing ones using the commands in [tribe/README.md](../tribe/README.md).
 
-The compact viewer shows attributes as tables. Its histogram displays all 5,800
-image means, with the current mean and a shaded ±1 standard deviation band
-from the image’s 10 individual human ratings. Sample variance is also displayed.
+For manual startup in an activated environment, use
+`python visualizer/server.py --port 8000`.
 
-## Predicted cortical response groups
+The home page puts the MassVis and Arunkumar dataset explorers first, followed by
+four simulation result links: MassVis, Kylie, Hayeong, and Arunkumar.
+The MassVis annotation viewer is at `data.html`; existing `?index=42` bookmarks redirect there.
 
-The stimulus selector also supports Kylie and Hayeong. Generate them with
-`python tribe/run.py --dataset kylie --device cuda` and
-`python tribe/run.py --dataset hayeong --device cuda`. The
-[output hub](../tribe/outputs/web/index.html) links separate pages for each
-study and comparison; the [study guide](../tribe/studies/README.md) explains
-their design, labels, matching, and commands. Kylie thumbnails show measured
-human complexity means; Hayeong thumbnails show condition labels.
+Arunkumar's dataset explorer is at `arunkumar.html`. It reads the published study
+manifest and original images directly, so it also works without predictions.
+Choose both experiments (600 observations), experiment 1 (indices 1–500), or
+experiment 2 (indices 501–600). It shows each observation's published mean and SD,
+all 39 taxonomy fields, and a clickable histogram with one-point bins
+`[−10,−9)`, `[−9,−8)`, …, `[9,10]`. Dashed lines mark the separate published
+I1–I5 boundaries at −6, −3, 3, and 6; the exact intervals and current group appear
+below the chart. The experiment selection and visualization index are saved in
+the URL. Histogram bars open the observation closest to their bin midpoint,
+with visualization indices breaking ties, as in the MassVis explorer.
 
-Open [brain.html](brain.html), also linked from the annotation explorer. Generate
-its assets with `python tribe/dataset.py --scope sample --predict --device cuda`
-from the repository root in the `tribe` environment. The default sample has ten
-stimuli per ten-point complexity bin. Use `--scope all` for all annotated stimuli;
-see [dataset commands](../tribe/README.md#dataset-runs-and-grouped-brain-explorer).
+## Analysis
 
-Group by any of the 29 published feature variables, perceived complexity, or
-source category (31 attributes). Counts include charts, chart types, distinct
-colors, quantitative variables, and categorical variables. Text, color, panel,
-and chart-type presence features use No/Yes groups; source category uses
-Government, Infographic, News, and Science. Select a group and choose its mean predicted
-response or its difference from the selected-set mean. All views share a scale
-within each mode. Group badges show sample sizes; member thumbnails link back to
-the original image annotations. The whole-dataset option shows an unavailable state
-until those results are generated. No browser-side model inference is performed.
+Assign published variables to X and Y using the selectors or the variable list.
+Y can remain All. Each populated cell shows the equal-stimulus mean of the first
+TRIBE prediction (t=0), or its difference from the included-study mean. Empty
+intersections show a dash. A shared symmetric scale covers the current grid.
 
-The **Cortical views** selector offers four standard lateral/medial views, one
-inferior/ventral view showing both hemispheres, or all five, according to the
-assets in the report. The selection is saved in the URL (`?views=four`,
-`?views=inferior`, or `?views=all`). Reports render all five by default;
-`tribe/dataset.py --views four` or `--views inferior` renders only that layout.
-Rebuild the full-dataset report from existing predictions with
-`python tribe/dataset.py --scope all --allow-partial --views all` to add the bottom view.
-Older reports continue to display their four standard views.
+MassVis complexity uses Low, Mid, and High: the bottom, middle, and top thirds of
+the selected images ranked by their human complexity scores. Groups have roughly
+equal sizes; image IDs break rating ties. Membership uses the whole selection,
+so it stays fixed while partial predictions finish. Counts remain exact values
+and binary features use No/Yes. Click either axis tick for all examples in that group, or a
+cell for its intersection. The example gallery sits above the grid, beside the
+variable list, and shows about three thumbnails at a time. Scroll horizontally
+to see the rest; more examples load automatically in batches of 24. Axis assignments,
+map mode, view, and selected examples are saved in the URL.
 
-Include `tribe/outputs/massvis_sample/` (and optionally `massvis_all/`) when serving
-or deploying the site. A custom report can be loaded with
-`brain.html?data=../path/to/explorer.json`. Generated results are excluded from Git.
+Kylie also offers Perceived complexity, using the published human means and
+ten-point bins `[0,10)`, …, `[90,100]`. Hayeong uses only experiment 2's 24 stimuli and exposes
+`has_color`, `bar_is_hand_drawn`, `font_is_hand_drawn`, `is_comic`, and
+`bar_is_image` separately, alongside study condition. These variables also work
+with existing saved predictions.
 
-Browser regression checks (optional development dependency):
+Arunkumar exposes image/information ratings on the published −10 (image-like) to
++10 (information-like) scale, grouped in I1–I5 intervals, plus every one of its
+39 stimulus taxonomy fields. The Study selector offers both experiments
+together (600 observations) or experiment 1 (500) and experiment 2 (100)
+separately. Each uses its own published ratings; separate experiments have
+separate contrast baselines. The combined view gives each experiment-specific
+observation equal weight. Identical image files reuse predictions, while three
+changed experiment-2 images use their actual source files.
+
+Inferior / ventral is the default view. The view selector also offers four
+lateral/medial views and all five views. Nilearn renders requested maps in the
+web backend, with cached images under `tribe/cache/visualizer/`.
+
+The backend reads `selection.json`, prediction arrays, and validated prediction
+receipts directly. Simulation does not build plots or pages. Partial runs show
+completed/selected counts. Kylie, Hayeong, and Arunkumar comparisons reuse their parent
+study's predictions, without additional inference or duplicate prediction folders.
+
+Custom outputs inside the repository can be opened with
+`brain.html?data=../tribe/outputs/custom/selection.json`. Existing `explorer.json`
+URLs also work when the folder has its selection and prediction files.
+`python tribe/web.py` updates old output-page redirects to this shared interface.
+The annotation viewer alone can still be served statically; analysis requires
+`visualizer/server.py` and the existing Nilearn/NumPy/Matplotlib dependencies.
+
+## Tests
 
 ```sh
-python -m pip install playwright
-python -m playwright install firefox
-python visualizer/test_brain.py
+python -m unittest discover -s tribe -p 'test_*.py'
+python -m unittest discover -s label -p 'test_*.py'
+node --check visualizer/brain.js
+NODE_PATH="$HOME/browser-tool/node_modules" node visualizer/test_explorers.cjs http://127.0.0.1:8000/
+NODE_PATH="$HOME/browser-tool/node_modules" node visualizer/test_studies.cjs http://127.0.0.1:8000/
 ```
 
-Run with the local server and completed default sample report available. This checks
-all available grouping attributes, both map modes, available view layouts,
-pagination, URL state, and mobile layout.
+Browser tests use the installed Playwright Firefox and the running backend.
+They cover navigation, study comparisons, X/Y aggregation, tick and cell examples,
+gallery scrolling, URLs, all cortical layouts, both map modes, and mobile layout.

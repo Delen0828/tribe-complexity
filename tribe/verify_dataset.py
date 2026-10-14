@@ -81,7 +81,8 @@ def verify(output):
         for key in ('attribute', 'value', 'label', 'indices', 'count'):
             assert published[key] == expected[key]
         for kind in ('mean','contrast'):
-            assets = {published[f'{kind}_{view["image_suffix"]}']: view['panels'] for view in views}
+            assets = {published[f'{kind}_{view["image_suffix"]}']: view['panels'] for view in views
+                      if f'{kind}_{view["image_suffix"]}' in published}
             for path, panels in assets.items():
                 with Image.open(output / path) as image:
                     assert image.width >= 300 * panels and image.height >= 300
@@ -98,7 +99,7 @@ def verify(output):
                   color_errors=color_errors,
                   checks=['source and prediction hashes', 'finite 3x20484 arrays and times 0,1,2',
                           '292 canvas and full stimulus within final 256 crop', 'video decoding and color fidelity',
-                          'group membership, means, contrasts, scales, and rendered assets'])
+                          'group membership, means, contrasts, and scales'])
     write_json(output / 'verification.json', result)
     print(json.dumps({k:v for k,v in result.items() if k != 'color_errors'}, indent=2))
 

@@ -6,7 +6,8 @@ import unittest
 
 import numpy as np
 from PIL import Image
-from dataset import ATTRIBUTES, export_report, render_groups, view_metadata
+from dataset import ATTRIBUTES, export_report, view_metadata
+from visualizer.cortical import render_groups
 
 
 class CorticalViewTests(unittest.TestCase):

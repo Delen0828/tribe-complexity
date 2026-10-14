@@ -1,4 +1,4 @@
-"""Extract the two supplements and build their stimulus/provenance manifests."""
+"""Prepare the supplements and build their stimulus/provenance manifests."""
 import argparse
 from pathlib import Path
 import sys
@@ -9,8 +9,9 @@ from studies import prepare_manifest, MANIFESTS
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--dataset', choices=['kylie', 'hayeong', 'both'], default='both')
+    parser.add_argument('--dataset', choices=['kylie', 'hayeong', 'arunkumar', 'both', 'all'], default='both')
     args = parser.parse_args()
-    for name in ('kylie', 'hayeong') if args.dataset == 'both' else (args.dataset,):
+    names = ('kylie', 'hayeong', 'arunkumar') if args.dataset == 'all' else ('kylie', 'hayeong') if args.dataset == 'both' else (args.dataset,)
+    for name in names:
         manifest = prepare_manifest(name)
         print(f'{name}: {len(manifest["rows"])} stimuli, {len(manifest["comparisons"])} comparisons; {MANIFESTS / (name + ".json")}')

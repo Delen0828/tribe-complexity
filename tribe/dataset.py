@@ -1,4 +1,4 @@
-"""Sample or predict all annotated MASSVIS stimuli and export grouped cortical maps."""
+"""Select stimuli and generate TRIBE predictions independently of web plotting."""
 import argparse
 from collections import Counter
 import csv
@@ -94,6 +94,8 @@ def attribute_metadata():
         item = dict(key=key, label=label, kind=kind)
         if key in COUNT_LABELS:
             item['count_labels'] = COUNT_LABELS[key]
+        if key == 'category':
+            item['values'] = CATEGORY_LABELS
         attributes.append(item)
     return attributes
 
@@ -229,55 +231,16 @@ def estimate_runtime(receipts, total_count, setup_seconds, benchmark=None):
                      'Excludes report rendering, downloads, and interruptions; balanced sample, not a confidence interval.')
 
 
-def render_groups(groups, output, views='all'):
-    view_metadata(views)
-    from compare import brain
-    from nilearn import datasets
-    import matplotlib.pyplot as plt
-    from matplotlib.colors import Normalize
-    fs = datasets.fetch_surf_fsaverage(mesh='fsaverage5', data_dir=str(ROOT / 'cache/nilearn'))
-    folder = output / 'brain_maps'
-    folder.mkdir(exist_ok=True)
-    limits = {kind: max(1e-12, max(float(np.abs(g[kind]).max()) for g in groups))
-              for kind in ('mean', 'contrast')}
-    layouts = []
-    if views in ('four', 'all'):
-        layouts.append(('', STANDARD_VIEWS))
-    if views in ('inferior', 'all'):
-        layouts.append(('_inferior', [('both', 'ventral')]))
-    for number, group in enumerate(groups, 1):
-        for kind in ('mean', 'contrast'):
-            for suffix, panels in layouts:
-                fig = plt.figure(figsize=(3 * len(panels), 3.4), facecolor='white')
-                gs = fig.add_gridspec(1, len(panels), wspace=0)
-                limit = limits[kind]
-                for column, (hemi, view) in enumerate(panels):
-                    brain(fig, gs[0, column], fs, group[kind], hemi, view, limit)
-                fig.subplots_adjust(top=.92, bottom=.28, left=0, right=1)
-                cax = fig.add_axes([.14, .15, .72, .03] if suffix else [.34, .15, .32, .03])
-                bar = fig.colorbar(plt.cm.ScalarMappable(norm=Normalize(-limit, limit), cmap='RdBu_r'),
-                                   cax=cax, orientation='horizontal')
-                bar.set_label('Predicted response (model units)', fontsize=8 if suffix else 10)
-                name = f"{group['attribute']}_{group['value']}_{kind}{suffix}.png"
-                fig.savefig(folder / name, dpi=110, facecolor='white')
-                plt.close(fig)
-                group[f'{kind}{suffix}_image'] = f'brain_maps/{name}'
-        print(f'Rendered group {number}/{len(groups)}: {group["attribute"]} {group["label"]}', flush=True)
-    return limits
 
-
-def export_static_site(output):
-    """Refresh the shared viewer and discover all sibling reports."""
-    from web import build_site
-    build_site(output.parent)
-
-
-def export_report(rows, maps, output, selection, timing, render=True, views='all'):
+def export_report(rows, maps, output, selection, timing, render=False, views='all'):
     rendered_views = view_metadata(views)
     started = time.perf_counter()
     attributes = selection.get('attributes', attribute_metadata())
     groups, grand_mean = aggregate_maps(rows, maps, attributes)
-    limits = render_groups(groups, output, views=views) if render else {}
+    if render:
+        raise ValueError('Plotting is handled by visualizer/server.py')
+    limits = {kind: max(1e-12, max(float(np.abs(g[kind]).max()) for g in groups))
+              for kind in ('mean', 'contrast')}
     np.savez_compressed(output / 'aggregate_maps.npz',
                         means=np.asarray([g['mean'] for g in groups]),
                         contrasts=np.asarray([g['contrast'] for g in groups]),
@@ -305,8 +268,6 @@ def export_report(rows, maps, output, selection, timing, render=True, views='all
         aggregation='Equal-weight arithmetic mean across stimuli, first predicted response at t=0.',
         contrast='Group mean minus the mean of all included stimuli (including this group).',
         sampling='Partial run: only completed predictions are included.' if len(rows) != len(selection['rows']) else sampling))
-    export_static_site(output)
-    print(f'Static report: {output / "index.html"}', flush=True)
     print(f'Explorer data: {output / "explorer.json"}', flush=True)
     print(json.dumps(timing, indent=2), flush=True)
 
@@ -325,7 +286,10 @@ def compatible_selection(previous, current):
     """Allow added grouping annotations while preserving every prediction identity."""
     if previous.keys() != current.keys():
         return False
-    if any(previous[key] != current[key] for key in current if key != 'rows'):
+    if any(previous[key] != current[key] for key in current if key not in ('rows', 'attributes')):
+        return False
+    definitions = {item['key']: item for item in current.get('attributes', [])}
+    if any(definitions.get(item['key']) != item for item in previous.get('attributes', [])):
         return False
     if len(previous['rows']) != len(current['rows']):
         return False
@@ -339,7 +303,7 @@ def compatible_selection(previous, current):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--dataset', choices=['massvis', 'kylie', 'hayeong'], default='massvis')
+    parser.add_argument('--dataset', choices=['massvis', 'kylie', 'hayeong', 'arunkumar'], default='massvis')
     parser.add_argument('--scope', choices=['sample', 'all'], default='sample')
     parser.add_argument('--per-bin', type=int, default=10)
     parser.add_argument('--seed', type=int, default=0)
@@ -354,10 +318,8 @@ def main():
     parser.add_argument('--cpu-threads', type=positive_threads, default=8,
                         help='PyTorch CPU compute threads (default: 8)')
     parser.add_argument('--precision', choices=['fp32', 'bf16'], default='fp32')
-    parser.add_argument('--views', choices=VIEW_LAYOUTS, default='all',
-                        help='Render four standard views, one bilateral inferior/ventral view, or all five (default: all)')
     action = parser.add_mutually_exclusive_group()
-    action.add_argument('--predict', action='store_true', help='Predict missing stimuli, then export the web report')
+    action.add_argument('--predict', action='store_true', help='Generate missing TRIBE predictions')
     action.add_argument('--sample-only', action='store_true', help='Save selection and source manifest only')
     parser.add_argument('--allow-partial', action='store_true',
                         help='Report only completed predictions, explicitly labeled as partial')
@@ -369,7 +331,7 @@ def main():
                   sample_only=args.sample_only, allow_partial=args.allow_partial,
                   background=args.background, device=args.device, thread=args.thread,
                   batch_size=args.batch_size, cpu_threads=args.cpu_threads,
-                  precision=args.precision, views=args.views)
+                  precision=args.precision)
         return
     from PIL import ImageColor
     background = list(ImageColor.getrgb(args.background))
@@ -409,6 +371,7 @@ def main():
                         '--manifest', str(output / 'inputs/manifest.json'), '--inputs-dir', str(output / 'inputs'),
                         '--outputs-dir', str(output), '--background', args.background, '--thread', str(args.thread), '--batch-size', str(args.batch_size),
                         '--cpu-threads', str(args.cpu_threads), '--precision', args.precision, '--resume'], check=True)
+        return
     rows = report_rows(rows, output, args.allow_partial)
     maps, receipts = load_predictions(rows, output, background, args.precision)
     metadata_path = output / 'run_metadata.json'
@@ -416,7 +379,7 @@ def main():
     timing = estimate_runtime(receipts, len(eligible), metadata['model_load_seconds'], metadata.get('benchmark'))
     if not metadata_path.exists():
         timing['note'] += ' Model setup timing is unavailable for this interrupted run.'
-    export_report(rows, maps, output, selection, timing, views=args.views)
+    export_report(rows, maps, output, selection, timing)
 
 
 def reuse_predictions(rows, source, output, background, precision='fp32'):

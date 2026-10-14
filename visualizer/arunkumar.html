@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Explore Arunkumar's original visualization stimuli, published image/information ratings, and taxonomy.">
+  <title>Arunkumar · Dataset explorer</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="arunkumar.css">
+  <script src="arunkumar.js" defer></script>
+</head>
+<body class="arunkumar">
+  <header><a class="brand" href="./">TRIBE <span>/ Arunkumar data</span></a><a href="./">Home</a></header>
+  <main>
+    <div class="toolbar">
+      <div class="dataset-controls">
+        <div><label for="experiment">Experiment</label><select id="experiment" disabled>
+          <option value="all">Both experiments · 600 observations</option>
+          <option value="1">Experiment 1 · 500 stimuli</option>
+          <option value="2">Experiment 2 · 100 stimuli</option>
+        </select></div>
+        <form id="lookup"><label for="index">Visualization index <span id="index-range">1–600</span></label><div class="controls"><input id="index" name="index" type="number" min="1" max="600" step="1" value="1" required><button type="submit" disabled>Explore →</button></div></form>
+      </div>
+      <nav aria-label="Visualizations"><button id="previous" type="button" disabled>← Previous</button><button id="next" type="button" disabled>Next →</button></nav>
+    </div>
+    <p id="status" role="status" aria-live="polite">Loading annotations…</p>
+    <div id="workspace" hidden>
+      <section class="image-panel" aria-labelledby="image-title">
+        <div class="image-heading"><div><p class="eyebrow" id="category"></p><h1 id="image-title"></h1></div><a id="original" target="_blank" rel="noreferrer">Open original ↗</a></div>
+        <div class="image-stage"><img id="image" alt=""><p id="image-error" hidden>Original image unavailable in this copy of the dataset.</p></div>
+        <div class="image-footer"><span id="image-id"></span><span id="match"></span></div>
+      </section>
+      <aside aria-label="Image/information rating and taxonomy">
+        <section class="score-panel" aria-labelledby="rating-title">
+          <div class="score-heading"><div><h2 id="rating-title">Image/information rating</h2><span class="score-subtitle" id="current-interval"></span></div><div><strong id="score"></strong><span> / [−10, +10]</span></div></div>
+          <svg id="histogram" viewBox="0 0 560 220" role="group" aria-label="Distribution of image/information means in one-point bins, with published I1–I5 boundaries; select a bar to explore a stimulus"></svg>
+          <div class="chart-legend"><span><i class="legend-bars"></i><span id="population-label">All observations</span></span><span><i class="legend-line"></i>Current mean</span><span><i class="legend-shade"></i>Mean ±1 SD</span><span><i class="legend-boundary"></i>I1–I5 boundary</span></div>
+          <p id="rating-spread"></p>
+          <p id="group-ratings" hidden></p>
+          <ul id="rating-intervals" aria-label="Published I1–I5 intervals"></ul>
+          <p class="dimension-note" id="distribution-note"></p>
+        </section>
+        <div id="dimensions"></div>
+      </aside>
+    </div>
+    <footer>Arunkumar et al. · IEEE VIS 2023 <span>Image or Information? · 500 + 100 experiment stimuli</span></footer>
+  </main>
+</body>
+</html>

@@ -17,9 +17,10 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import Normalize
 from matplotlib.backends.backend_pdf import PdfPages
 from nilearn import datasets, plotting
-from nilearn.surface import PolyMesh, load_surf_data
 from PIL import Image
 from preprocessing import PROTOCOL
+sys.path.insert(0, str(ROOT.parent))
+from visualizer.cortical import brain
 from parallelism import positive_threads
 
 
@@ -30,36 +31,6 @@ def colorbar(fig, cell, low, high, cmap, label):
     fig.colorbar(plt.cm.ScalarMappable(norm=Normalize(low, high), cmap=cmap),
                  cax=cax, label=label)
 
-
-def brain(fig, cell, fs, values, hemi, view, limit, positive=False):
-    ax = fig.add_subplot(cell, projection='3d')
-    if hemi == 'both':
-        # PolyMesh keeps the inflated hemispheres side by side and preserves
-        # the model's left-then-right vertex order in one inferior projection.
-        mesh = PolyMesh(left=fs['infl_left'], right=fs['infl_right'])
-        half = values
-        background = np.concatenate([load_surf_data(fs[f'sulc_{h}'])
-                                     for h in ('left', 'right')])
-    else:
-        mesh = fs[f'infl_{hemi}']
-        half = values[:10242] if hemi == 'left' else values[10242:]
-        background = fs[f'sulc_{hemi}']
-    plotting.plot_surf_stat_map(
-        mesh, half, hemi=hemi, view=view,
-        bg_map=background, cmap='hot' if positive else 'RdBu_r',
-        vmin=0 if positive else -limit, vmax=limit,
-        symmetric_cbar=not positive, colorbar=False, axes=ax, figure=fig,
-        threshold=1e-12 if positive else None,
-    )
-    if hemi == 'both' and view == 'ventral':
-        # Keep anterior at the top, with hemispheres side by side. Looking
-        # from below puts anatomical right on the left of the image.
-        ax.view_init(elev=-90, azim=90)
-        for x, label in ((.26, 'R'), (.74, 'L')):
-            ax.text2D(x, .04, label, transform=ax.transAxes, ha='center', fontsize=8)
-    title = 'Inferior / ventral · both hemispheres' if hemi == 'both' else f'{hemi.capitalize()} {view}'
-    ax.set_title(title, fontsize=8 if hemi == 'both' else 10, pad=0)
-    return ax
 
 
 def compare_pair():
@@ -246,7 +217,7 @@ def main():
     parser.add_argument('--output-dir', type=Path, default=ROOT / 'outputs/spectrum')
     action = parser.add_mutually_exclusive_group()
     action.add_argument('--sample-only', action='store_true', help='Save selected stimuli without inference or rendering')
-    action.add_argument('--predict', action='store_true', help='Generate predictions for the selected spectrum before rendering')
+    action.add_argument('--predict', action='store_true', help='Generate predictions for the selected spectrum')
     parser.add_argument('--device', default='cpu', help='Inference device, e.g. cuda or cpu')
     parser.add_argument('--thread', type=positive_threads, default=8, help='CPU preparation workers')
     parser.add_argument('--batch-size', type=positive_threads, default=1,
@@ -283,6 +254,7 @@ def main():
                         '--manifest', str(manifest_path), '--inputs-dir', str(output / 'inputs'),
                         '--outputs-dir', str(output), '--thread', str(args.thread),
                         '--batch-size', str(args.batch_size), '--cpu-threads', str(args.cpu_threads)], check=True)
+        return
     missing = [row['index'] for row in rows if not (output / f"prediction_{row['index']}.npz").exists()]
     if missing or not (output / 'run_metadata.json').exists():
         parser.error(f'Missing spectrum predictions/metadata (image IDs: {missing}). Run with --predict.')

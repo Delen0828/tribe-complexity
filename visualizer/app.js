@@ -74,7 +74,7 @@ function drawHistogram(record) {
   for (const tick of [0, 25, 50, 75, 100]) {
     add('text', {x: x(tick), y: baseline + 20, 'text-anchor': 'middle', class: 'hist-label'}, String(tick));
   }
-  $('rating-spread').textContent = `Human ratings: n = ${record.human_rating_count} · SD ${sd.toFixed(1)} · Sample variance ${record.human_rating_variance.toFixed(1)} points². Shading shows rating spread, not a confidence interval${mean - sd < 0 || mean + sd > 100 ? '; clipped to 0–100' : ''}.`;
+  $('rating-spread').textContent = `n = ${record.human_rating_count} · SD ${sd.toFixed(1)} · Variance ${record.human_rating_variance.toFixed(1)}`;
 }
 function show(value, updateURL = true) {
   if (!/^\d+$/.test(String(value)) || !records[Number(value)]) {
@@ -154,7 +154,7 @@ async function start() {
     records = await response.json();
     show(new URLSearchParams(location.search).get('index') ?? '0', false);
   } catch (error) {
-    $('status').textContent = 'Cannot load annotations. Run python3 label/build.py, then serve the repository with python3 -m http.server 8000.';
+    $('status').textContent = 'Annotations unavailable.';
     console.error(error);
   }
 }

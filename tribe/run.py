@@ -82,10 +82,9 @@ def prepare_input(row, args, target, background_rgb):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dataset', choices=['kylie', 'hayeong'],
-                        help='Prepare a study, predict its stimuli, and build separate comparison pages')
-    parser.add_argument('--report-only', action='store_true', help='Rebuild study pages from existing predictions')
-    parser.add_argument('--views', choices=['four', 'inferior', 'all'], default='all')
+    parser.add_argument('--dataset', choices=['kylie', 'hayeong', 'arunkumar'],
+                        help='Prepare a study and generate its TRIBE predictions')
+    parser.add_argument('--report-only', action='store_true', help='Export study arrays from existing predictions')
     parser.add_argument('--smoke-only', action='store_true')
     parser.add_argument('--prepare-only', action='store_true')
     parser.add_argument('--device', default='cpu')
@@ -113,7 +112,7 @@ def main():
         run_study(args.dataset, output=args.outputs_dir, predict=not args.report_only,
                   prepare_only=args.prepare_only, background=args.background,
                   device=args.device, thread=args.thread, batch_size=args.batch_size,
-                  cpu_threads=args.cpu_threads, precision=args.precision, views=args.views)
+                  cpu_threads=args.cpu_threads, precision=args.precision)
         return
     # Validate the color before loading models or writing outputs.
     _, geometry = prepare_stimulus(Image.new('RGB', (1, 1)), args.background)

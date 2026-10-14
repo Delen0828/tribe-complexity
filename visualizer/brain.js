@@ -1,291 +1,289 @@
 'use strict';
 const el = id => document.getElementById(id);
-let report = null, baseURL = null, selectedGroup = null, visibleMembers = 0, requestID = 0;
-const localReport = document.body.dataset.report;
-const catalogPath = document.body.dataset.catalog;
-let catalog = null;
-const params = new URLSearchParams(location.search);
-const legacyViews = ['Left lateral', 'Left medial', 'Right lateral', 'Right medial'].map((label, panel) => ({
-  key: label.toLowerCase().replace(' ', '_'), label, image_suffix: 'image', panel, panels: 4,
-}));
-if (localReport) el('dataset-control').hidden = true;
-if ([...el('dataset').options].some(option => option.value === params.get('dataset'))) {
-  el('dataset').value = params.get('dataset');
-}
+let report = null, analysis = null, catalog = [], visibleMembers = 0, memberIndices = [], selection = null;
+let reportRequest = 0, analysisRequest = 0, analysisController = null;
+const initial = new URLSearchParams(location.search);
+const dataPath = initial.get('data');
 
-function asset(path) { return new URL(path, baseURL).href; }
-function availableViews() { return report.views || legacyViews; }
-function configureViews(preferred) {
-  const views = availableViews();
-  const hasFour = legacyViews.every(view => views.some(item => item.key === view.key));
-  const hasInferior = views.some(view => view.key === 'inferior');
-  el('views').replaceChildren();
-  for (const [value, label, available] of [
-    ['four', 'Four standard views', hasFour],
-    ['inferior', 'Inferior / ventral · 1 view', hasInferior],
-    ['all', 'All five views', hasFour && hasInferior],
-  ]) {
-    if (!available) continue;
-    const option = document.createElement('option');
-    option.value = value;
-    option.textContent = label;
-    el('views').append(option);
+function sourceParams() {
+  const params = new URLSearchParams({dataset: el('dataset').value});
+  if (dataPath) {
+    const url = new URL(dataPath, location.href);
+    if (url.origin !== location.origin) throw new Error('Invalid report URL');
+    params.set('data', url.pathname);
   }
-  const choices = [...el('views').options].map(option => option.value);
-  const selected = choices.includes(preferred) ? preferred : report.view_layout;
-  if (choices.includes(selected)) el('views').value = selected;
+  return params;
 }
-function groupTitle(attribute, group) {
-  if (attribute.key === 'complexity') {
-    return `${group.value * 10}–${(group.value + 1) * 10} perceived complexity`;
+async function json(url, signal) {
+  const startupHint = 'Run ./start-visualizer.sh and open the URL it prints.';
+  let response;
+  try {
+    response = await fetch(url, {signal, cache: 'no-store'});
+  } catch (error) {
+    if (error.name === 'AbortError') throw error;
+    throw new Error(`Cannot reach the visualizer server. ${startupHint}`);
   }
-  // Keep older five-attribute reports readable when they lack count metadata.
-  const legacyCountLabels = {
-    colors: ['color', 'colors'], charts: ['chart', 'charts'],
-    quantitative: ['quantitative variable', 'quantitative variables'],
-    categorical: ['categorical variable', 'categorical variables'],
-  };
-  const countLabels = attribute.count_labels || legacyCountLabels[attribute.key];
-  return countLabels
-    ? `${group.value} ${countLabels[group.value === 1 ? 0 : 1]}`
-    : group.label;
+  if ((url === '/api/reports' && response.status === 404) ||
+      !(response.headers.get('content-type') || '').includes('application/json')) {
+    throw new Error(`Visualizer API unavailable at ${location.origin}. ${startupHint}`);
+  }
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || 'Predictions unavailable');
+  return data;
 }
 function setURL() {
   const url = new URL(location.href);
-  if (!localReport) url.searchParams.set('dataset', el('dataset').value);
-  url.searchParams.set('attribute', el('attribute').value);
+  url.searchParams.set('dataset', el('dataset').value);
+  url.searchParams.set('x', el('x-axis').value);
+  url.searchParams.set('y', el('y-axis').value);
   url.searchParams.set('statistic', el('statistic').value);
   url.searchParams.set('views', el('views').value);
-  if (selectedGroup) url.searchParams.set('group', selectedGroup.value);
+  url.searchParams.delete('attribute');
+  url.searchParams.delete('group');
+  for (const key of ['examples', 'xbin', 'ybin']) url.searchParams.delete(key);
+  if (selection) {
+    url.searchParams.set('examples', selection.axis);
+    if (selection.x !== undefined) url.searchParams.set('xbin', selection.x);
+    if (selection.y !== undefined) url.searchParams.set('ybin', selection.y);
+  }
   history.replaceState(null, '', url);
 }
 function showMembers(reset = true) {
-  if (reset) { visibleMembers = 0; el('members').replaceChildren(); }
-  const rowsByIndex = new Map(report.rows.map(row => [row.index, row]));
-  const end = Math.min(visibleMembers + 24, selectedGroup.count);
-  for (const index of selectedGroup.indices.slice(visibleMembers, end)) {
-    const row = rowsByIndex.get(index);
+  if (reset) {visibleMembers = 0; el('members').replaceChildren(); el('members').scrollLeft = 0;}
+  const rows = new Map(report.rows.map(row => [row.index, row]));
+  const end = Math.min(visibleMembers + 24, memberIndices.length);
+  for (const index of memberIndices.slice(visibleMembers, end)) {
+    const row = rows.get(index);
     const link = document.createElement('a');
     link.className = 'member';
-    link.href = (localReport || catalogPath || report.dataset && report.dataset !== 'massvis')
-      ? asset(`inputs/${index}.png`) : `./?index=${index}`;
+    link.href = report.dataset === 'massvis' ? `data.html?index=${index}` : row.image;
     const image = document.createElement('img');
-    image.src = asset(`inputs/${index}.png`);
+    image.src = row.image;
     image.alt = row.filename;
     image.loading = 'lazy';
     const title = document.createElement('strong');
     title.textContent = row.label || `Image ${index}`;
+    title.title = title.textContent;
     const detail = document.createElement('span');
-    detail.textContent = row.score_label || (Number.isFinite(row.score)
-      ? `Complexity ${row.score.toFixed(1)} / 100` : row.filename);
+    detail.textContent = row.score_label || (Number.isFinite(row.score) ? `Complexity ${row.score.toFixed(1)}` : row.filename);
+    detail.title = detail.textContent;
     link.append(image, title, detail);
     el('members').append(link);
   }
   visibleMembers = end;
-  el('member-range').textContent = `${end} of ${selectedGroup.count} stimuli shown`;
-  el('more-members').hidden = end >= selectedGroup.count;
+  el('member-range').textContent = `${memberIndices.length.toLocaleString()} examples`;
+  el('members-empty').hidden = memberIndices.length > 0;
 }
-function showMap() {
-  const kind = el('statistic').value;
-  const attribute = report.attributes.find(a => a.key === el('attribute').value);
-  const groups = report.groups.filter(g => g.attribute === attribute.key);
-  const layout = el('views').value;
-  const views = availableViews().filter(view => layout === 'all'
-    || (layout === 'inferior' ? view.key === 'inferior' : view.key !== 'inferior'));
-  el('map-kind').textContent = kind === 'mean' ? 'Mean predicted response' : 'Difference from included-stimulus mean';
-  el('map-title').textContent = attribute.label;
-  el('group-count').textContent = `${groups.length} groups × ${views.length} ${views.length === 1 ? 'view' : 'views'}`;
-  document.querySelector('.brain-grid-scroll').setAttribute('aria-label',
-    `Groups across columns, ${views.length} cortical ${views.length === 1 ? 'view' : 'views'} down rows`);
-  el('map-description').textContent = kind === 'mean' ? report.aggregation : report.contrast;
-  const limit = report.limits[kind];
-  el('scale-note').textContent = Number.isFinite(limit)
-    ? `Shared scale across every ${kind === 'mean' ? 'group mean' : 'difference map'}: −${limit.toFixed(3)} to +${limit.toFixed(3)} model units. Blue = negative; red = positive. Select a column label to inspect its stimuli.`
-    : 'Cortical maps have not been rendered for this report.';
+function chooseExamples(axis, x, y) {
+  selection = {axis};
+  if (x !== undefined) selection.x = x;
+  if (y !== undefined) selection.y = y;
+  const xGroup = analysis.axes.x.find(g => String(g.value) === String(x));
+  const yGroup = analysis.axes.y.find(g => String(g.value) === String(y));
+  let label;
+  if (axis === 'x') {memberIndices = xGroup.indices; label = xGroup.label;}
+  else if (axis === 'y') {memberIndices = yGroup.indices; label = yGroup.label;}
+  else {
+    memberIndices = analysis.cells.find(c => String(c.x) === String(x) && String(c.y) === String(y)).indices;
+    label = `${xGroup.label} × ${yGroup.label}`;
+  }
+  for (const button of el('groups').querySelectorAll('button')) {
+    const selected = button.dataset.axis === axis &&
+      (x === undefined || button.dataset.x === String(x)) && (y === undefined || button.dataset.y === String(y));
+    button.setAttribute('aria-pressed', String(selected));
+  }
+  el('members-heading').textContent = `Examples · ${label}`;
+  el('members-heading').title = el('members-heading').textContent;
+  el('members-section').hidden = false;
+  showMembers();
+  setURL();
+}
+function tick(group, axis) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'axis-tick';
+  button.dataset.axis = axis;
+  button.dataset[axis] = group.value;
+  button.setAttribute('aria-pressed', 'false');
+  button.setAttribute('aria-label', `${axis.toUpperCase()}: ${group.label}; ${group.indices.length} examples`);
+  button.append(document.createTextNode(group.label));
+  const count = document.createElement('small');
+  count.textContent = `n = ${group.indices.length}`;
+  button.append(count);
+  button.addEventListener('click', () => chooseExamples(axis, axis === 'x' ? group.value : undefined,
+                                                       axis === 'y' ? group.value : undefined));
+  return button;
+}
+function drawGrid() {
   const grid = el('groups');
   grid.replaceChildren();
-  grid.style.minWidth = `${120 + groups.length * 220}px`;
-  const header = grid.createTHead().insertRow();
+  grid.style.minWidth = `${120 + analysis.axes.x.length * 235}px`;
+  const head = grid.createTHead().insertRow();
   const corner = document.createElement('th');
-  corner.scope = 'col';
-  corner.className = 'view-label';
-  corner.textContent = 'Cortical view';
-  header.append(corner);
-  for (const group of groups) {
-    const heading = document.createElement('th');
-    heading.scope = 'col';
-    const sampleSize = document.createElement('div');
-    sampleSize.className = 'sample-size-icons';
-    sampleSize.setAttribute('role', 'img');
-    sampleSize.setAttribute('aria-label', `${group.count} stimuli; one square per stimulus`);
-    sampleSize.title = `n = ${group.count} stimuli`;
-    for (let i = 0; i < group.count; i++) {
-      const square = document.createElement('span');
-      square.className = 'sample-square';
-      square.setAttribute('aria-hidden', 'true');
-      sampleSize.append(square);
-    }
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.dataset.value = group.value;
-    button.setAttribute('aria-pressed', String(group === selectedGroup));
-    button.textContent = groupTitle(attribute, group);
-    button.setAttribute('aria-label', `${attribute.label}: ${group.label}; ${group.count} stimuli`);
-    button.addEventListener('click', () => chooseGroup(group));
-    heading.append(sampleSize, button);
-    header.append(heading);
+  corner.className = 'axis-corner';
+  const label = key => report.attributes.find(a => a.key === key)?.label || 'All';
+  corner.textContent = `${label(el('y-axis').value)} / ${label(el('x-axis').value)}`;
+  head.append(corner);
+  for (const group of analysis.axes.x) {
+    const th = document.createElement('th'); th.scope = 'col'; th.append(tick(group, 'x')); head.append(th);
   }
   const body = grid.createTBody();
-  for (const view of views) {
-    const row = body.insertRow();
-    const label = document.createElement('th');
-    label.scope = 'row';
-    label.className = 'view-label';
-    label.textContent = view.label;
-    row.append(label);
-    for (const group of groups) {
-      const cell = row.insertCell();
-      const frame = document.createElement('div');
-      frame.className = 'cortical-view';
+  const cells = new Map(analysis.cells.map(c => [JSON.stringify([c.x, c.y]), c]));
+  for (const y of analysis.axes.y) {
+    const tr = body.insertRow();
+    const th = document.createElement('th'); th.scope = 'row'; th.append(tick(y, 'y')); tr.append(th);
+    for (const x of analysis.axes.x) {
+      const cell = cells.get(JSON.stringify([x.value, y.value]));
+      const td = tr.insertCell();
+      td.dataset.count = cell.count;
+      if (!cell.count) {td.className = 'empty-cell'; td.textContent = '—'; continue;}
+      const button = document.createElement('button');
+      button.type = 'button'; button.className = 'cell-map';
+      button.dataset.axis = 'cell'; button.dataset.x = x.value; button.dataset.y = y.value;
+      button.setAttribute('aria-pressed', 'false');
+      button.setAttribute('aria-label', `${x.label} × ${y.label}; ${cell.count} examples`);
+      button.addEventListener('click', () => chooseExamples('cell', x.value, y.value));
       const image = document.createElement('img');
-      image.className = 'group-map';
-      image.loading = 'lazy';
-      // Use report metadata to crop standard strips or show a single bottom map.
-      image.style.width = `${100 * view.panels}%`;
-      image.style.left = `${-100 * view.panel}%`;
-      image.alt = `${view.label}: ${kind === 'mean' ? 'group mean' : 'group minus included-stimulus mean'} for ${attribute.label} ${group.label}, ${group.count} stimuli.`;
-      const error = document.createElement('p');
-      error.className = 'map-error';
-      error.textContent = 'Cannot load this cortical map.';
-      error.hidden = true;
-      image.addEventListener('error', () => { image.hidden = true; error.hidden = false; });
-      const path = group[`${kind}_${view.image_suffix}`];
-      if (path) image.src = asset(path);
-      else { image.hidden = true; error.hidden = false; }
-      frame.append(image, error);
-      cell.append(frame);
+      image.className = 'group-map'; image.loading = 'lazy';
+      image.width = el('views').value === 'inferior' ? 285 : 570;
+      image.height = el('views').value === 'inferior' ? 257 : el('views').value === 'four' ? 513 : 770;
+      image.alt = `Predicted cortical response · ${x.label} × ${y.label}`;
+      const mapParams = sourceParams();
+      for (const [key, value] of Object.entries({id: analysis.id, x: cell.x, y: cell.y, views: el('views').value,
+        x_axis: el('x-axis').value, y_axis: el('y-axis').value, statistic: el('statistic').value})) mapParams.set(key, value);
+      image.src = '/api/map?' + mapParams;
+      const error = document.createElement('span'); error.className = 'map-error'; error.hidden = true;
+      error.textContent = 'Map unavailable';
+      image.addEventListener('error', () => {image.hidden = true; error.hidden = false;});
+      const count = document.createElement('span'); count.className = 'cell-count'; count.textContent = `n = ${cell.count}`;
+      button.append(image, error, count); td.append(button);
     }
   }
-  setURL();
-}
-function chooseGroup(group) {
-  selectedGroup = group;
-  for (const button of el('groups').querySelectorAll('button')) {
-    button.setAttribute('aria-pressed', String(button.dataset.value === String(group.value)));
+  el('scale-low').textContent = `−${analysis.limit.toFixed(3)}`;
+  el('scale-high').textContent = `+${analysis.limit.toFixed(3)}`;
+  if (selection) chooseExamples(selection.axis, selection.x, selection.y);
+  else {
+    memberIndices = report.rows.map(row => row.index);
+    el('members-heading').textContent = 'Examples · All';
+    el('members-heading').title = el('members-heading').textContent;
+    el('members-section').hidden = false;
+    showMembers();
   }
-  const attribute = report.attributes.find(a => a.key === group.attribute);
-  el('members-heading').textContent = `Stimuli · ${attribute.label}: ${group.label}`;
-  setURL();
-  showMembers();
 }
-function showGroups(preferred = null) {
-  const groups = report.groups.filter(g => g.attribute === el('attribute').value);
-  selectedGroup = groups.find(g => String(g.value) === preferred) || groups[0];
-  showMap();
-  chooseGroup(selectedGroup);
+function updateFields() {
+  for (const button of el('fields').querySelectorAll('button')) {
+    button.setAttribute('aria-pressed', String(el(`${button.dataset.axis}-axis`).value === button.dataset.key));
+  }
+}
+async function refreshGrid(restore = null) {
+  const request = ++analysisRequest;
+  analysisController?.abort();
+  analysisController = new AbortController();
+  selection = null;
+  analysis = null;
+  el('members-section').hidden = true;
+  el('groups').replaceChildren();
+  el('brain-status').textContent = 'Loading…';
+  updateFields();
+  setURL();
+  try {
+    const params = sourceParams();
+    params.set('x', el('x-axis').value); params.set('y', el('y-axis').value);
+    params.set('statistic', el('statistic').value);
+    const data = await json('/api/analysis?' + params, analysisController.signal);
+    if (request !== analysisRequest) return;
+    analysis = data;
+    if (restore && ['x', 'y', 'cell'].includes(restore.axis)) {
+      const hasX = analysis.axes.x.some(g => String(g.value) === String(restore.x));
+      const hasY = analysis.axes.y.some(g => String(g.value) === String(restore.y));
+      if ((restore.axis === 'x' && hasX) || (restore.axis === 'y' && hasY) || (restore.axis === 'cell' && hasX && hasY)) selection = restore;
+    }
+    drawGrid(); setURL();
+    el('brain-status').textContent = '';
+  } catch (error) {
+    if (error.name === 'AbortError' || request !== analysisRequest) return;
+    el('brain-status').textContent = error.message;
+  }
+}
+function configureAxes(params) {
+  el('field-search').value = '';
+  for (const axis of ['x', 'y']) {
+    const select = el(`${axis}-axis`); select.replaceChildren();
+    if (axis === 'y') select.add(new Option('All', ''));
+    for (const attribute of report.attributes) select.add(new Option(attribute.label, attribute.key));
+    const preferred = params.get(axis) || (axis === 'x' ? params.get('attribute') : null);
+    if ([...select.options].some(o => o.value === preferred)) select.value = preferred;
+  }
+  el('fields').replaceChildren();
+  for (const attribute of report.attributes) {
+    const field = document.createElement('div'); field.className = 'field';
+    const name = document.createElement('span'); name.textContent = attribute.label; field.append(name);
+    for (const axis of ['x', 'y']) {
+      const button = document.createElement('button'); button.type = 'button'; button.textContent = axis.toUpperCase();
+      button.dataset.axis = axis; button.dataset.key = attribute.key;
+      button.setAttribute('aria-label', `Assign ${attribute.label} to ${axis.toUpperCase()}`);
+      button.addEventListener('click', () => {el(`${axis}-axis`).value = attribute.key; refreshGrid();});
+      field.append(button);
+    }
+    el('fields').append(field);
+  }
 }
 async function loadReport() {
-  const id = ++requestID;
-  report = null;
-  selectedGroup = null;
-  el('brain-workspace').hidden = true;
-  el('download').hidden = true;
-  el('attribute').disabled = true;
-  el('statistic').disabled = true;
-  el('views').disabled = true;
+  const request = ++reportRequest;
+  ++analysisRequest; analysisController?.abort();
+  report = null; analysis = null; selection = null;
+  el('brain-workspace').hidden = true; el('selection-link').hidden = true;
+  el('statistic').disabled = true; el('views').disabled = true;
   el('brain-status').textContent = 'Loading predictions…';
-  const defaultPath = catalog
-    ? catalog.find(item => item.id === el('dataset').value)?.data
-    : `../tribe/outputs/${el('dataset').value}/explorer.json`;
-  const path = localReport || new URLSearchParams(location.search).get('data') || defaultPath;
+  const params = new URLSearchParams(location.search);
   try {
-    const url = new URL(path, location.href);
-    if (url.origin !== location.origin) throw new Error('Report must be hosted on this site.');
-    const response = await fetch(url, {cache: 'no-cache'});
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const data = await response.json();
-    if (id !== requestID) return;
-    if (data.schema_version !== 1 || !data.groups.length || data.rows.length !== data.count) throw new Error('Invalid report format');
+    const data = await json('/api/report?' + sourceParams());
+    if (request !== reportRequest) return;
     report = data;
-    baseURL = url;
-    el('report-title').textContent = report.title || 'How do stimulus groups compare?';
-    el('report-intro').textContent = report.description || 'Choose an attribute to compare all groups: one column per group, with your selected cortical views stacked vertically.';
-    document.title = report.title || 'MASSVIS · Predicted brain responses';
-    el('report-brand').textContent = report.dataset && report.dataset !== 'massvis' ? 'TRIBE / Controlled studies' : 'MASSVIS / Predicted brain responses';
-    const currentParams = new URLSearchParams(location.search);
-    el('attribute').replaceChildren();
-    for (const attribute of report.attributes) {
-      const option = document.createElement('option');
-      option.value = attribute.key;
-      option.textContent = attribute.label;
-      el('attribute').append(option);
-    }
-    if (report.attributes.some(a => a.key === currentParams.get('attribute'))) el('attribute').value = currentParams.get('attribute');
-    el('statistic').value = currentParams.get('statistic') === 'contrast' ? 'contrast' : 'mean';
-    configureViews(currentParams.get('views'));
-    el('attribute').disabled = false;
-    el('statistic').disabled = false;
-    el('views').disabled = false;
+    el('report-title').textContent = report.title; document.title = `TRIBE · ${report.title}`;
+    configureAxes(params);
+    el('statistic').value = params.get('statistic') === 'contrast' ? 'contrast' : 'mean';
+    el('views').value = ['four', 'all'].includes(params.get('views')) ? params.get('views') : 'inferior';
+    el('statistic').disabled = false; el('views').disabled = false;
+    el('selection-link').href = report.selection; el('selection-link').hidden = false;
+    el('sample-summary').textContent = report.complete ? `n = ${report.count.toLocaleString()}`
+      : `Partial · ${report.count.toLocaleString()} / ${report.selected_count.toLocaleString()}`;
     el('brain-workspace').hidden = false;
-    el('brain-status').textContent = `${report.count.toLocaleString()} predictions loaded · ${(report.precision || 'fp32').toUpperCase()}.`;
-    el('sample-summary').textContent = report.scope === 'study'
-      ? `${report.count.toLocaleString()} study stimuli · ${report.title}`
-      : `${report.count.toLocaleString()} of ${report.eligible_count.toLocaleString()} available annotated stimuli · ${report.scope === 'sample' ? `Sample seed ${report.seed}` : 'Whole dataset'}`;
-    el('sampling-note').textContent = report.scope === 'study' ? report.sampling : report.scope === 'sample'
-      ? 'Balanced sampling across ten complexity bins; groups summarize this selected sample, not the natural dataset distribution. Bins exclude their upper edge except 100. Squares above each column show its sample size: one square per stimulus.'
-      : 'All available annotated stimuli. Feature groups use published counts, presence labels, and source categories; group sizes may differ. Bins exclude their upper edge except 100.';
-    if (report.complete === false) {
-      el('sample-summary').textContent = `Partial run · ${report.count.toLocaleString()} of ${report.selected_count.toLocaleString()} selected stimuli`;
-      el('sampling-note').textContent = 'Incomplete inference: only completed predictions are included. These groups may be biased and do not represent the full selection. Contrasts use the mean of completed stimuli.';
-    }
-    el('download').href = asset('aggregate_maps.npz');
-    el('download').hidden = false;
-    el('selection-link').href = asset('selection.json');
-    el('timing-link').href = asset('timing.json');
-    const t = report.timing;
-    el('runtime').textContent = t.full_prediction_seconds
-      ? `Measured ${t.measured_count} uncached stimuli: ${t.mean_seconds_per_stimulus.toFixed(2)} seconds per stimulus on ${t.device}. Estimated ${t.total_stimuli.toLocaleString()}-stimulus inference run: ${(t.full_prediction_seconds/3600).toFixed(1)} hours. ${t.note}`
-      : t.note;
-    showGroups(currentParams.get('group'));
+    await refreshGrid({axis: params.get('examples'), x: params.get('xbin') ?? undefined, y: params.get('ybin') ?? undefined});
   } catch (error) {
-    if (id !== requestID) return;
-    el('brain-workspace').hidden = true;
-    el('download').hidden = true;
-    el('brain-status').textContent = 'This report is unavailable. Generate its grouped report and reload. Serve the outputs directory over HTTP when viewing locally.';
-    console.error(error);
+    if (request !== reportRequest) return;
+    el('brain-status').textContent = error.message;
   }
 }
 el('dataset').addEventListener('change', () => {
   const url = new URL(location.href);
-  url.searchParams.delete('data');
-  url.searchParams.set('dataset', el('dataset').value);
-  history.replaceState(null, '', url);
+  url.search = new URLSearchParams({dataset: el('dataset').value}); history.replaceState(null, '', url);
   loadReport();
 });
-el('attribute').addEventListener('change', () => showGroups());
-el('statistic').addEventListener('change', showMap);
-el('views').addEventListener('change', showMap);
-el('more-members').addEventListener('click', () => showMembers(false));
+for (const id of ['x-axis', 'y-axis']) el(id).addEventListener('change', () => refreshGrid());
+el('statistic').addEventListener('change', () => refreshGrid(selection));
+el('views').addEventListener('change', () => {if (analysis) {drawGrid(); setURL();}});
+el('swap-axes').addEventListener('click', () => {
+  const x = el('x-axis').value, y = el('y-axis').value;
+  if (!y) return;
+  el('x-axis').value = y; el('y-axis').value = x; refreshGrid();
+});
+el('field-search').addEventListener('input', () => {
+  const term = el('field-search').value.toLowerCase();
+  for (const field of el('fields').children) field.hidden = !field.textContent.toLowerCase().includes(term);
+});
+el('members').addEventListener('scroll', () => {
+  const gallery = el('members');
+  if (visibleMembers < memberIndices.length &&
+      gallery.scrollWidth - gallery.scrollLeft - gallery.clientWidth < gallery.clientWidth) showMembers(false);
+});
 async function initialize() {
-  if (catalogPath) {
-    try {
-      const response = await fetch(catalogPath, {cache: 'no-cache'});
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      catalog = await response.json();
-      el('dataset').replaceChildren();
-      for (const item of catalog) {
-        const option = document.createElement('option');
-        option.value = item.id;
-        option.textContent = item.label;
-        el('dataset').append(option);
-      }
-      if (!catalog.length) throw new Error('No grouped reports available');
-      if (catalog.some(item => item.id === params.get('dataset'))) el('dataset').value = params.get('dataset');
-    } catch (error) {
-      el('brain-status').textContent = 'No grouped reports available. Build reports and serve the outputs directory over HTTP.';
-      return;
-    }
-  }
-  await loadReport();
+  try {
+    catalog = await json('/api/reports');
+    for (const item of catalog) el('dataset').add(new Option(item.label, item.id));
+    if (catalog.some(item => item.id === initial.get('dataset'))) el('dataset').value = initial.get('dataset');
+    if (dataPath) el('dataset').disabled = true;
+    await loadReport();
+  } catch (error) {el('brain-status').textContent = error.message;}
 }
 initialize();

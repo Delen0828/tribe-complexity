@@ -54,6 +54,9 @@ HAYEONG_FEATURES = [dict(key=key, label=key, kind='binary', values={'0': 'No', '
 
 def study_variables(dataset, rows, attributes):
     """Expose stimulus features, including for selections saved before these fields existed."""
+    if dataset == 'ashcraft':
+        from .ashcraft import ashcraft_variables
+        return ashcraft_variables(rows, attributes)
     if dataset not in ('kylie', 'hayeong'):
         return rows, attributes
     updated = []
@@ -233,7 +236,11 @@ def hayeong_manifest(root):
 
 
 def prepare_manifest(dataset):
-    if dataset == 'arunkumar':
+    if dataset == 'ashcraft':
+        from .ashcraft import ashcraft_manifest
+        result = ashcraft_manifest()
+        provenance = {}
+    elif dataset == 'arunkumar':
         from .arunkumar import arunkumar_manifest
         result = arunkumar_manifest(REPOSITORY / 'data/Arunkumar')
         provenance = {}

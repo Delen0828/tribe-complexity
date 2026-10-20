@@ -38,6 +38,7 @@ python tribe/dataset.py --scope all --predict --device cuda \
 python tribe/run.py --dataset kylie --device cuda
 python tribe/run.py --dataset hayeong --device cuda
 python tribe/run.py --dataset arunkumar --device cuda
+python tribe/run.py --dataset ashcraft --device cuda
 ```
 
 Rerun these commands to resume validated predictions. `--sample-only` saves the
@@ -50,6 +51,9 @@ Each array contains three responses with shape `3 × 20,484` and times 0/1/2.
 Simulation does not render charts, cortical maps, PDFs, or website pages.
 Kylie, Hayeong, and Arunkumar comparisons are selected from parent predictions by the visualizer.
 See [study source organization](studies/README.md).
+Ashcraft uses the 72 authoritative pilot-4 controlled scatterplots. Its
+[condition CSVs and reproduction notes](../SemanticsOfDataViz_HAshcraftGTUgThesis/REPRODUCTION.md)
+record the four MATLAB attention tasks and the static-image simulation's scope.
 
 `--thread N` sets CPU preparation workers; `--batch-size N` sets stimuli per GPU
 encoder forward; `--cpu-threads N` sets PyTorch CPU threads. Defaults are 8, 1,

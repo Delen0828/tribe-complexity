@@ -1,4 +1,4 @@
-# Kylie, Hayeong, and Arunkumar comparisons
+# Controlled visualization studies
 
 These studies use the same TRIBE protocol and interactive cortical viewer as MassVis:
 three-second silent clips, full-image proportional fitting inside the centered
@@ -25,6 +25,7 @@ the existing MassVis practice. Only the interpreted manifests and code are track
 | Hayeong experiment 2 | `tvcg-mm-3634785/visulization stimuli/experimet_2/{emission,ice,medal,trump}/` | 24: four topics × six conditions | Survey/report figures |
 | Arunkumar experiment 1 | `data/Arunkumar/Stimuli/Expt 1 - 500 stimuli/` | 500, joined to experiment-1 ratings and all taxonomy fields | Recall examples, demographics, result figures |
 | Arunkumar experiment 2 | `data/Arunkumar/Stimuli/Expt 2 - 100 stimuli/` | 100, joined by rank and original stimulus ID | Recall examples, demographics, result figures |
+| Ashcraft pilot 4 | `SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/` and its XLSX list | 72 scatterplots; exact raster exports; correlation direction/class and outlier presence | Other pilot sets, RSA figures, task-specific inference |
 
 The original misspellings `visulization`, `experimet_2`, and `handrawn` are
 preserved in source paths. Kylie's metadata uses `penguins_area_*` while its main
@@ -103,6 +104,7 @@ From the repository root in the existing `tribe` environment:
 python tribe/run.py --dataset kylie --device cuda
 python tribe/run.py --dataset hayeong --device cuda
 python tribe/run.py --dataset arunkumar --device cuda
+python tribe/run.py --dataset ashcraft --device cuda
 python visualizer/server.py --port 8000
 ```
 
@@ -122,6 +124,7 @@ again. Comparison choices are available in the Study selector:
 | Arunkumar | 600 | Both experiments' own image/information ratings and all 39 taxonomy fields |
 | Arunkumar experiment 1 | 500 | Experiment-1 ratings and all taxonomy fields |
 | Arunkumar experiment 2 | 100 | Experiment-2 ratings and all taxonomy fields |
+| Ashcraft | 72 | Published pilot-4 correlation direction/class and outlier presence |
 
 Assign variables to X and Y. Click either axis tick to see examples across that
 bin; click a cell to see its intersection. Inferior view is the default, with

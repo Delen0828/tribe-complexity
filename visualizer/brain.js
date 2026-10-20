@@ -241,6 +241,9 @@ async function loadReport() {
     if (request !== reportRequest) return;
     report = data;
     el('report-title').textContent = report.title; document.title = `TRIBE · ${report.title}`;
+    el('report-description').textContent = [report.description, report.sampling].filter(Boolean).join(' ');
+    el('report-description').hidden = !el('report-description').textContent;
+    el('ashcraft-resources').hidden = report.dataset !== 'ashcraft';
     configureAxes(params);
     el('statistic').value = params.get('statistic') === 'contrast' ? 'contrast' : 'mean';
     el('views').value = ['four', 'all'].includes(params.get('views')) ? params.get('views') : 'inferior';

@@ -138,7 +138,7 @@ def run_study(dataset, output=None, predict=False, sample_only=False, prepare_on
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--dataset', choices=['kylie', 'hayeong', 'arunkumar'], required=True)
+    parser.add_argument('--dataset', choices=['kylie', 'hayeong', 'arunkumar', 'ashcraft'], required=True)
     parser.add_argument('--output-dir', dest='output', type=Path)
     action = parser.add_mutually_exclusive_group()
     action.add_argument('--predict', action='store_true')

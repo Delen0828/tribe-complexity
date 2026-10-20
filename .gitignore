@@ -12,3 +12,6 @@ tribe/*.log
 
 # Outputs from running the model
 tribe/outputs/
+
+# Thesis raster exports and independently regenerated stimuli
+SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/

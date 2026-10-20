@@ -32,7 +32,8 @@ STUDIES = {
 }
 TITLES = {'massvis_sample': 'MassVis · Sample', 'massvis_all': 'MassVis · All',
           'kylie': "Kylie's study", 'hayeong': "Hayeong's study",
-          'arunkumar': "Arunkumar's study · Both experiments"}
+          'arunkumar': "Arunkumar's study · Both experiments",
+          'ashcraft': 'Ashcraft · Controlled scatterplots'}
 
 
 class Visualizer:
@@ -60,7 +61,7 @@ class Visualizer:
 
     def catalog(self):
         items = []
-        for name in ('massvis_sample', 'massvis_all', 'kylie', 'hayeong', 'arunkumar', *STUDIES):
+        for name in ('massvis_sample', 'massvis_all', 'kylie', 'hayeong', 'arunkumar', 'ashcraft', *STUDIES):
             folder = self.outputs / STUDIES.get(name, (name,))[0]
             items.append(dict(id=name, label=TITLES.get(name, name.replace('_', ' ').title()),
                               available=(folder / 'selection.json').is_file()))
@@ -124,6 +125,7 @@ class Visualizer:
             revision = hashlib.sha256(json.dumps([
                 fingerprint, attributes, [row['attributes'] for row in public_rows]], sort_keys=True).encode()).hexdigest()
             metadata = dict(title=title, dataset=selection.get('dataset', 'massvis'),
+                            description=selection.get('description', ''), sampling=selection.get('sampling', ''),
                             count=len(rows), selected_count=selected_count, complete=len(rows) == selected_count,
                             attributes=attributes, rows=public_rows, revision=revision,
                             selection=prefix + '/selection.json')

@@ -5,7 +5,7 @@ const {firefox} = require('playwright');
 const base = process.argv[2] || 'http://127.0.0.1:8765/';
 const url = path => new URL(path, base).href;
 const names = ['massvis_sample', 'kylie', 'kylie_bar', 'kylie_area', 'hayeong',
-  'hayeong_color', 'hayeong_hand_drawn', 'arunkumar', 'arunkumar_experiment_1', 'arunkumar_experiment_2'];
+  'hayeong_color', 'hayeong_hand_drawn', 'arunkumar', 'arunkumar_experiment_1', 'arunkumar_experiment_2', 'ashcraft'];
 
 async function main() {
   const browser = await firefox.launch({headless: true});
@@ -33,9 +33,9 @@ async function main() {
       });
     }
     await page.goto(url('visualizer/'));
-    assert.equal(await page.locator('.home-grid a').count(), 6);
+    assert.equal(await page.locator('.home-grid a').count(), 7);
     assert.equal(await page.locator('nav[aria-label="Dataset explorers"] a').count(), 2);
-    assert.equal(await page.locator('nav[aria-label="Simulation results"] a').count(), 4);
+    assert.equal(await page.locator('nav[aria-label="Simulation results"] a').count(), 5);
     await page.locator('.home-grid a').first().click();
     await page.waitForSelector('#workspace:visible');
     await page.fill('#index', '42'); await page.locator('#lookup button').click();
@@ -68,6 +68,41 @@ async function main() {
       const firstExample = await page.locator('#members a').first().boundingBox();
       assert(Math.abs(firstExample.width * 3 + 24 - gallery.width) < 2);
       if (name.startsWith('kylie')) assert(report.attributes.some(a => a.key === 'complexity' && a.kind === 'bin'));
+      if (name === 'ashcraft') {
+        assert.equal(report.count, 72);
+        assert.equal(report.selected_count, 72);
+        assert.equal(report.complete, true);
+        assert.equal(await page.locator('#ashcraft-resources a').count(), 4);
+        assert(await page.locator('#ashcraft-resources').isVisible());
+        assert((await page.locator('#report-description').innerText()).includes('motion'));
+        assert(!report.attributes.some(a => ['task', 'complexity', 'ink_density'].includes(a.key)));
+        const response = await page.request.get(url('api/analysis?dataset=ashcraft&x=correlation_direction&y=has_outlier'));
+        assert(response.ok());
+        assert.deepEqual((await response.json()).cells.map(c => c.count), [24, 12, 12, 24]);
+        for (const axis of ['x', 'y']) {
+          const params = new URLSearchParams({dataset: name,
+            x: axis === 'x' ? 'correlation_class' : 'correlation_direction',
+            y: axis === 'y' ? 'correlation_class' : 'correlation_direction'});
+          const strengthResponse = await page.request.get(url('api/analysis?' + params));
+          assert(strengthResponse.ok());
+          const strength = await strengthResponse.json();
+          assert.deepEqual(strength.axes[axis].map(g => g.label), ['Low', 'Mid', 'High']);
+          assert.equal(strength.cells.reduce((sum, c) => sum + c.count, 0), 72);
+          for (const group of strength.axes[axis]) {
+            const members = report.rows.filter(row => group.indices.includes(row.index));
+            assert.deepEqual([...new Set(members.map(row => row.attributes.correlation_direction))].sort(),
+              ['negative', 'positive']);
+            assert(members.every(row => {
+              const magnitude = Math.abs(row.published_r);
+              return group.value === 'low' ? magnitude < .3 :
+                group.value === 'mid' ? magnitude >= .3 && magnitude < .7 : magnitude >= .7;
+            }));
+          }
+        }
+        for (const link of await page.locator('#ashcraft-resources a').evaluateAll(links => links.map(a => a.href))) {
+          assert((await page.request.get(link)).ok());
+        }
+      }
       if (name.startsWith('hayeong')) {
         assert.deepEqual(report.attributes.slice(0, 5).map(a => a.key),
           ['has_color', 'bar_is_hand_drawn', 'font_is_hand_drawn', 'is_comic', 'bar_is_image']);
@@ -217,7 +252,7 @@ async function main() {
     await page.waitForFunction(() => document.querySelector('#brain-status').textContent === 'Predictions unavailable');
     await page.unroute('**/api/report?*');
     assert.deepEqual(errors, []);
-    process.stdout.write('PASS: 10 study routes, both Arunkumar experiments and all 39 metadata fields, experiment 2 features, 31 MassVis variables on both axes, 3 cortical layouts, 2 map modes, full-run coverage, navigation, scrolling gallery and connection diagnostics\n');
+    process.stdout.write(`PASS: ${names.length} study routes including Ashcraft, both Arunkumar experiments and all 39 metadata fields, experiment 2 features, 31 MassVis variables on both axes, 3 cortical layouts, 2 map modes, full-run coverage, navigation, scrolling gallery and connection diagnostics\n`);
   } finally {await browser.close();}
 }
 main().catch(error => {process.stderr.write(error.stack + '\n'); process.exitCode = 1;});

@@ -1,0 +1,1356 @@
+{
+  "title": "Ashcraft \u00b7 Controlled scatterplots",
+  "description": "72 published pilot-4 scatterplots. Correlation direction and outlier presence have balanced marginals, with unequal joint cells (24/12/12/24).",
+  "sampling": "All 72 authoritative pilot-4 PNGs exported without pixel changes. Equal image weight; static 3-second TRIBE protocol. MATLAB attention tasks, prompts, motion, fixation, and block context are omitted; no task-specific or measured fMRI validation is claimed.",
+  "attributes": [
+    {
+      "key": "correlation_direction",
+      "label": "Correlation direction",
+      "kind": "category",
+      "values": {
+        "negative": "Negative",
+        "positive": "Positive"
+      }
+    },
+    {
+      "key": "has_outlier",
+      "label": "Outlier present",
+      "kind": "binary",
+      "values": {
+        "0": "No",
+        "1": "Yes"
+      }
+    },
+    {
+      "key": "correlation_class",
+      "label": "Correlation class",
+      "kind": "category",
+      "values": {
+        "low": "Low",
+        "mid": "Mid",
+        "high": "High"
+      }
+    }
+  ],
+  "rows": [
+    {
+      "index": 1,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot1_posSrngCor(r=0.986)_out(MD=4.302,z=5.871).png",
+      "filename": "scatter_plot1_posSrngCor(r=0.986)_out(MD=4.302,z=5.871).png",
+      "sha256": "79286c8b47a39dac92000a8d84218b0ed74d827ff4244e29bdeb09dc662290b9",
+      "attributes": {
+        "correlation_direction": "positive",
+        "has_outlier": 1,
+        "correlation_class": "high"
+      },
+      "label": "Scatterplot 1 \u00b7 positive \u00b7 outlier",
+      "score_label": "r = +0.986 \u00b7 outlier",
+      "published_r": 0.986,
+      "mahalanobis_distance": 4.302,
+      "outlier_z": 5.871,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot1_posSrngCor(r=0.986)_out(MD=4.302,z=5.871).png"
+    },
+    {
+      "index": 2,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot2_posSrngCor(r=0.968).png",
+      "filename": "scatter_plot2_posSrngCor(r=0.968).png",
+      "sha256": "dad388f9df96ff8c61bb65562dfc091eb422f8bbfa756e2ad74f8ee6e51212b9",
+      "attributes": {
+        "correlation_direction": "positive",
+        "has_outlier": 0,
+        "correlation_class": "high"
+      },
+      "label": "Scatterplot 2 \u00b7 positive \u00b7 no outlier",
+      "score_label": "r = +0.968 \u00b7 no outlier",
+      "published_r": 0.968,
+      "mahalanobis_distance": null,
+      "outlier_z": null,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot2_posSrngCor(r=0.968).png"
+    },
+    {
+      "index": 3,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot3_posSrngCor(r=0.942).png",
+      "filename": "scatter_plot3_posSrngCor(r=0.942).png",
+      "sha256": "b60dbae11125d05c60a9ef9794212b7262c49e875a900fefb8aa301289adfdb7",
+      "attributes": {
+        "correlation_direction": "positive",
+        "has_outlier": 0,
+        "correlation_class": "high"
+      },
+      "label": "Scatterplot 3 \u00b7 positive \u00b7 no outlier",
+      "score_label": "r = +0.942 \u00b7 no outlier",
+      "published_r": 0.942,
+      "mahalanobis_distance": null,
+      "outlier_z": null,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot3_posSrngCor(r=0.942).png"
+    },
+    {
+      "index": 4,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot4_posSrngCor(r=0.902)_out(MD=5.088,z=5.941).png",
+      "filename": "scatter_plot4_posSrngCor(r=0.902)_out(MD=5.088,z=5.941).png",
+      "sha256": "735a6891ac94fb7979f269f1fbe2dfe8b6b3f193e6dfab2d30a4c0dc27d4fe56",
+      "attributes": {
+        "correlation_direction": "positive",
+        "has_outlier": 1,
+        "correlation_class": "high"
+      },
+      "label": "Scatterplot 4 \u00b7 positive \u00b7 outlier",
+      "score_label": "r = +0.902 \u00b7 outlier",
+      "published_r": 0.902,
+      "mahalanobis_distance": 5.088,
+      "outlier_z": 5.941,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot4_posSrngCor(r=0.902)_out(MD=5.088,z=5.941).png"
+    },
+    {
+      "index": 5,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot5_posSrngCor(r=0.881)_out(MD=3.353,z=3.345).png",
+      "filename": "scatter_plot5_posSrngCor(r=0.881)_out(MD=3.353,z=3.345).png",
+      "sha256": "e554ff9c99e5019877ca0fe57bf1d82bf3b4d55343fcc86919f7ac2c02b173e1",
+      "attributes": {
+        "correlation_direction": "positive",
+        "has_outlier": 1,
+        "correlation_class": "high"
+      },
+      "label": "Scatterplot 5 \u00b7 positive \u00b7 outlier",
+      "score_label": "r = +0.881 \u00b7 outlier",
+      "published_r": 0.881,
+      "mahalanobis_distance": 3.353,
+      "outlier_z": 3.345,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot5_posSrngCor(r=0.881)_out(MD=3.353,z=3.345).png"
+    },
+    {
+      "index": 6,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot6_posSrngCor(r=0.852)_out(MD=5.770,z=7.092).png",
+      "filename": "scatter_plot6_posSrngCor(r=0.852)_out(MD=5.770,z=7.092).png",
+      "sha256": "8f5b8a15d7ac9fbc04e2a1fb84f50c1d0271a9d84b2e04a9a54d7611935a5705",
+      "attributes": {
+        "correlation_direction": "positive",
+        "has_outlier": 1,
+        "correlation_class": "high"
+      },
+      "label": "Scatterplot 6 \u00b7 positive \u00b7 outlier",
+      "score_label": "r = +0.852 \u00b7 outlier",
+      "published_r": 0.852,
+      "mahalanobis_distance": 5.77,
+      "outlier_z": 7.092,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot6_posSrngCor(r=0.852)_out(MD=5.770,z=7.092).png"
+    },
+    {
+      "index": 7,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot7_posSrngCor(r=0.805)_out(MD=4.658,z=5.198).png",
+      "filename": "scatter_plot7_posSrngCor(r=0.805)_out(MD=4.658,z=5.198).png",
+      "sha256": "5df76e9dc7f497c97081869c387c771e2636f8a017932641212c7156c73e30a7",
+      "attributes": {
+        "correlation_direction": "positive",
+        "has_outlier": 1,
+        "correlation_class": "high"
+      },
+      "label": "Scatterplot 7 \u00b7 positive \u00b7 outlier",
+      "score_label": "r = +0.805 \u00b7 outlier",
+      "published_r": 0.805,
+      "mahalanobis_distance": 4.658,
+      "outlier_z": 5.198,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot7_posSrngCor(r=0.805)_out(MD=4.658,z=5.198).png"
+    },
+    {
+      "index": 8,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot8_posSrngCor(r=0.796)_out(MD=3.637,z=3.646).png",
+      "filename": "scatter_plot8_posSrngCor(r=0.796)_out(MD=3.637,z=3.646).png",
+      "sha256": "883ebb52c0be702dbafe0ccf2cd2a1f7540407c185aac0153aabd5d7b0c6af95",
+      "attributes": {
+        "correlation_direction": "positive",
+        "has_outlier": 1,
+        "correlation_class": "high"
+      },
+      "label": "Scatterplot 8 \u00b7 positive \u00b7 outlier",
+      "score_label": "r = +0.796 \u00b7 outlier",
+      "published_r": 0.796,
+      "mahalanobis_distance": 3.637,
+      "outlier_z": 3.646,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot8_posSrngCor(r=0.796)_out(MD=3.637,z=3.646).png"
+    },
+    {
+      "index": 9,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot9_posSrngCor(r=0.780).png",
+      "filename": "scatter_plot9_posSrngCor(r=0.780).png",
+      "sha256": "8c8de32ba3cf1166363461a9a2b6b4681937c03680a340ca8ec3342a123ecfd4",
+      "attributes": {
+        "correlation_direction": "positive",
+        "has_outlier": 0,
+        "correlation_class": "high"
+      },
+      "label": "Scatterplot 9 \u00b7 positive \u00b7 no outlier",
+      "score_label": "r = +0.780 \u00b7 no outlier",
+      "published_r": 0.78,
+      "mahalanobis_distance": null,
+      "outlier_z": null,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot9_posSrngCor(r=0.780).png"
+    },
+    {
+      "index": 10,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot10_posSrngCor(r=0.742).png",
+      "filename": "scatter_plot10_posSrngCor(r=0.742).png",
+      "sha256": "b603b53557c51cdf4daef40564b83f992e0fe2020f03d8b00b9966bd7c78a0b8",
+      "attributes": {
+        "correlation_direction": "positive",
+        "has_outlier": 0,
+        "correlation_class": "high"
+      },
+      "label": "Scatterplot 10 \u00b7 positive \u00b7 no outlier",
+      "score_label": "r = +0.742 \u00b7 no outlier",
+      "published_r": 0.742,
+      "mahalanobis_distance": null,
+      "outlier_z": null,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot10_posSrngCor(r=0.742).png"
+    },
+    {
+      "index": 11,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot11_posSrngCor(r=0.728)_out(MD=6.112,z=7.968).png",
+      "filename": "scatter_plot11_posSrngCor(r=0.728)_out(MD=6.112,z=7.968).png",
+      "sha256": "f08861ee848ad6bfb1b65ad2a288a951218de6f964f65bf1a38dca53cc0a64dd",
+      "attributes": {
+        "correlation_direction": "positive",
+        "has_outlier": 1,
+        "correlation_class": "high"
+      },
+      "label": "Scatterplot 11 \u00b7 positive \u00b7 outlier",
+      "score_label": "r = +0.728 \u00b7 outlier",
+      "published_r": 0.728,
+      "mahalanobis_distance": 6.112,
+      "outlier_z": 7.968,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot11_posSrngCor(r=0.728)_out(MD=6.112,z=7.968).png"
+    },
+    {
+      "index": 12,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot12_posCor(r=0.683)_out(MD=3.180,z=3.042).png",
+      "filename": "scatter_plot12_posCor(r=0.683)_out(MD=3.180,z=3.042).png",
+      "sha256": "f929bf96877f08be9e49404ac5b182a46f249ed0acd783bf4acc37c459f36520",
+      "attributes": {
+        "correlation_direction": "positive",
+        "has_outlier": 1,
+        "correlation_class": "mid"
+      },
+      "label": "Scatterplot 12 \u00b7 positive \u00b7 outlier",
+      "score_label": "r = +0.683 \u00b7 outlier",
+      "published_r": 0.683,
+      "mahalanobis_distance": 3.18,
+      "outlier_z": 3.042,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot12_posCor(r=0.683)_out(MD=3.180,z=3.042).png"
+    },
+    {
+      "index": 13,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot13_posCor(r=0.662).png",
+      "filename": "scatter_plot13_posCor(r=0.662).png",
+      "sha256": "8d2a2d8a450a4fcf086a5cc3db1ff92a57b97f0b21c50934df48152d9c97c56e",
+      "attributes": {
+        "correlation_direction": "positive",
+        "has_outlier": 0,
+        "correlation_class": "mid"
+      },
+      "label": "Scatterplot 13 \u00b7 positive \u00b7 no outlier",
+      "score_label": "r = +0.662 \u00b7 no outlier",
+      "published_r": 0.662,
+      "mahalanobis_distance": null,
+      "outlier_z": null,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot13_posCor(r=0.662).png"
+    },
+    {
+      "index": 14,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot14_posCor(r=0.634).png",
+      "filename": "scatter_plot14_posCor(r=0.634).png",
+      "sha256": "390a3a524ddb2eef83bd1f9177aa15dc2d49984d1098cf6de2268e17c4c825e9",
+      "attributes": {
+        "correlation_direction": "positive",
+        "has_outlier": 0,
+        "correlation_class": "mid"
+      },
+      "label": "Scatterplot 14 \u00b7 positive \u00b7 no outlier",
+      "score_label": "r = +0.634 \u00b7 no outlier",
+      "published_r": 0.634,
+      "mahalanobis_distance": null,
+      "outlier_z": null,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot14_posCor(r=0.634).png"
+    },
+    {
+      "index": 15,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot15_posCor(r=0.589).png",
+      "filename": "scatter_plot15_posCor(r=0.589).png",
+      "sha256": "330823baba92501fb227f4d621a624f9ea3d1beb1e74b089e5d7abac051dd53a",
+      "attributes": {
+        "correlation_direction": "positive",
+        "has_outlier": 0,
+        "correlation_class": "mid"
+      },
+      "label": "Scatterplot 15 \u00b7 positive \u00b7 no outlier",
+      "score_label": "r = +0.589 \u00b7 no outlier",
+      "published_r": 0.589,
+      "mahalanobis_distance": null,
+      "outlier_z": null,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot15_posCor(r=0.589).png"
+    },
+    {
+      "index": 16,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot16_posCor(r=0.530)_out(MD=5.267,z=6.009).png",
+      "filename": "scatter_plot16_posCor(r=0.530)_out(MD=5.267,z=6.009).png",
+      "sha256": "f3104e80dd094c03ebd2bf87b1a9b0021dac839ede9b574146ee9f6410fdc046",
+      "attributes": {
+        "correlation_direction": "positive",
+        "has_outlier": 1,
+        "correlation_class": "mid"
+      },
+      "label": "Scatterplot 16 \u00b7 positive \u00b7 outlier",
+      "score_label": "r = +0.530 \u00b7 outlier",
+      "published_r": 0.53,
+      "mahalanobis_distance": 5.267,
+      "outlier_z": 6.009,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot16_posCor(r=0.530)_out(MD=5.267,z=6.009).png"
+    },
+    {
+      "index": 17,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot17_posCor(r=0.509)_out(MD=5.465,z=6.463).png",
+      "filename": "scatter_plot17_posCor(r=0.509)_out(MD=5.465,z=6.463).png",
+      "sha256": "58a5c8262f67f92cae859b37d8fe9b59b5e8d179e9c35170489bbc65d59a3a20",
+      "attributes": {
+        "correlation_direction": "positive",
+        "has_outlier": 1,
+        "correlation_class": "mid"
+      },
+      "label": "Scatterplot 17 \u00b7 positive \u00b7 outlier",
+      "score_label": "r = +0.509 \u00b7 outlier",
+      "published_r": 0.509,
+      "mahalanobis_distance": 5.465,
+      "outlier_z": 6.463,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot17_posCor(r=0.509)_out(MD=5.465,z=6.463).png"
+    },
+    {
+      "index": 18,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot18_posCor(r=0.537)_out(MD=5.179,z=6.293).png",
+      "filename": "scatter_plot18_posCor(r=0.537)_out(MD=5.179,z=6.293).png",
+      "sha256": "fd83f38f8639c76c1dbd3a5893838cb293b4373516d58ba97d6502a5304fc7f5",
+      "attributes": {
+        "correlation_direction": "positive",
+        "has_outlier": 1,
+        "correlation_class": "mid"
+      },
+      "label": "Scatterplot 18 \u00b7 positive \u00b7 outlier",
+      "score_label": "r = +0.537 \u00b7 outlier",
+      "published_r": 0.537,
+      "mahalanobis_distance": 5.179,
+      "outlier_z": 6.293,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot18_posCor(r=0.537)_out(MD=5.179,z=6.293).png"
+    },
+    {
+      "index": 19,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot19_posCor(r=0.473)_out(MD=5.629,z=6.855).png",
+      "filename": "scatter_plot19_posCor(r=0.473)_out(MD=5.629,z=6.855).png",
+      "sha256": "33232c237f79fc64a83af62c94bc0008ae2e25943940185191b145d3cf0e7000",
+      "attributes": {
+        "correlation_direction": "positive",
+        "has_outlier": 1,
+        "correlation_class": "mid"
+      },
+      "label": "Scatterplot 19 \u00b7 positive \u00b7 outlier",
+      "score_label": "r = +0.473 \u00b7 outlier",
+      "published_r": 0.473,
+      "mahalanobis_distance": 5.629,
+      "outlier_z": 6.855,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot19_posCor(r=0.473)_out(MD=5.629,z=6.855).png"
+    },
+    {
+      "index": 20,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot20_posCor(r=0.484)_out(MD=4.915,z=5.743).png",
+      "filename": "scatter_plot20_posCor(r=0.484)_out(MD=4.915,z=5.743).png",
+      "sha256": "81ba69422696af7427fbbd6502c751c21262ca7f31eee593aa9e3548b560657b",
+      "attributes": {
+        "correlation_direction": "positive",
+        "has_outlier": 1,
+        "correlation_class": "mid"
+      },
+      "label": "Scatterplot 20 \u00b7 positive \u00b7 outlier",
+      "score_label": "r = +0.484 \u00b7 outlier",
+      "published_r": 0.484,
+      "mahalanobis_distance": 4.915,
+      "outlier_z": 5.743,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot20_posCor(r=0.484)_out(MD=4.915,z=5.743).png"
+    },
+    {
+      "index": 21,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot21_posCor(r=0.455)_out(MD=4.247,z=4.744).png",
+      "filename": "scatter_plot21_posCor(r=0.455)_out(MD=4.247,z=4.744).png",
+      "sha256": "fa7b2ac4810acf0f8fe96ca59939f33f5050433427d415dea9b0f3d33319bd07",
+      "attributes": {
+        "correlation_direction": "positive",
+        "has_outlier": 1,
+        "correlation_class": "mid"
+      },
+      "label": "Scatterplot 21 \u00b7 positive \u00b7 outlier",
+      "score_label": "r = +0.455 \u00b7 outlier",
+      "published_r": 0.455,
+      "mahalanobis_distance": 4.247,
+      "outlier_z": 4.744,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot21_posCor(r=0.455)_out(MD=4.247,z=4.744).png"
+    },
+    {
+      "index": 22,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot22_posCor(r=0.395).png",
+      "filename": "scatter_plot22_posCor(r=0.395).png",
+      "sha256": "e9c4aa7096fa4f957920099ef3b58eab7a80cd2330989469cca472fd71a079a1",
+      "attributes": {
+        "correlation_direction": "positive",
+        "has_outlier": 0,
+        "correlation_class": "mid"
+      },
+      "label": "Scatterplot 22 \u00b7 positive \u00b7 no outlier",
+      "score_label": "r = +0.395 \u00b7 no outlier",
+      "published_r": 0.395,
+      "mahalanobis_distance": null,
+      "outlier_z": null,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot22_posCor(r=0.395).png"
+    },
+    {
+      "index": 23,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot23_posCor(r=0.400)_out(MD=3.462,z=3.386).png",
+      "filename": "scatter_plot23_posCor(r=0.400)_out(MD=3.462,z=3.386).png",
+      "sha256": "4c1736ebbb505075d274367b75244f64f9b916ced47aab53cbea13206f85a24b",
+      "attributes": {
+        "correlation_direction": "positive",
+        "has_outlier": 1,
+        "correlation_class": "mid"
+      },
+      "label": "Scatterplot 23 \u00b7 positive \u00b7 outlier",
+      "score_label": "r = +0.400 \u00b7 outlier",
+      "published_r": 0.4,
+      "mahalanobis_distance": 3.462,
+      "outlier_z": 3.386,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot23_posCor(r=0.400)_out(MD=3.462,z=3.386).png"
+    },
+    {
+      "index": 24,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot24_posCor(r=0.313)_out(MD=3.754,z=3.887).png",
+      "filename": "scatter_plot24_posCor(r=0.313)_out(MD=3.754,z=3.887).png",
+      "sha256": "24cf0bcda4b650f6df056f017ebd4b8226f497875a1ee9c0ba8a351700e981be",
+      "attributes": {
+        "correlation_direction": "positive",
+        "has_outlier": 1,
+        "correlation_class": "mid"
+      },
+      "label": "Scatterplot 24 \u00b7 positive \u00b7 outlier",
+      "score_label": "r = +0.313 \u00b7 outlier",
+      "published_r": 0.313,
+      "mahalanobis_distance": 3.754,
+      "outlier_z": 3.887,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot24_posCor(r=0.313)_out(MD=3.754,z=3.887).png"
+    },
+    {
+      "index": 25,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot25_posCor(r=0.319).png",
+      "filename": "scatter_plot25_posCor(r=0.319).png",
+      "sha256": "aa6e60762ea9a9c610d4e619a685524e792eddd7a90961d4c5f482b408e375a8",
+      "attributes": {
+        "correlation_direction": "positive",
+        "has_outlier": 0,
+        "correlation_class": "mid"
+      },
+      "label": "Scatterplot 25 \u00b7 positive \u00b7 no outlier",
+      "score_label": "r = +0.319 \u00b7 no outlier",
+      "published_r": 0.319,
+      "mahalanobis_distance": null,
+      "outlier_z": null,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot25_posCor(r=0.319).png"
+    },
+    {
+      "index": 26,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot26_posCor(r=0.239)_out(MD=5.031,z=5.588).png",
+      "filename": "scatter_plot26_posCor(r=0.239)_out(MD=5.031,z=5.588).png",
+      "sha256": "62bd0ea0e6e10a900e03d1c1df4ba19684b75f2cde4304adda4f8181971fbecf",
+      "attributes": {
+        "correlation_direction": "positive",
+        "has_outlier": 1,
+        "correlation_class": "low"
+      },
+      "label": "Scatterplot 26 \u00b7 positive \u00b7 outlier",
+      "score_label": "r = +0.239 \u00b7 outlier",
+      "published_r": 0.239,
+      "mahalanobis_distance": 5.031,
+      "outlier_z": 5.588,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot26_posCor(r=0.239)_out(MD=5.031,z=5.588).png"
+    },
+    {
+      "index": 27,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot27_posCor(r=0.279).png",
+      "filename": "scatter_plot27_posCor(r=0.279).png",
+      "sha256": "3f36f3fc11e80e5fc1ec9dc15eb2675d2fe3e4935b89f7c3c951311d9c2b3f3a",
+      "attributes": {
+        "correlation_direction": "positive",
+        "has_outlier": 0,
+        "correlation_class": "low"
+      },
+      "label": "Scatterplot 27 \u00b7 positive \u00b7 no outlier",
+      "score_label": "r = +0.279 \u00b7 no outlier",
+      "published_r": 0.279,
+      "mahalanobis_distance": null,
+      "outlier_z": null,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot27_posCor(r=0.279).png"
+    },
+    {
+      "index": 28,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot28_posCor(r=0.231)_out(MD=3.628,z=3.729).png",
+      "filename": "scatter_plot28_posCor(r=0.231)_out(MD=3.628,z=3.729).png",
+      "sha256": "1963c248889ea5ae508e5cacff7ff8ebf297cd2c1ce2b0f8af0ab95f1e0512fc",
+      "attributes": {
+        "correlation_direction": "positive",
+        "has_outlier": 1,
+        "correlation_class": "low"
+      },
+      "label": "Scatterplot 28 \u00b7 positive \u00b7 outlier",
+      "score_label": "r = +0.231 \u00b7 outlier",
+      "published_r": 0.231,
+      "mahalanobis_distance": 3.628,
+      "outlier_z": 3.729,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot28_posCor(r=0.231)_out(MD=3.628,z=3.729).png"
+    },
+    {
+      "index": 29,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot29_posCor(r=0.185).png",
+      "filename": "scatter_plot29_posCor(r=0.185).png",
+      "sha256": "8711c0760b9612d141a9441024f0eaf5e667163c94ddc44ed1322827ac354006",
+      "attributes": {
+        "correlation_direction": "positive",
+        "has_outlier": 0,
+        "correlation_class": "low"
+      },
+      "label": "Scatterplot 29 \u00b7 positive \u00b7 no outlier",
+      "score_label": "r = +0.185 \u00b7 no outlier",
+      "published_r": 0.185,
+      "mahalanobis_distance": null,
+      "outlier_z": null,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot29_posCor(r=0.185).png"
+    },
+    {
+      "index": 30,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot30_posCor(r=0.219)_out(MD=5.780,z=7.046).png",
+      "filename": "scatter_plot30_posCor(r=0.219)_out(MD=5.780,z=7.046).png",
+      "sha256": "2a9014d1992ad1a720eb0edb442f0c61564651ac2ec6a59b9e0b62923dd09f10",
+      "attributes": {
+        "correlation_direction": "positive",
+        "has_outlier": 1,
+        "correlation_class": "low"
+      },
+      "label": "Scatterplot 30 \u00b7 positive \u00b7 outlier",
+      "score_label": "r = +0.219 \u00b7 outlier",
+      "published_r": 0.219,
+      "mahalanobis_distance": 5.78,
+      "outlier_z": 7.046,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot30_posCor(r=0.219)_out(MD=5.780,z=7.046).png"
+    },
+    {
+      "index": 31,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot31_posCor(r=0.139).png",
+      "filename": "scatter_plot31_posCor(r=0.139).png",
+      "sha256": "bf25d4c6596489752d0e87c0b3550ddc1ee1453dcfc973a4d78edf6960296693",
+      "attributes": {
+        "correlation_direction": "positive",
+        "has_outlier": 0,
+        "correlation_class": "low"
+      },
+      "label": "Scatterplot 31 \u00b7 positive \u00b7 no outlier",
+      "score_label": "r = +0.139 \u00b7 no outlier",
+      "published_r": 0.139,
+      "mahalanobis_distance": null,
+      "outlier_z": null,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot31_posCor(r=0.139).png"
+    },
+    {
+      "index": 32,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot32_posCor(r=0.087)_out(MD=6.159,z=7.543).png",
+      "filename": "scatter_plot32_posCor(r=0.087)_out(MD=6.159,z=7.543).png",
+      "sha256": "0f2b8394443502c450c46e5b4029364bffc3c65dd0c24c1d586990d5394594be",
+      "attributes": {
+        "correlation_direction": "positive",
+        "has_outlier": 1,
+        "correlation_class": "low"
+      },
+      "label": "Scatterplot 32 \u00b7 positive \u00b7 outlier",
+      "score_label": "r = +0.087 \u00b7 outlier",
+      "published_r": 0.087,
+      "mahalanobis_distance": 6.159,
+      "outlier_z": 7.543,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot32_posCor(r=0.087)_out(MD=6.159,z=7.543).png"
+    },
+    {
+      "index": 33,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot33_posCor(r=0.080)_out(MD=4.141,z=4.530).png",
+      "filename": "scatter_plot33_posCor(r=0.080)_out(MD=4.141,z=4.530).png",
+      "sha256": "5129cb2c11daacfdfb6b61e74fc9e0bef6374003874439c970912a3baa7ba52f",
+      "attributes": {
+        "correlation_direction": "positive",
+        "has_outlier": 1,
+        "correlation_class": "low"
+      },
+      "label": "Scatterplot 33 \u00b7 positive \u00b7 outlier",
+      "score_label": "r = +0.080 \u00b7 outlier",
+      "published_r": 0.08,
+      "mahalanobis_distance": 4.141,
+      "outlier_z": 4.53,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot33_posCor(r=0.080)_out(MD=4.141,z=4.530).png"
+    },
+    {
+      "index": 34,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot34_posCor(r=0.078)_out(MD=3.561,z=3.605).png",
+      "filename": "scatter_plot34_posCor(r=0.078)_out(MD=3.561,z=3.605).png",
+      "sha256": "8c08676c040890ca33a433baac9b9295fe2bd2815b2aec4ba91700f2900c7410",
+      "attributes": {
+        "correlation_direction": "positive",
+        "has_outlier": 1,
+        "correlation_class": "low"
+      },
+      "label": "Scatterplot 34 \u00b7 positive \u00b7 outlier",
+      "score_label": "r = +0.078 \u00b7 outlier",
+      "published_r": 0.078,
+      "mahalanobis_distance": 3.561,
+      "outlier_z": 3.605,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot34_posCor(r=0.078)_out(MD=3.561,z=3.605).png"
+    },
+    {
+      "index": 35,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot35_posCor(r=0.016)_out(MD=4.918,z=5.682).png",
+      "filename": "scatter_plot35_posCor(r=0.016)_out(MD=4.918,z=5.682).png",
+      "sha256": "a5bd46f1530e70e8a1db3db9589878a0d180dc7a2a99114d901ea010ae2fcfcf",
+      "attributes": {
+        "correlation_direction": "positive",
+        "has_outlier": 1,
+        "correlation_class": "low"
+      },
+      "label": "Scatterplot 35 \u00b7 positive \u00b7 outlier",
+      "score_label": "r = +0.016 \u00b7 outlier",
+      "published_r": 0.016,
+      "mahalanobis_distance": 4.918,
+      "outlier_z": 5.682,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot35_posCor(r=0.016)_out(MD=4.918,z=5.682).png"
+    },
+    {
+      "index": 36,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot36_posCor(r=0.002)_out(MD=3.678,z=3.791).png",
+      "filename": "scatter_plot36_posCor(r=0.002)_out(MD=3.678,z=3.791).png",
+      "sha256": "0e2a4b4a452787db59277eee66648f626c105860fb07a4a60f1812e2a6559035",
+      "attributes": {
+        "correlation_direction": "positive",
+        "has_outlier": 1,
+        "correlation_class": "low"
+      },
+      "label": "Scatterplot 36 \u00b7 positive \u00b7 outlier",
+      "score_label": "r = +0.002 \u00b7 outlier",
+      "published_r": 0.002,
+      "mahalanobis_distance": 3.678,
+      "outlier_z": 3.791,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot36_posCor(r=0.002)_out(MD=3.678,z=3.791).png"
+    },
+    {
+      "index": 37,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot37_negCor(r=-0.025).png",
+      "filename": "scatter_plot37_negCor(r=-0.025).png",
+      "sha256": "613be7227f693bc0661b0145ba871fd6c6f558dc5320ae0b93e94c4513072545",
+      "attributes": {
+        "correlation_direction": "negative",
+        "has_outlier": 0,
+        "correlation_class": "low"
+      },
+      "label": "Scatterplot 37 \u00b7 negative \u00b7 no outlier",
+      "score_label": "r = -0.025 \u00b7 no outlier",
+      "published_r": -0.025,
+      "mahalanobis_distance": null,
+      "outlier_z": null,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot37_negCor(r=-0.025).png"
+    },
+    {
+      "index": 38,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot38_negCor(r=-0.004)_out(MD=4.218,z=4.774).png",
+      "filename": "scatter_plot38_negCor(r=-0.004)_out(MD=4.218,z=4.774).png",
+      "sha256": "ec468a3c15aafe36ac1c5946513dea29c123c549df59046af8137d950940062e",
+      "attributes": {
+        "correlation_direction": "negative",
+        "has_outlier": 1,
+        "correlation_class": "low"
+      },
+      "label": "Scatterplot 38 \u00b7 negative \u00b7 outlier",
+      "score_label": "r = -0.004 \u00b7 outlier",
+      "published_r": -0.004,
+      "mahalanobis_distance": 4.218,
+      "outlier_z": 4.774,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot38_negCor(r=-0.004)_out(MD=4.218,z=4.774).png"
+    },
+    {
+      "index": 39,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot39_negCor(r=-0.070).png",
+      "filename": "scatter_plot39_negCor(r=-0.070).png",
+      "sha256": "978e16af02363c16b91bff622b085ab49ffd0e7622e8cdd572269511f0bae529",
+      "attributes": {
+        "correlation_direction": "negative",
+        "has_outlier": 0,
+        "correlation_class": "low"
+      },
+      "label": "Scatterplot 39 \u00b7 negative \u00b7 no outlier",
+      "score_label": "r = -0.070 \u00b7 no outlier",
+      "published_r": -0.07,
+      "mahalanobis_distance": null,
+      "outlier_z": null,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot39_negCor(r=-0.070).png"
+    },
+    {
+      "index": 40,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot40_negCor(r=-0.117)_out(MD=3.488,z=3.513).png",
+      "filename": "scatter_plot40_negCor(r=-0.117)_out(MD=3.488,z=3.513).png",
+      "sha256": "8d4f316b91dd022a8a51ac6403973eb7cb3ef6271328f2a5688c61eea7d757a7",
+      "attributes": {
+        "correlation_direction": "negative",
+        "has_outlier": 1,
+        "correlation_class": "low"
+      },
+      "label": "Scatterplot 40 \u00b7 negative \u00b7 outlier",
+      "score_label": "r = -0.117 \u00b7 outlier",
+      "published_r": -0.117,
+      "mahalanobis_distance": 3.488,
+      "outlier_z": 3.513,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot40_negCor(r=-0.117)_out(MD=3.488,z=3.513).png"
+    },
+    {
+      "index": 41,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot41_negCor(r=-0.125).png",
+      "filename": "scatter_plot41_negCor(r=-0.125).png",
+      "sha256": "b3af8790b65bf895011522aa847d903f5cba40ff7dc149c3fc9717411c8a3a96",
+      "attributes": {
+        "correlation_direction": "negative",
+        "has_outlier": 0,
+        "correlation_class": "low"
+      },
+      "label": "Scatterplot 41 \u00b7 negative \u00b7 no outlier",
+      "score_label": "r = -0.125 \u00b7 no outlier",
+      "published_r": -0.125,
+      "mahalanobis_distance": null,
+      "outlier_z": null,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot41_negCor(r=-0.125).png"
+    },
+    {
+      "index": 42,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot42_negCor(r=-0.148)_out(MD=5.810,z=7.029).png",
+      "filename": "scatter_plot42_negCor(r=-0.148)_out(MD=5.810,z=7.029).png",
+      "sha256": "b05089b7900e8f54a5e3e76a191d42d6be0f3c1321ae58829c5653747e8cad56",
+      "attributes": {
+        "correlation_direction": "negative",
+        "has_outlier": 1,
+        "correlation_class": "low"
+      },
+      "label": "Scatterplot 42 \u00b7 negative \u00b7 outlier",
+      "score_label": "r = -0.148 \u00b7 outlier",
+      "published_r": -0.148,
+      "mahalanobis_distance": 5.81,
+      "outlier_z": 7.029,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot42_negCor(r=-0.148)_out(MD=5.810,z=7.029).png"
+    },
+    {
+      "index": 43,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot43_negCor(r=-0.198)_out(MD=4.892,z=5.891).png",
+      "filename": "scatter_plot43_negCor(r=-0.198)_out(MD=4.892,z=5.891).png",
+      "sha256": "450d3b6bc268d2320ece338f21751e9cc2f2fda5881495e26675f952dca73eff",
+      "attributes": {
+        "correlation_direction": "negative",
+        "has_outlier": 1,
+        "correlation_class": "low"
+      },
+      "label": "Scatterplot 43 \u00b7 negative \u00b7 outlier",
+      "score_label": "r = -0.198 \u00b7 outlier",
+      "published_r": -0.198,
+      "mahalanobis_distance": 4.892,
+      "outlier_z": 5.891,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot43_negCor(r=-0.198)_out(MD=4.892,z=5.891).png"
+    },
+    {
+      "index": 44,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot44_negCor(r=-0.205).png",
+      "filename": "scatter_plot44_negCor(r=-0.205).png",
+      "sha256": "6092c3b8da076c05bf401e60d04e79699e008585e465fbdbc0f6a9867b98cde7",
+      "attributes": {
+        "correlation_direction": "negative",
+        "has_outlier": 0,
+        "correlation_class": "low"
+      },
+      "label": "Scatterplot 44 \u00b7 negative \u00b7 no outlier",
+      "score_label": "r = -0.205 \u00b7 no outlier",
+      "published_r": -0.205,
+      "mahalanobis_distance": null,
+      "outlier_z": null,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot44_negCor(r=-0.205).png"
+    },
+    {
+      "index": 45,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot45_negCor(r=-0.195)_out(MD=4.646,z=5.297).png",
+      "filename": "scatter_plot45_negCor(r=-0.195)_out(MD=4.646,z=5.297).png",
+      "sha256": "5ad69ffd4b792618b70ecff27cb492891ee0c7c2bb30e3158c9b042e341392d6",
+      "attributes": {
+        "correlation_direction": "negative",
+        "has_outlier": 1,
+        "correlation_class": "low"
+      },
+      "label": "Scatterplot 45 \u00b7 negative \u00b7 outlier",
+      "score_label": "r = -0.195 \u00b7 outlier",
+      "published_r": -0.195,
+      "mahalanobis_distance": 4.646,
+      "outlier_z": 5.297,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot45_negCor(r=-0.195)_out(MD=4.646,z=5.297).png"
+    },
+    {
+      "index": 46,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot46_negCor(r=-0.255)_out(MD=3.675,z=3.596).png",
+      "filename": "scatter_plot46_negCor(r=-0.255)_out(MD=3.675,z=3.596).png",
+      "sha256": "1a4a456ee2a327118ee88475c6768a647706f0c00be53937d6291a7638cdc17a",
+      "attributes": {
+        "correlation_direction": "negative",
+        "has_outlier": 1,
+        "correlation_class": "low"
+      },
+      "label": "Scatterplot 46 \u00b7 negative \u00b7 outlier",
+      "score_label": "r = -0.255 \u00b7 outlier",
+      "published_r": -0.255,
+      "mahalanobis_distance": 3.675,
+      "outlier_z": 3.596,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot46_negCor(r=-0.255)_out(MD=3.675,z=3.596).png"
+    },
+    {
+      "index": 47,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot47_negCor(r=-0.289).png",
+      "filename": "scatter_plot47_negCor(r=-0.289).png",
+      "sha256": "b4968be30a75ac5bb14465a87006782a9b2b740aeb107e709a8b453cee576eb9",
+      "attributes": {
+        "correlation_direction": "negative",
+        "has_outlier": 0,
+        "correlation_class": "low"
+      },
+      "label": "Scatterplot 47 \u00b7 negative \u00b7 no outlier",
+      "score_label": "r = -0.289 \u00b7 no outlier",
+      "published_r": -0.289,
+      "mahalanobis_distance": null,
+      "outlier_z": null,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot47_negCor(r=-0.289).png"
+    },
+    {
+      "index": 48,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot48_negCor(r=-0.305)_out(MD=3.349,z=3.376).png",
+      "filename": "scatter_plot48_negCor(r=-0.305)_out(MD=3.349,z=3.376).png",
+      "sha256": "f6c79c197941a7e666c08a9b74cb4c14e8a3920335a20db45aa44a399f0cb913",
+      "attributes": {
+        "correlation_direction": "negative",
+        "has_outlier": 1,
+        "correlation_class": "mid"
+      },
+      "label": "Scatterplot 48 \u00b7 negative \u00b7 outlier",
+      "score_label": "r = -0.305 \u00b7 outlier",
+      "published_r": -0.305,
+      "mahalanobis_distance": 3.349,
+      "outlier_z": 3.376,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot48_negCor(r=-0.305)_out(MD=3.349,z=3.376).png"
+    },
+    {
+      "index": 49,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot49_negCor(r=-0.353).png",
+      "filename": "scatter_plot49_negCor(r=-0.353).png",
+      "sha256": "615d038505a09b4e0052c346829ccbd8bb126e0882de26987e8836d57b481bd0",
+      "attributes": {
+        "correlation_direction": "negative",
+        "has_outlier": 0,
+        "correlation_class": "mid"
+      },
+      "label": "Scatterplot 49 \u00b7 negative \u00b7 no outlier",
+      "score_label": "r = -0.353 \u00b7 no outlier",
+      "published_r": -0.353,
+      "mahalanobis_distance": null,
+      "outlier_z": null,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot49_negCor(r=-0.353).png"
+    },
+    {
+      "index": 50,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot50_negCor(r=-0.371).png",
+      "filename": "scatter_plot50_negCor(r=-0.371).png",
+      "sha256": "3c8522638138d986c31eaac3aca24d68704409a3ef6a89475ea0191a39fd46cc",
+      "attributes": {
+        "correlation_direction": "negative",
+        "has_outlier": 0,
+        "correlation_class": "mid"
+      },
+      "label": "Scatterplot 50 \u00b7 negative \u00b7 no outlier",
+      "score_label": "r = -0.371 \u00b7 no outlier",
+      "published_r": -0.371,
+      "mahalanobis_distance": null,
+      "outlier_z": null,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot50_negCor(r=-0.371).png"
+    },
+    {
+      "index": 51,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot51_negCor(r=-0.408).png",
+      "filename": "scatter_plot51_negCor(r=-0.408).png",
+      "sha256": "b9ac90241b38d61e1de89162421edcd5b5ac8f182106c608cf085787f6b23dcf",
+      "attributes": {
+        "correlation_direction": "negative",
+        "has_outlier": 0,
+        "correlation_class": "mid"
+      },
+      "label": "Scatterplot 51 \u00b7 negative \u00b7 no outlier",
+      "score_label": "r = -0.408 \u00b7 no outlier",
+      "published_r": -0.408,
+      "mahalanobis_distance": null,
+      "outlier_z": null,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot51_negCor(r=-0.408).png"
+    },
+    {
+      "index": 52,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot52_negCor(r=-0.436).png",
+      "filename": "scatter_plot52_negCor(r=-0.436).png",
+      "sha256": "9b7d9d649f56770fdb9906192fbe3707773ce0de55f4ae00b381938c1893ce56",
+      "attributes": {
+        "correlation_direction": "negative",
+        "has_outlier": 0,
+        "correlation_class": "mid"
+      },
+      "label": "Scatterplot 52 \u00b7 negative \u00b7 no outlier",
+      "score_label": "r = -0.436 \u00b7 no outlier",
+      "published_r": -0.436,
+      "mahalanobis_distance": null,
+      "outlier_z": null,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot52_negCor(r=-0.436).png"
+    },
+    {
+      "index": 53,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot53_negCor(r=-0.451)_out(MD=3.638,z=3.953).png",
+      "filename": "scatter_plot53_negCor(r=-0.451)_out(MD=3.638,z=3.953).png",
+      "sha256": "70eb1edc70e627c84bb49c047a82afa7164441386ab249c548a26980c068074e",
+      "attributes": {
+        "correlation_direction": "negative",
+        "has_outlier": 1,
+        "correlation_class": "mid"
+      },
+      "label": "Scatterplot 53 \u00b7 negative \u00b7 outlier",
+      "score_label": "r = -0.451 \u00b7 outlier",
+      "published_r": -0.451,
+      "mahalanobis_distance": 3.638,
+      "outlier_z": 3.953,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot53_negCor(r=-0.451)_out(MD=3.638,z=3.953).png"
+    },
+    {
+      "index": 54,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot54_negCor(r=-0.446)_out(MD=5.726,z=6.738).png",
+      "filename": "scatter_plot54_negCor(r=-0.446)_out(MD=5.726,z=6.738).png",
+      "sha256": "a390a532a627a5de84d84a98001866d519c0af78451fe1ded10f09816bedec68",
+      "attributes": {
+        "correlation_direction": "negative",
+        "has_outlier": 1,
+        "correlation_class": "mid"
+      },
+      "label": "Scatterplot 54 \u00b7 negative \u00b7 outlier",
+      "score_label": "r = -0.446 \u00b7 outlier",
+      "published_r": -0.446,
+      "mahalanobis_distance": 5.726,
+      "outlier_z": 6.738,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot54_negCor(r=-0.446)_out(MD=5.726,z=6.738).png"
+    },
+    {
+      "index": 55,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot55_negCor(r=-0.487)_out(MD=5.324,z=6.080).png",
+      "filename": "scatter_plot55_negCor(r=-0.487)_out(MD=5.324,z=6.080).png",
+      "sha256": "31ac99e071731f5a78a078a7c74fb2e4094d81ae12d6a5a664aff4f2f1a1f6f4",
+      "attributes": {
+        "correlation_direction": "negative",
+        "has_outlier": 1,
+        "correlation_class": "mid"
+      },
+      "label": "Scatterplot 55 \u00b7 negative \u00b7 outlier",
+      "score_label": "r = -0.487 \u00b7 outlier",
+      "published_r": -0.487,
+      "mahalanobis_distance": 5.324,
+      "outlier_z": 6.08,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot55_negCor(r=-0.487)_out(MD=5.324,z=6.080).png"
+    },
+    {
+      "index": 56,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot56_negCor(r=-0.528).png",
+      "filename": "scatter_plot56_negCor(r=-0.528).png",
+      "sha256": "511d894b22463ab9d29be24b5786c351de9d51f445c5289b024c5706a7e5a06f",
+      "attributes": {
+        "correlation_direction": "negative",
+        "has_outlier": 0,
+        "correlation_class": "mid"
+      },
+      "label": "Scatterplot 56 \u00b7 negative \u00b7 no outlier",
+      "score_label": "r = -0.528 \u00b7 no outlier",
+      "published_r": -0.528,
+      "mahalanobis_distance": null,
+      "outlier_z": null,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot56_negCor(r=-0.528).png"
+    },
+    {
+      "index": 57,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot57_negCor(r=-0.575).png",
+      "filename": "scatter_plot57_negCor(r=-0.575).png",
+      "sha256": "959f1622340813fe560d7114dcb28453954d6b9e62b9dfa307e9692b9e208308",
+      "attributes": {
+        "correlation_direction": "negative",
+        "has_outlier": 0,
+        "correlation_class": "mid"
+      },
+      "label": "Scatterplot 57 \u00b7 negative \u00b7 no outlier",
+      "score_label": "r = -0.575 \u00b7 no outlier",
+      "published_r": -0.575,
+      "mahalanobis_distance": null,
+      "outlier_z": null,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot57_negCor(r=-0.575).png"
+    },
+    {
+      "index": 58,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot58_negCor(r=-0.599).png",
+      "filename": "scatter_plot58_negCor(r=-0.599).png",
+      "sha256": "2f76691d40124ab03cd5f25cdff31c7caeb0b4dc62922a5da122cec38e5d70e2",
+      "attributes": {
+        "correlation_direction": "negative",
+        "has_outlier": 0,
+        "correlation_class": "mid"
+      },
+      "label": "Scatterplot 58 \u00b7 negative \u00b7 no outlier",
+      "score_label": "r = -0.599 \u00b7 no outlier",
+      "published_r": -0.599,
+      "mahalanobis_distance": null,
+      "outlier_z": null,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot58_negCor(r=-0.599).png"
+    },
+    {
+      "index": 59,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot59_negCor(r=-0.623).png",
+      "filename": "scatter_plot59_negCor(r=-0.623).png",
+      "sha256": "6541360dbc8d1f9e4ec60190b0dc4e7128ae6fd3da6aa9490c4c8593a96d66ca",
+      "attributes": {
+        "correlation_direction": "negative",
+        "has_outlier": 0,
+        "correlation_class": "mid"
+      },
+      "label": "Scatterplot 59 \u00b7 negative \u00b7 no outlier",
+      "score_label": "r = -0.623 \u00b7 no outlier",
+      "published_r": -0.623,
+      "mahalanobis_distance": null,
+      "outlier_z": null,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot59_negCor(r=-0.623).png"
+    },
+    {
+      "index": 60,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot60_negCor(r=-0.642).png",
+      "filename": "scatter_plot60_negCor(r=-0.642).png",
+      "sha256": "35aa22fd87607e902f4c5b044dd46aa42d988ebdf10391255b4caf47cd285584",
+      "attributes": {
+        "correlation_direction": "negative",
+        "has_outlier": 0,
+        "correlation_class": "mid"
+      },
+      "label": "Scatterplot 60 \u00b7 negative \u00b7 no outlier",
+      "score_label": "r = -0.642 \u00b7 no outlier",
+      "published_r": -0.642,
+      "mahalanobis_distance": null,
+      "outlier_z": null,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot60_negCor(r=-0.642).png"
+    },
+    {
+      "index": 61,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot61_negCor(r=-0.684).png",
+      "filename": "scatter_plot61_negCor(r=-0.684).png",
+      "sha256": "6ceb7645456f739ea60821d4811e211372952950293d59bbe7f0f468ad0bf33b",
+      "attributes": {
+        "correlation_direction": "negative",
+        "has_outlier": 0,
+        "correlation_class": "mid"
+      },
+      "label": "Scatterplot 61 \u00b7 negative \u00b7 no outlier",
+      "score_label": "r = -0.684 \u00b7 no outlier",
+      "published_r": -0.684,
+      "mahalanobis_distance": null,
+      "outlier_z": null,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot61_negCor(r=-0.684).png"
+    },
+    {
+      "index": 62,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot62_negSrngCor(r=-0.715).png",
+      "filename": "scatter_plot62_negSrngCor(r=-0.715).png",
+      "sha256": "914496be04885d3062de97968fdaa4dcaf56b226fb0b24df1d5d5c038e88a1cc",
+      "attributes": {
+        "correlation_direction": "negative",
+        "has_outlier": 0,
+        "correlation_class": "high"
+      },
+      "label": "Scatterplot 62 \u00b7 negative \u00b7 no outlier",
+      "score_label": "r = -0.715 \u00b7 no outlier",
+      "published_r": -0.715,
+      "mahalanobis_distance": null,
+      "outlier_z": null,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot62_negSrngCor(r=-0.715).png"
+    },
+    {
+      "index": 63,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot63_negSrngCor(r=-0.744).png",
+      "filename": "scatter_plot63_negSrngCor(r=-0.744).png",
+      "sha256": "0d2945c8e67ad719baee6e83c57c5bb5b14ed822eeb93864a5bc8a1187fbcccc",
+      "attributes": {
+        "correlation_direction": "negative",
+        "has_outlier": 0,
+        "correlation_class": "high"
+      },
+      "label": "Scatterplot 63 \u00b7 negative \u00b7 no outlier",
+      "score_label": "r = -0.744 \u00b7 no outlier",
+      "published_r": -0.744,
+      "mahalanobis_distance": null,
+      "outlier_z": null,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot63_negSrngCor(r=-0.744).png"
+    },
+    {
+      "index": 64,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot64_negSrngCor(r=-0.741).png",
+      "filename": "scatter_plot64_negSrngCor(r=-0.741).png",
+      "sha256": "edf64b55cc52a5e246576a70bc4f69b4d9fb7b31729a5538ea6ca9f735f77d0a",
+      "attributes": {
+        "correlation_direction": "negative",
+        "has_outlier": 0,
+        "correlation_class": "high"
+      },
+      "label": "Scatterplot 64 \u00b7 negative \u00b7 no outlier",
+      "score_label": "r = -0.741 \u00b7 no outlier",
+      "published_r": -0.741,
+      "mahalanobis_distance": null,
+      "outlier_z": null,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot64_negSrngCor(r=-0.741).png"
+    },
+    {
+      "index": 65,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot65_negSrngCor(r=-0.802).png",
+      "filename": "scatter_plot65_negSrngCor(r=-0.802).png",
+      "sha256": "3c1fcda971f06e4ca5b20d0f106615bb10f0605b1b06dc5364c1577a2681e8b6",
+      "attributes": {
+        "correlation_direction": "negative",
+        "has_outlier": 0,
+        "correlation_class": "high"
+      },
+      "label": "Scatterplot 65 \u00b7 negative \u00b7 no outlier",
+      "score_label": "r = -0.802 \u00b7 no outlier",
+      "published_r": -0.802,
+      "mahalanobis_distance": null,
+      "outlier_z": null,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot65_negSrngCor(r=-0.802).png"
+    },
+    {
+      "index": 66,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot66_negSrngCor(r=-0.824).png",
+      "filename": "scatter_plot66_negSrngCor(r=-0.824).png",
+      "sha256": "b1d021d5807c52e4907b18e2073c074b270252e9e169c1fb074bafad4c4c9296",
+      "attributes": {
+        "correlation_direction": "negative",
+        "has_outlier": 0,
+        "correlation_class": "high"
+      },
+      "label": "Scatterplot 66 \u00b7 negative \u00b7 no outlier",
+      "score_label": "r = -0.824 \u00b7 no outlier",
+      "published_r": -0.824,
+      "mahalanobis_distance": null,
+      "outlier_z": null,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot66_negSrngCor(r=-0.824).png"
+    },
+    {
+      "index": 67,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot67_negSrngCor(r=-0.860)_out(MD=3.869,z=4.091).png",
+      "filename": "scatter_plot67_negSrngCor(r=-0.860)_out(MD=3.869,z=4.091).png",
+      "sha256": "ff12b6d9407449c15311350ece667a7247e98d12eb1ad61e1699625ae2deb2ec",
+      "attributes": {
+        "correlation_direction": "negative",
+        "has_outlier": 1,
+        "correlation_class": "high"
+      },
+      "label": "Scatterplot 67 \u00b7 negative \u00b7 outlier",
+      "score_label": "r = -0.860 \u00b7 outlier",
+      "published_r": -0.86,
+      "mahalanobis_distance": 3.869,
+      "outlier_z": 4.091,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot67_negSrngCor(r=-0.860)_out(MD=3.869,z=4.091).png"
+    },
+    {
+      "index": 68,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot68_negSrngCor(r=-0.879).png",
+      "filename": "scatter_plot68_negSrngCor(r=-0.879).png",
+      "sha256": "6aaadbc0cd1fc567953e967e9667b432dad8751dbddd5b9a5e94ad5fec8dff22",
+      "attributes": {
+        "correlation_direction": "negative",
+        "has_outlier": 0,
+        "correlation_class": "high"
+      },
+      "label": "Scatterplot 68 \u00b7 negative \u00b7 no outlier",
+      "score_label": "r = -0.879 \u00b7 no outlier",
+      "published_r": -0.879,
+      "mahalanobis_distance": null,
+      "outlier_z": null,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot68_negSrngCor(r=-0.879).png"
+    },
+    {
+      "index": 69,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot69_negSrngCor(r=-0.912)_out(MD=4.303,z=4.551).png",
+      "filename": "scatter_plot69_negSrngCor(r=-0.912)_out(MD=4.303,z=4.551).png",
+      "sha256": "8ef30bd3504717d22b9b524d3f980cd8f3c816b25a89c4b2d502b19ffb9262bc",
+      "attributes": {
+        "correlation_direction": "negative",
+        "has_outlier": 1,
+        "correlation_class": "high"
+      },
+      "label": "Scatterplot 69 \u00b7 negative \u00b7 outlier",
+      "score_label": "r = -0.912 \u00b7 outlier",
+      "published_r": -0.912,
+      "mahalanobis_distance": 4.303,
+      "outlier_z": 4.551,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot69_negSrngCor(r=-0.912)_out(MD=4.303,z=4.551).png"
+    },
+    {
+      "index": 70,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot70_negSrngCor(r=-0.944).png",
+      "filename": "scatter_plot70_negSrngCor(r=-0.944).png",
+      "sha256": "7db729dc0bdd355d732285e0d130cb9dfeedd4611e5c8ac7aa2b5b13ad6ae38c",
+      "attributes": {
+        "correlation_direction": "negative",
+        "has_outlier": 0,
+        "correlation_class": "high"
+      },
+      "label": "Scatterplot 70 \u00b7 negative \u00b7 no outlier",
+      "score_label": "r = -0.944 \u00b7 no outlier",
+      "published_r": -0.944,
+      "mahalanobis_distance": null,
+      "outlier_z": null,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot70_negSrngCor(r=-0.944).png"
+    },
+    {
+      "index": 71,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot71_negSrngCor(r=-0.971).png",
+      "filename": "scatter_plot71_negSrngCor(r=-0.971).png",
+      "sha256": "3531c4cb679d52474b5c3fae3c5fc0bd7a2f7ee70a0377545d09a96fad9d18ac",
+      "attributes": {
+        "correlation_direction": "negative",
+        "has_outlier": 0,
+        "correlation_class": "high"
+      },
+      "label": "Scatterplot 71 \u00b7 negative \u00b7 no outlier",
+      "score_label": "r = -0.971 \u00b7 no outlier",
+      "published_r": -0.971,
+      "mahalanobis_distance": null,
+      "outlier_z": null,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot71_negSrngCor(r=-0.971).png"
+    },
+    {
+      "index": 72,
+      "source": "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/pilot4/stimuli/scatter_plot72_negSrngCor(r=-0.998).png",
+      "filename": "scatter_plot72_negSrngCor(r=-0.998).png",
+      "sha256": "133489580896324845f68e5a737730d933a54ab0ef39232bae07a267a5fbbd14",
+      "attributes": {
+        "correlation_direction": "negative",
+        "has_outlier": 0,
+        "correlation_class": "high"
+      },
+      "label": "Scatterplot 72 \u00b7 negative \u00b7 no outlier",
+      "score_label": "r = -0.998 \u00b7 no outlier",
+      "published_r": -0.998,
+      "mahalanobis_distance": null,
+      "outlier_z": null,
+      "ink_density": "unknown",
+      "original_source": "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/dataVizSetPilot_4/scatter_plot72_negSrngCor(r=-0.998).png"
+    }
+  ],
+  "comparisons": [],
+  "source_documents": {
+    "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/DataVizThesis_HAScript.m": "f323f3bbf6a7085b9627b0a18d6986e630ebdbc046577e48a6da55c7e58d7f30",
+    "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_StimGen/DataVizStim(figure)Gen.ipynb": "9eddaecaf49a436d51e13899c10ae2c8b7a5f5a919fc1246b226fabb93b38dbb",
+    "SemanticsOfDataViz_HAshcraftGTUgThesis/DataVizThesis_Script/stimSetPilot_4.xlsx": "c2672b375d68bbc2f66f56f0fd85a45be1bfa215065ef4f00e9d08daac203043",
+    "SemanticsOfDataViz_HAshcraftGTUgThesis/reproduce.py": "b10d683bd0f8b96a8c06268c5818642e41e9d6be0307aa2b003483bcc6a5c631"
+  },
+  "source_sha256": "c2672b375d68bbc2f66f56f0fd85a45be1bfa215065ef4f00e9d08daac203043",
+  "reproduction": {
+    "mode": "pilot4",
+    "stimuli": 72,
+    "method": "Lossless export of authoritative published rasters; not regenerated coordinates",
+    "source_sha256": {
+      "DataVizThesis_Script/DataVizThesis_HAScript.m": "f323f3bbf6a7085b9627b0a18d6986e630ebdbc046577e48a6da55c7e58d7f30",
+      "DataVizThesis_StimGen/DataVizStim(figure)Gen.ipynb": "9eddaecaf49a436d51e13899c10ae2c8b7a5f5a919fc1246b226fabb93b38dbb",
+      "DataVizThesis_Script/stimSetPilot_4.xlsx": "c2672b375d68bbc2f66f56f0fd85a45be1bfa215065ef4f00e9d08daac203043",
+      "reproduce.py": "b10d683bd0f8b96a8c06268c5818642e41e9d6be0307aa2b003483bcc6a5c631"
+    },
+    "protocol": "Static images for the existing independent 3-second TRIBE pipeline",
+    "limitation": "MATLAB motion, preceding prompts, attention, and block timing are not simulated"
+  },
+  "schema_version": 1,
+  "dataset": "ashcraft"
+}

@@ -92,6 +92,17 @@ receipts directly. Simulation does not build plots or pages. Partial runs show
 completed/selected counts. Kylie, Hayeong, and Arunkumar comparisons reuse their parent
 study's predictions, without additional inference or duplicate prediction folders.
 
+Ashcraft's controlled scatterplots are available in the Study selector and from
+the home page, whose link opens a new tab. The initial grid compares correlation
+direction × outlier presence. The page links its study-condition, image-count,
+and protocol CSVs. Correlation class uses |r|: Low below 0.3, Mid from 0.3 to
+below 0.7, and High at or above 0.7; direction is a separate variable.
+These are predictions of the 72 authoritative pilot-4 images
+under the existing static protocol; task instructions, attention, movement, and
+block context are omitted. The four tasks are documented, not inferred as
+separate responses from identical pixels. See the
+[reproduction notes](../SemanticsOfDataViz_HAshcraftGTUgThesis/REPRODUCTION.md).
+
 Custom outputs inside the repository can be opened with
 `brain.html?data=../tribe/outputs/custom/selection.json`. Existing `explorer.json`
 URLs also work when the folder has its selection and prediction files.

@@ -82,7 +82,7 @@ def prepare_input(row, args, target, background_rgb):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dataset', choices=['kylie', 'hayeong', 'arunkumar'],
+    parser.add_argument('--dataset', choices=['kylie', 'hayeong', 'arunkumar', 'ashcraft'],
                         help='Prepare a study and generate its TRIBE predictions')
     parser.add_argument('--report-only', action='store_true', help='Export study arrays from existing predictions')
     parser.add_argument('--smoke-only', action='store_true')

@@ -1,6 +1,8 @@
 main {max-width:none}
 .brain-heading {display:flex;align-items:center;justify-content:space-between;gap:16px;margin:8px 0 24px}
 .brain-heading h1 {font-size:1.8rem;letter-spacing:-.035em;margin:0}
+.report-description {max-width:1000px;color:#52667d;font-size:.875rem;line-height:1.6}
+.study-resources {display:flex;flex-wrap:wrap;gap:8px 20px;font-size:.8rem;margin:14px 0 24px}.study-resources[hidden] {display:none}
 .brain-controls {display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:20px;max-width:1040px}
 select {font:inherit;width:100%;min-width:0;max-width:100%;padding:10px 30px 10px 12px;background:white;color:#172637;border:1px solid #9cacbf;border-radius:6px}
 #brain-status {font-size:.875rem;color:#52667d;min-height:1.4em;margin:18px 0}

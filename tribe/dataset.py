@@ -284,6 +284,12 @@ def report_rows(rows, output, allow_partial=False):
 
 def compatible_selection(previous, current):
     """Allow added grouping annotations while preserving every prediction identity."""
+    if previous.get('dataset') == current.get('dataset') == 'ashcraft':
+        from studies import study_variables
+        previous, current = dict(previous), dict(current)
+        for selection in (previous, current):
+            selection['rows'], selection['attributes'] = study_variables(
+                'ashcraft', selection['rows'], selection['attributes'])
     if previous.keys() != current.keys():
         return False
     if any(previous[key] != current[key] for key in current if key not in ('rows', 'attributes')):
@@ -303,7 +309,7 @@ def compatible_selection(previous, current):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--dataset', choices=['massvis', 'kylie', 'hayeong', 'arunkumar'], default='massvis')
+    parser.add_argument('--dataset', choices=['massvis', 'kylie', 'hayeong', 'arunkumar', 'ashcraft'], default='massvis')
     parser.add_argument('--scope', choices=['sample', 'all'], default='sample')
     parser.add_argument('--per-bin', type=int, default=10)
     parser.add_argument('--seed', type=int, default=0)

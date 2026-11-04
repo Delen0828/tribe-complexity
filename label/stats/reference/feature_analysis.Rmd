@@ -1,0 +1,3749 @@
+---
+title: "Feature Analysis"
+author: "Kylie Lin"
+date: "2024-03-14"
+output: html_document
+---
+
+## Look at Everything and its relationship to Perceived Visual Complexity
+
+Analysis includes many tests for mean difference and statistical significance.
+
+```{r, message=F}
+library(tidyverse)
+library(skimr)
+library(readr)
+library(gtools)
+library(janitor)
+library(patchwork)
+library(DT)
+library(gt)
+library(ggdist)
+library(ggnewscale)
+
+data <- read_csv("data/all_labeled_MASSVIS_5800.csv") %>% 
+  clean_names()
+
+data_agg <- tibble(
+  label_group = NA, #i.e. source,multiplicity
+  label = NA, # name of label, i.e. Area, Bar
+  applies = NA,  # binary encoding, 0 = does not apply, 1 = applies
+  n = NA, # count
+  mean_complexity = NA,
+  sd = NA,
+  se = NA
+)
+```
+
+
+# amount of each label in dataset
+
+```{r}
+amounts_data <- data %>% 
+  select(-c(image_id,filename,news_category,science_category,infographic_category,government_category,panel_s,single_panel,multi_panel,amount_of_text, chart_types,category,chart_types_count,chart_count,color_count,quantitative,categorical))
+
+amounts_data <- data.frame(t(colSums(amounts_data[,-1])))
+           
+write_csv(amounts_data,"data/amount_of_each_binary_label.csv")
+```
+
+
+
+```{r}
+mean_comp <- data %>% 
+  summarise(mean_comp = round(mean(mean_human_complexity_rating),2))
+
+data %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram(show.legend=F, color = "white",fill="gray50") +
+    geom_vline(xintercept=mean_comp$mean_comp, color = "red",linewidth=1) +
+    geom_text(x = (mean_comp$mean_comp + 5), y =310, label = mean_comp$mean_comp, color = "red") +
+    theme_minimal() +
+    scale_x_continuous(limits = c(0,100)) +
+    scale_y_continuous(expand = c(0, 0)) +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      # axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      # panel.grid.major.y = element_blank(),
+      panel.grid.major.x = element_blank()
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    ) +
+  coord_cartesian(clip = "off")
+
+# ggsave("figures_for_paper/complexity_distributions.png")
+```
+
+
+
+
+
+
+
+## Source
+
+Run ANOVA — unequal sample sizes are not an assumption, but are something to consider when reading results.
+
+``` {r}
+category_aov = aov(mean_human_complexity_rating ~ category, data)
+summary(category_aov)
+
+```
+Do Post-Hoc Tukey test
+
+```{r}
+tukey_test <- TukeyHSD(category_aov)
+tukey_test
+
+# get actual adjust p values
+tukey_test$category[,"p adj"]
+
+```
+
+
+``` {r}
+# temp <- tibble(category_f = factor(data$category, levels=c("Science","Infographic","News","Government")))
+# data$category_f <- factor(data$category, levels=c("Science","Infographic","News","Government"))
+
+data %>% 
+    mutate(
+    category = factor(category, labels=c("Government", "Infographic", "News", "Science"))
+  ) %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram(show.legend=F) +
+    geom_point(data = cat_means, aes(x = mean_complexity, y = 0), color = "red", size = 3) +
+    geom_vline(data = cat_means, aes(xintercept = mean_complexity), color = "red", size = 1, alpha = 0.75) +
+    facet_wrap(~ factor(category, levels=c("Science","Infographic","News","Government")), ncol=1) +
+    theme_minimal() +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0)) +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      strip.text.x = element_blank()
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+ggsave("figures_for_paper/category_distributions.png", width=4, height=8)
+
+```
+
+
+
+```{r}
+data_agg <- cat_means %>% 
+  mutate(applies=NA,
+         label_group="Source") %>% 
+  rename("label" = category) %>% 
+  select(c(label_group,label,applies,everything()))
+
+```
+
+## Multiplicity
+
+Do a t-test, first check if variance is different or not.
+
+```{r}
+panel_means <- data %>% 
+  select(c(panel_s, mean_human_complexity_rating)) %>% 
+  group_by(panel_s) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+panel_means
+```
+
+No significant variance difference
+
+```{r}
+data %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram(show.legend=F) +
+    geom_point(data = panel_means, aes(x = mean_complexity, y = 0), color = "red", size = 3) +
+    geom_vline(data = panel_means, aes(xintercept = mean_complexity), color = "red", size = 0.5, alpha = 0.5) +
+    facet_wrap(~panel_s, ncol=1) +
+    theme_minimal() +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0)) +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+
+panels_ftest <- var.test(mean_human_complexity_rating ~ panel_s, data = data)
+panels_ftest
+```
+
+Conduct the t-test
+
+``` {r}
+
+t.test(mean_human_complexity_rating ~ panel_s, data=data, var.equal=T)
+
+```
+
+``` {r}
+panels_means <- data %>% 
+  select(c(panel_s, mean_human_complexity_rating)) %>% 
+  group_by(panel_s) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+data %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram(show.legend=F) +
+    geom_point(data = panels_means, aes(x = mean_complexity, y = 0), color = "red", size = 3) +
+    geom_vline(data = panels_means, aes(xintercept = mean_complexity), color = "red", size = 1, alpha = 0.75) +
+    facet_wrap(~panel_s, ncol=1) +
+    theme_minimal() +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0)) +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      strip.text.x = element_blank()
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+ggsave("figures_for_paper/panel_distributions.png", width=4, height=4)
+
+```
+
+```{r}
+data %>% 
+  mutate(panel_s = as.factor(panel_s)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating,y=reorder(panel_s,mean_human_complexity_rating)))+
+  stat_interval(aes(alpha=panel_s),position=position_dodge(),
+                        show.legend=F, height=3,linewidth=15) +
+  scale_color_manual(values = c("gray70","gray50","gray30")) +
+  stat_pointinterval(aes(alpha=panel_s), position=position_dodge(), 
+                     point_size = 12,linewidth=NA,color="gray20", shape=18,
+                        show.legend=F) +
+  new_scale_color() +
+  # scale_color_manual(values = c("gray60","gray20")) +
+  # geom_point(data=means, aes(x = mean_complexity, y = panel_s,color=panel_s)) +
+    # geom_hline(yintercept=mean_comp$mean_comp, color = "red",linewidth=1) +
+    # geom_text(y = (mean_comp$mean_comp + 5), x =310, label = mean_comp$mean_comp, color = "red") +
+    theme_minimal() +
+    scale_alpha_discrete(range = c(1,.15)) +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    # scale_y_discrete(expand = c(50, 50)) +
+    # scale_colour_grey() +
+    # scale_color_brewer() +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text.y = element_blank(),
+      # axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      panel.grid.major.x = element_blank(),
+      # panel.border = element_rect(color = "gray50", 
+      #                               fill = NA, 
+      #                               size = 0.5),
+      plot.margin=unit(c(.2,.5,.2,.2),"cm")
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+
+ggsave("figures_for_paper/intervals/panels_int.png", width=10, height=4)
+```
+
+
+```{r}
+panel_means <- panel_means %>% 
+  mutate(applies=NA,
+         label_group="Multiplicity") %>% 
+  rename(label = panel_s) %>% 
+  select(c(label_group,label,applies,everything()))
+
+data_agg <- data_agg %>% 
+  rbind(panel_means)
+
+```
+
+
+## Text
+
+A series of t-tests on the different text categories. Includes variance tests
+
+### No text
+
+
+```{r}
+notext_means <- data %>% 
+  select(c(no_text, mean_human_complexity_rating)) %>% 
+  group_by(no_text) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+notext_means
+```
+
+
+```{r}
+notext_agg <- notext_means %>% 
+  mutate(label="no_text",
+         label_group="Text") %>% 
+  rename("applies" = "no_text") %>% 
+  select(c(label_group,label,applies,everything()))
+
+data_agg <- data_agg %>% 
+  rbind(notext_agg)
+
+```
+
+
+No significant variance difference
+
+```{r}
+data %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram() +
+    facet_wrap(~no_text) +
+    theme_minimal()
+
+notext_ftest <- var.test(mean_human_complexity_rating ~ no_text, data = data)
+notext_ftest
+```
+
+```{r}
+# data %>% 
+#   ggplot(aes(x = mean_human_complexity_rating, fill=as.factor(no_text))) +
+#     geom_histogram() +
+#     geom_vline(data=notext_means, aes(xintercept = mean_complexity, color=as.factor(no_text)), size=0.5, show.legend = F) +
+#     scale_fill_manual(values = c("grey50","orchid4")) +
+#     scale_color_manual(values = c("grey50","orchid4")) +
+#     theme_minimal()
+```
+
+
+
+
+Conduct the t-test
+
+``` {r}
+
+t.test(mean_human_complexity_rating ~ no_text, data=data, var.equal=T)
+
+```
+
+``` {r}
+notext_means <- data %>% 
+  select(c(no_text, mean_human_complexity_rating)) %>% 
+  group_by(no_text) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+data %>% 
+  mutate(no_text = as.factor(no_text)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram(aes(fill=no_text),show.legend=F) +
+    geom_point(data = notext_means, aes(x = mean_complexity, y = 0), color = "red", size = 3) +
+    geom_vline(data = notext_means, aes(xintercept = mean_complexity), color = "red", size = 01, alpha = 0.75) +
+    facet_wrap(~factor(no_text, levels =c("1", "0")), ncol=1) +
+    theme_minimal() +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0)) +
+    scale_fill_manual(values = c("grey25","grey50")) +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      strip.text.x = element_blank(),
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+ggsave("figures_for_paper/notext_distributions.png", width=4, height=4)
+
+```
+
+
+
+```{r}
+data %>% 
+  mutate(no_text = as.factor(no_text)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating,y=reorder(no_text,-mean_human_complexity_rating)))+
+  stat_interval(aes(alpha=no_text),position=position_dodge(),
+                        show.legend=F, height=3,linewidth=15) +
+  scale_color_manual(values = c("#b1bff9","#8da7f9","#779bf9")) +
+  stat_pointinterval(aes(alpha=no_text), position=position_dodge(), 
+                     point_size = 12,linewidth=NA,color="#282B7C", shape=18,
+                        show.legend=F) +
+  new_scale_color() +
+  # scale_color_manual(values = c("gray60","gray20")) +
+  # geom_point(data=means, aes(x = mean_complexity, y = panel_s,color=panel_s)) +
+    # geom_hline(yintercept=mean_comp$mean_comp, color = "red",linewidth=1) +
+    # geom_text(y = (mean_comp$mean_comp + 5), x =310, label = mean_comp$mean_comp, color = "red") +
+    theme_minimal() +
+    scale_alpha_discrete(range = c(.15,1)) +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    # scale_y_discrete(expand = c(50, 50)) +
+    # scale_colour_grey() +
+    # scale_color_brewer() +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text.y = element_blank(),
+      # axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      panel.grid.major.x = element_blank(),
+      # panel.border = element_rect(color = "gray50", 
+      #                               fill = NA, 
+      #                               size = 0.5),
+      plot.margin=unit(c(.2,.5,.2,.2),"cm")
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+
+ggsave("figures_for_paper/intervals/notext_int.png", width=10, height=4)
+```
+
+
+### Text-Only
+
+```{r}
+data %>% 
+  select(c(text_only, mean_human_complexity_rating)) %>% 
+  group_by(text_only) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+```
+
+
+
+Significant variance difference
+
+```{r}
+data %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram() +
+    facet_wrap(~text_only) +
+    theme_minimal()
+
+textonly_ftest <- var.test(mean_human_complexity_rating ~ text_only, data = data)
+textonly_ftest
+```
+
+Conduct the t-test
+
+``` {r}
+# variance is different — use welch t test
+t.test(mean_human_complexity_rating ~ text_only, data=data, var.equal=F)
+
+```
+
+```{r}
+data %>% 
+  mutate(text_only = as.factor(text_only)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating,y=reorder(text_only,-mean_human_complexity_rating)))+
+  stat_interval(aes(alpha=text_only),position=position_dodge(),
+                        show.legend=F, height=3,linewidth=15) +
+  scale_color_manual(values = c("#b1bff9","#8da7f9","#779bf9")) +
+  stat_pointinterval(aes(alpha=text_only), position=position_dodge(), 
+                     point_size = 12,linewidth=NA,color="#282B7C", shape=18,
+                        show.legend=F) +
+  new_scale_color() +
+  # scale_color_manual(values = c("gray60","gray20")) +
+  # geom_point(data=means, aes(x = mean_complexity, y = panel_s,color=panel_s)) +
+    # geom_hline(yintercept=mean_comp$mean_comp, color = "red",linewidth=1) +
+    # geom_text(y = (mean_comp$mean_comp + 5), x =310, label = mean_comp$mean_comp, color = "red") +
+    theme_minimal() +
+    scale_alpha_discrete(range = c(.15,1)) +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    # scale_y_discrete(expand = c(50, 50)) +
+    # scale_colour_grey() +
+    # scale_color_brewer() +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text.y = element_blank(),
+      # axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      panel.grid.major.x = element_blank(),
+      # panel.border = element_rect(color = "gray50", 
+      #                               fill = NA, 
+      #                               size = 0.5),
+      plot.margin=unit(c(.2,.5,.2,.2),"cm")
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+
+ggsave("figures_for_paper/intervals/textonly_int.png", width=10, height=4)
+```
+
+
+``` {r}
+textonly_means <- data %>% 
+  select(c(text_only, mean_human_complexity_rating)) %>% 
+  group_by(text_only) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+data %>% 
+  mutate(text_only = as.factor(text_only)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram(aes(fill=text_only),show.legend=F) +
+    geom_point(data = textonly_means, aes(x = mean_complexity, y = 0), color = "red", size = 3) +
+    geom_vline(data = textonly_means, aes(xintercept = mean_complexity), color = "red", size = 01, alpha = 0.75) +
+    facet_wrap(~factor(text_only, levels =c("1", "0")), ncol=1) +
+    theme_minimal() +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0)) +
+    scale_fill_manual(values = c("grey25","grey50")) +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      strip.text.x = element_blank(),
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+ggsave("figures_for_paper/textonly_distributions.png", width=4, height=4)
+
+```
+
+```{r}
+textonly_agg <- textonly_means %>% 
+  mutate(label="text_only",
+         label_group="Text") %>% 
+  rename("applies" = "text_only") %>% 
+  select(c(label_group,label,applies,everything()))
+
+data_agg <- data_agg %>% 
+  rbind(textonly_agg)
+
+```
+
+
+
+### Titles
+
+```{r}
+data %>% 
+  select(c(titles, mean_human_complexity_rating)) %>% 
+  group_by(titles) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+```
+
+Significant variance difference
+
+```{r}
+data %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram() +
+    facet_wrap(~titles) +
+    theme_minimal()
+
+titles_ftest <- var.test(mean_human_complexity_rating ~ titles, data = data)
+titles_ftest
+```
+
+Conduct the t-test
+
+``` {r}
+
+t.test(mean_human_complexity_rating ~ titles, data=data, var.equal=F)
+
+```
+
+
+``` {r}
+titles_means <- data %>% 
+  select(c(titles, mean_human_complexity_rating)) %>% 
+  group_by(titles) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+data %>% 
+  mutate(titles = as.factor(titles)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram(aes(fill=titles),show.legend=F) +
+    geom_point(data = titles_means, aes(x = mean_complexity, y = 0), color = "red", size = 3) +
+    geom_vline(data = titles_means, aes(xintercept = mean_complexity), color = "red", size = 1, alpha = 0.75) +
+    facet_wrap(~factor(titles, levels =c("1", "0")), ncol=1) +
+    theme_minimal() +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0)) +
+    scale_fill_manual(values = c("grey25","grey50")) +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      strip.text.x = element_blank(),
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+
+ggsave("figures_for_paper/titles_distributions.png", width=4, height=4)
+
+```
+
+```{r}
+data %>% 
+  mutate(titles = as.factor(titles)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating,y=reorder(titles,-mean_human_complexity_rating)))+
+  stat_interval(aes(alpha=titles),position=position_dodge(),
+                        show.legend=F, height=3,linewidth=15) +
+  scale_color_manual(values = c("#b1bff9","#8da7f9","#779bf9")) +
+  stat_pointinterval(aes(alpha=titles), position=position_dodge(), 
+                     point_size = 12,linewidth=NA,color="#282B7C", shape=18,
+                        show.legend=F) +
+  new_scale_color() +
+  # scale_color_manual(values = c("gray60","gray20")) +
+  # geom_point(data=means, aes(x = mean_complexity, y = panel_s,color=panel_s)) +
+    # geom_hline(yintercept=mean_comp$mean_comp, color = "red",linewidth=1) +
+    # geom_text(y = (mean_comp$mean_comp + 5), x =310, label = mean_comp$mean_comp, color = "red") +
+    theme_minimal() +
+    scale_alpha_discrete(range = c(.15,1)) +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    # scale_y_discrete(expand = c(50, 50)) +
+    # scale_colour_grey() +
+    # scale_color_brewer() +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text.y = element_blank(),
+      # axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      panel.grid.major.x = element_blank(),
+      # panel.border = element_rect(color = "gray50", 
+      #                               fill = NA, 
+      #                               size = 0.5),
+      plot.margin=unit(c(.2,.5,.2,.2),"cm")
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+
+ggsave("figures_for_paper/intervals/titles_int.png", width=10, height=4)
+```
+
+
+```{r}
+titles_agg <- titles_means %>% 
+  mutate(label="titles",
+         label_group="Text") %>% 
+  rename("applies" = "titles") %>% 
+  select(c(label_group,label,applies,everything()))
+
+data_agg <- data_agg %>% 
+  rbind(titles_agg)
+
+```
+
+
+### Annotations
+
+```{r}
+data %>% 
+  select(c(annotations, mean_human_complexity_rating)) %>% 
+  group_by(annotations) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+```
+
+Significant variance difference
+
+```{r}
+data %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram() +
+    facet_wrap(~annotations) +
+    theme_minimal()
+
+annotations_ftest <- var.test(mean_human_complexity_rating ~ annotations, data = data)
+annotations_ftest
+```
+
+Conduct the t-test
+
+``` {r}
+# var.equal set to false here
+t.test(mean_human_complexity_rating ~ annotations, data=data, var.equal=F)
+
+```
+
+
+``` {r}
+annotations_means <- data %>% 
+  select(c(annotations, mean_human_complexity_rating)) %>% 
+  group_by(annotations) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+data %>% 
+  mutate(annotations = as.factor(annotations)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram(aes(fill=annotations),show.legend=F) +
+    geom_point(data = annotations_means, aes(x = mean_complexity, y = 0), color = "red", size = 3) +
+    geom_vline(data = annotations_means, aes(xintercept = mean_complexity), color = "red", size = 1, alpha = 0.75) +
+    facet_wrap(~factor(annotations, levels =c("1", "0")), ncol=1) +
+    theme_minimal() +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0)) +
+    scale_fill_manual(values = c("grey50", "grey25")) +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      strip.text.x = element_blank(),
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+ggsave("figures_for_paper/annotations_distributions.png", width=4, height=4)
+
+```
+
+```{r}
+data %>% 
+  mutate(annotations = as.factor(annotations)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating,y=reorder(annotations,mean_human_complexity_rating)))+
+  stat_interval(aes(alpha=annotations),position=position_dodge(),
+                        show.legend=F, height=3,linewidth=15) +
+  scale_color_manual(values = c("#b1bff9","#8da7f9","#779bf9")) +
+  stat_pointinterval(aes(alpha=annotations), position=position_dodge(), 
+                     point_size = 12,linewidth=NA,color="#282B7C", shape=18,
+                        show.legend=F) +
+  new_scale_color() +
+  # scale_color_manual(values = c("gray60","gray20")) +
+  # geom_point(data=means, aes(x = mean_complexity, y = panel_s,color=panel_s)) +
+    # geom_hline(yintercept=mean_comp$mean_comp, color = "red",linewidth=1) +
+    # geom_text(y = (mean_comp$mean_comp + 5), x =310, label = mean_comp$mean_comp, color = "red") +
+    theme_minimal() +
+    scale_alpha_discrete(range = c(.15,1)) +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    # scale_y_discrete(expand = c(50, 50)) +
+    # scale_colour_grey() +
+    # scale_color_brewer() +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text.y = element_blank(),
+      # axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      panel.grid.major.x = element_blank(),
+      # panel.border = element_rect(color = "gray50", 
+      #                               fill = NA, 
+      #                               size = 0.5),
+      plot.margin=unit(c(.2,.5,.2,.2),"cm")
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+
+ggsave("figures_for_paper/intervals/annotations_int.png", width=10, height=4)
+```
+
+```{r}
+annot_agg <- annotations_means %>% 
+  mutate(label="annotations",
+         label_group="Text") %>% 
+  rename("applies" = "annotations") %>% 
+  select(c(label_group,label,applies,everything()))
+
+data_agg <- data_agg %>% 
+  rbind(annot_agg)
+
+```
+
+### Captions
+
+```{r}
+data %>% 
+  select(c(captions, mean_human_complexity_rating)) %>% 
+  group_by(captions) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+```
+
+Significant variance difference
+
+```{r}
+data %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram() +
+    facet_wrap(~captions) +
+    theme_minimal()
+
+captions_ftest <- var.test(mean_human_complexity_rating ~ captions, data = data)
+captions_ftest
+```
+
+Conduct the t-test
+
+``` {r}
+# var.equal set to false here
+t.test(mean_human_complexity_rating ~ captions, data=data, var.equal=F)
+
+```
+
+``` {r}
+captions_means <- data %>% 
+  select(c(captions, mean_human_complexity_rating)) %>% 
+  group_by(captions) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+data %>% 
+  mutate(captions = as.factor(captions)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram(aes(fill=captions),show.legend=F) +
+    geom_point(data = captions_means, aes(x = mean_complexity, y = 0), color = "red", size = 3) +
+    geom_vline(data = captions_means, aes(xintercept = mean_complexity), color = "red", size = 1, alpha = 0.75) +
+    facet_wrap(~factor(captions, levels =c("1", "0")), ncol=1) +
+    theme_minimal() +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0)) +
+    scale_fill_manual(values = c("grey25","grey50")) +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      strip.text.x = element_blank(),
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+ggsave("figures_for_paper/captions_distributions.png", width=4, height=4)
+
+```
+
+```{r}
+data %>% 
+  mutate(captions = as.factor(captions)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating,y=reorder(captions,-mean_human_complexity_rating)))+
+  stat_interval(aes(alpha=captions),position=position_dodge(),
+                        show.legend=F, height=3,linewidth=15) +
+  scale_color_manual(values = c("#b1bff9","#8da7f9","#779bf9")) +
+  stat_pointinterval(aes(alpha=captions), position=position_dodge(), 
+                     point_size = 12,linewidth=NA,color="#282B7C", shape=18,
+                        show.legend=F) +
+  new_scale_color() +
+  # scale_color_manual(values = c("gray60","gray20")) +
+  # geom_point(data=means, aes(x = mean_complexity, y = panel_s,color=panel_s)) +
+    # geom_hline(yintercept=mean_comp$mean_comp, color = "red",linewidth=1) +
+    # geom_text(y = (mean_comp$mean_comp + 5), x =310, label = mean_comp$mean_comp, color = "red") +
+    theme_minimal() +
+    scale_alpha_discrete(range = c(.15,1)) +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    # scale_y_discrete(expand = c(50, 50)) +
+    # scale_colour_grey() +
+    # scale_color_brewer() +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text.y = element_blank(),
+      # axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      panel.grid.major.x = element_blank(),
+      # panel.border = element_rect(color = "gray50", 
+      #                               fill = NA, 
+      #                               size = 0.5),
+      plot.margin=unit(c(.2,.5,.2,.2),"cm")
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+
+ggsave("figures_for_paper/intervals/captions_int.png", width=10, height=4)
+```
+
+```{r}
+caps_agg <- captions_means %>% 
+  mutate(label="captions",
+         label_group="Text") %>% 
+  rename("applies" = "captions") %>% 
+  select(c(label_group,label,applies,everything()))
+
+data_agg <- data_agg %>% 
+  rbind(caps_agg)
+
+```
+
+### Legend Text
+
+```{r}
+data %>% 
+  select(c(legend_text, mean_human_complexity_rating)) %>% 
+  group_by(legend_text) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+```
+
+No significant variance difference
+
+```{r}
+data %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram() +
+    facet_wrap(~legend_text) +
+    theme_minimal()
+
+legendtext_ftest <- var.test(mean_human_complexity_rating ~ legend_text, data = data)
+legendtext_ftest
+```
+
+Conduct the t-test
+
+``` {r}
+
+t.test(mean_human_complexity_rating ~ legend_text, data=data, var.equal=F)
+
+```
+
+``` {r}
+legendtext_means <- data %>% 
+  select(c(legend_text, mean_human_complexity_rating)) %>% 
+  group_by(legend_text) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+data %>% 
+  mutate(legend_text = as.factor(legend_text)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram(aes(fill=legend_text),show.legend=F) +
+    geom_point(data = legendtext_means, aes(x = mean_complexity, y = 0), color = "red", size = 3) +
+    geom_vline(data = legendtext_means, aes(xintercept = mean_complexity), color = "red", size = 1, alpha = 0.75) +
+    facet_wrap(~factor(legend_text, levels =c("1", "0")), ncol=1) +
+    theme_minimal() +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0)) +
+    scale_fill_manual(values = c("grey50","grey25")) +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      strip.text.x = element_blank(),
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+ggsave("figures_for_paper/legendtext_distributions.png", width=4, height=4)
+
+```
+
+```{r}
+data %>% 
+  mutate(legend_text = as.factor(legend_text)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating,y=reorder(legend_text,mean_human_complexity_rating)))+
+  stat_interval(aes(alpha=legend_text),position=position_dodge(),
+                        show.legend=F, height=3,linewidth=15) +
+  scale_color_manual(values = c("#b1bff9","#8da7f9","#779bf9")) +
+  stat_pointinterval(aes(alpha=legend_text), position=position_dodge(), 
+                     point_size = 12,linewidth=NA,color="#282B7C", shape=18,
+                        show.legend=F) +
+  new_scale_color() +
+  # scale_color_manual(values = c("gray60","gray20")) +
+  # geom_point(data=means, aes(x = mean_complexity, y = panel_s,color=panel_s)) +
+    # geom_hline(yintercept=mean_comp$mean_comp, color = "red",linewidth=1) +
+    # geom_text(y = (mean_comp$mean_comp + 5), x =310, label = mean_comp$mean_comp, color = "red") +
+    theme_minimal() +
+    scale_alpha_discrete(range = c(.15,1)) +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    # scale_y_discrete(expand = c(50, 50)) +
+    # scale_colour_grey() +
+    # scale_color_brewer() +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text.y = element_blank(),
+      # axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      panel.grid.major.x = element_blank(),
+      # panel.border = element_rect(color = "gray50", 
+      #                               fill = NA, 
+      #                               size = 0.5),
+      plot.margin=unit(c(.2,.5,.2,.2),"cm")
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+
+ggsave("figures_for_paper/intervals/legend_text_int.png", width=10, height=4)
+```
+
+```{r}
+legtext_agg <- legendtext_means %>% 
+  mutate(label="legend text",
+         label_group="Text") %>% 
+  rename("applies" = "legend_text") %>% 
+  select(c(label_group,label,applies,everything()))
+
+data_agg <- data_agg %>% 
+  rbind(legtext_agg)
+
+```
+
+
+```{r}
+data %>% 
+  group_by(legend_text) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd_complexity = sd(mean_human_complexity_rating),
+    se_complexity = sd_complexity / sqrt(n)
+  ) %>% 
+  ggplot(aes(x = reorder(legend_text, -mean_complexity), y = mean_complexity, fill = legend_text)) +
+    geom_col(show.legend=F) +
+    geom_errorbar(aes(ymin=mean_complexity-se_complexity, ymax=mean_complexity+se_complexity), width=.2) +
+    theme_minimal() +
+    scale_y_continuous(limits = c(0,100), expand = c(0, 0)) +
+    labs(
+      title = "Legend Text",
+      x = "Legend Text",
+      y = "Mean Complexity"
+    ) +
+    theme(
+      axis.ticks.x = element_blank()
+    )
+
+data %>% 
+  ggplot(aes(x = reorder(legend_text, -mean_human_complexity_rating), y = mean_human_complexity_rating, fill = legend_text)) +
+    geom_boxplot(show.legend=F) +
+    theme_minimal() +
+    scale_y_continuous(limits = c(0,100), expand = c(0, 0)) +
+    labs(
+      title = "Legend Text",
+      x = "Legend Text",
+      y = "Mean Complexity"
+    ) +
+    theme(
+      axis.ticks.x = element_blank()
+    )
+
+
+```
+
+
+### Legend Titles
+
+```{r}
+data %>% 
+  select(c(legend_title, mean_human_complexity_rating)) %>% 
+  group_by(legend_title) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+```
+
+No significant variance difference
+
+```{r}
+data %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram() +
+    facet_wrap(~legend_title) +
+    theme_minimal()
+
+legendtitle_ftest <- var.test(mean_human_complexity_rating ~ legend_title, data = data)
+legendtitle_ftest
+```
+
+Conduct the t-test
+
+``` {r}
+
+t.test(mean_human_complexity_rating ~ legend_title, data=data, var.equal=T)
+
+```
+
+``` {r}
+legendtitle_means <- data %>% 
+  select(c(legend_title, mean_human_complexity_rating)) %>% 
+  group_by(legend_title) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+data %>% 
+  mutate(legend_title = as.factor(legend_title)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram(aes(fill=legend_title),show.legend=F) +
+    geom_point(data = legendtitle_means, aes(x = mean_complexity, y = 0), color = "red", size = 3) +
+    geom_vline(data = legendtitle_means, aes(xintercept = mean_complexity), color = "red", size = 1, alpha = 0.75) +
+    facet_wrap(~factor(legend_title, levels =c("1", "0")), ncol=1) +
+    theme_minimal() +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0)) +
+    scale_fill_manual(values = c("grey50","grey25")) +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      strip.text.x = element_blank(),
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+ggsave("figures_for_paper/legendtitle_distributions.png", width=4, height=4)
+
+```
+
+```{r}
+data %>% 
+  mutate(legend_title = as.factor(legend_title)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating,y=reorder(legend_title,mean_human_complexity_rating)))+
+  stat_interval(aes(alpha=legend_title),position=position_dodge(),
+                        show.legend=F, height=3,linewidth=15) +
+  scale_color_manual(values = c("#b1bff9","#8da7f9","#779bf9")) +
+  stat_pointinterval(aes(alpha=legend_title), position=position_dodge(), 
+                     point_size = 12,linewidth=NA,color="#282B7C", shape=18,
+                        show.legend=F) +
+  new_scale_color() +
+  # scale_color_manual(values = c("gray60","gray20")) +
+  # geom_point(data=means, aes(x = mean_complexity, y = panel_s,color=panel_s)) +
+    # geom_hline(yintercept=mean_comp$mean_comp, color = "red",linewidth=1) +
+    # geom_text(y = (mean_comp$mean_comp + 5), x =310, label = mean_comp$mean_comp, color = "red") +
+    theme_minimal() +
+    scale_alpha_discrete(range = c(.15,1)) +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    # scale_y_discrete(expand = c(50, 50)) +
+    # scale_colour_grey() +
+    # scale_color_brewer() +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text.y = element_blank(),
+      # axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      panel.grid.major.x = element_blank(),
+      # panel.border = element_rect(color = "gray50", 
+      #                               fill = NA, 
+      #                               size = 0.5),
+      plot.margin=unit(c(.2,.5,.2,.2),"cm")
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+
+ggsave("figures_for_paper/intervals/legend_title_int.png", width=10, height=4)
+```
+
+```{r}
+legtitle_agg <- legendtitle_means %>% 
+  mutate(label="legend title",
+         label_group="Text") %>% 
+  rename("applies" = "legend_title") %>% 
+  select(c(label_group,label,applies,everything()))
+
+data_agg <- data_agg %>% 
+  rbind(legtitle_agg)
+
+```
+
+
+
+```{r}
+data %>% 
+  group_by(legend_title) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd_complexity = sd(mean_human_complexity_rating),
+    se_complexity = sd_complexity / sqrt(n)
+  ) %>% 
+  ggplot(aes(x = reorder(legend_title, -mean_complexity), y = mean_complexity, fill = legend_title)) +
+    geom_col(show.legend=F) +
+    geom_errorbar(aes(ymin=mean_complexity-se_complexity, ymax=mean_complexity+se_complexity), width=.2) +
+    theme_minimal() +
+    scale_y_continuous(limits = c(0,100), expand = c(0, 0)) +
+    labs(
+      title = "Legend Title",
+      x = "Legend Title",
+      y = "Mean Complexity"
+    ) +
+    theme(
+      axis.ticks.x = element_blank()
+    )
+
+data %>% 
+  ggplot(aes(x = reorder(legend_title, -mean_human_complexity_rating), y = mean_human_complexity_rating, fill = legend_title)) +
+    geom_boxplot(show.legend=F) +
+    theme_minimal() +
+    scale_y_continuous(limits = c(0,100), expand = c(0, 0)) +
+    labs(
+      title = "Legend Title",
+      x = "Legend Title",
+      y = "Mean Complexity"
+    ) +
+    theme(
+      axis.ticks.x = element_blank()
+    )
+
+
+```
+
+### Axes Text
+
+```{r}
+data %>% 
+  select(c(axes_text, mean_human_complexity_rating)) %>% 
+  group_by(axes_text) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+```
+
+Significant variance difference
+
+```{r}
+data %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram() +
+    facet_wrap(~axes_text) +
+    theme_minimal()
+
+axestext_ftest <- var.test(mean_human_complexity_rating ~ axes_text, data = data)
+axestext_ftest
+```
+
+Conduct the t-test
+
+``` {r}
+
+t.test(mean_human_complexity_rating ~ axes_text, data=data, var.equal=F)
+
+```
+
+``` {r}
+axestext_means <- data %>% 
+  select(c(axes_text, mean_human_complexity_rating)) %>% 
+  group_by(axes_text) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+data %>% 
+  mutate(axes_text = as.factor(axes_text)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram(aes(fill=axes_text),show.legend=F) +
+    geom_point(data = axestext_means, aes(x = mean_complexity, y = 0), color = "red", size = 3) +
+    geom_vline(data = axestext_means, aes(xintercept = mean_complexity), color = "red", size = 1, alpha = 0.75) +
+    facet_wrap(~factor(axes_text, levels =c("1", "0")), ncol=1) +
+    theme_minimal() +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0)) +
+    scale_fill_manual(values = c("grey50", "grey25")) +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      strip.text.x = element_blank(),
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+ggsave("figures_for_paper/axestext_distributions.png", width=4, height=4)
+
+```
+
+```{r}
+data %>% 
+  mutate(axes_text = as.factor(axes_text)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating,y=reorder(axes_text,mean_human_complexity_rating)))+
+  stat_interval(aes(alpha=axes_text),position=position_dodge(),
+                        show.legend=F, height=3,linewidth=15) +
+  scale_color_manual(values = c("#b1bff9","#8da7f9","#779bf9")) +
+  stat_pointinterval(aes(alpha=axes_text), position=position_dodge(), 
+                     point_size = 12,linewidth=NA,color="#282B7C", shape=18,
+                        show.legend=F) +
+  new_scale_color() +
+  # scale_color_manual(values = c("gray60","gray20")) +
+  # geom_point(data=means, aes(x = mean_complexity, y = panel_s,color=panel_s)) +
+    # geom_hline(yintercept=mean_comp$mean_comp, color = "red",linewidth=1) +
+    # geom_text(y = (mean_comp$mean_comp + 5), x =310, label = mean_comp$mean_comp, color = "red") +
+    theme_minimal() +
+    scale_alpha_discrete(range = c(.15,1)) +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    # scale_y_discrete(expand = c(50, 50)) +
+    # scale_colour_grey() +
+    # scale_color_brewer() +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text.y = element_blank(),
+      # axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      panel.grid.major.x = element_blank(),
+      # panel.border = element_rect(color = "gray50", 
+      #                               fill = NA, 
+      #                               size = 0.5),
+      plot.margin=unit(c(.2,.5,.2,.2),"cm")
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+
+ggsave("figures_for_paper/intervals/axes_text_int.png", width=10, height=4)
+```
+
+```{r}
+axestext_agg <- axestext_means %>% 
+  mutate(label="axes text",
+         label_group="Text") %>% 
+  rename("applies" = "axes_text") %>% 
+  select(c(label_group,label,applies,everything()))
+
+data_agg <- data_agg %>% 
+  rbind(axestext_agg)
+
+```
+
+### Axes Labels
+
+```{r}
+data %>% 
+  select(c(axes_labels, mean_human_complexity_rating)) %>% 
+  group_by(axes_labels) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+```
+
+Significant variance difference
+
+```{r}
+data %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram() +
+    facet_wrap(~axes_labels) +
+    theme_minimal()
+
+axeslabels_ftest <- var.test(mean_human_complexity_rating ~ axes_labels, data = data)
+axeslabels_ftest
+```
+
+Conduct the t-test
+
+``` {r}
+
+t.test(mean_human_complexity_rating ~ axes_labels, data=data, var.equal=F)
+
+```
+
+```{r}
+data %>% 
+  group_by(axes_labels) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd_complexity = sd(mean_human_complexity_rating),
+    se_complexity = sd_complexity / sqrt(n)
+  ) %>% 
+  ggplot(aes(x = reorder(axes_labels, -mean_complexity), y = mean_complexity, fill = axes_labels)) +
+    geom_col(show.legend=F) +
+    geom_errorbar(aes(ymin=mean_complexity-se_complexity, ymax=mean_complexity+se_complexity), width=.2) +
+    theme_minimal() +
+    scale_y_continuous(limits = c(0,100), expand = c(0, 0)) +
+    labs(
+      title = "Axes Labels",
+      x = "Axes Labels",
+      y = "Mean Complexity"
+    ) +
+    theme(
+      axis.ticks.x = element_blank()
+    )
+
+data %>% 
+  ggplot(aes(x = reorder(axes_labels, -mean_human_complexity_rating), y = mean_human_complexity_rating, fill = axes_labels)) +
+    geom_boxplot(show.legend=F) +
+    theme_minimal() +
+    scale_y_continuous(limits = c(0,100), expand = c(0, 0)) +
+    labs(
+      title = "Axes Labels",
+      x = "Axes Labels",
+      y = "Mean Complexity"
+    ) +
+    theme(
+      axis.ticks.x = element_blank()
+    )
+
+
+```
+
+```{r}
+data %>% 
+  mutate(axes_labels = as.factor(axes_labels)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating,y=reorder(axes_labels,mean_human_complexity_rating)))+
+  stat_interval(aes(alpha=axes_labels),position=position_dodge(),
+                        show.legend=F, height=3,linewidth=15) +
+  scale_color_manual(values = c("#b1bff9","#8da7f9","#779bf9")) +
+  stat_pointinterval(aes(alpha=axes_labels), position=position_dodge(), 
+                     point_size = 12,linewidth=NA,color="#282B7C", shape=18,
+                        show.legend=F) +
+  new_scale_color() +
+  # scale_color_manual(values = c("gray60","gray20")) +
+  # geom_point(data=means, aes(x = mean_complexity, y = panel_s,color=panel_s)) +
+    # geom_hline(yintercept=mean_comp$mean_comp, color = "red",linewidth=1) +
+    # geom_text(y = (mean_comp$mean_comp + 5), x =310, label = mean_comp$mean_comp, color = "red") +
+    theme_minimal() +
+    scale_alpha_discrete(range = c(.15,1)) +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    # scale_y_discrete(expand = c(50, 50)) +
+    # scale_colour_grey() +
+    # scale_color_brewer() +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text.y = element_blank(),
+      # axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      panel.grid.major.x = element_blank(),
+      # panel.border = element_rect(color = "gray50", 
+      #                               fill = NA, 
+      #                               size = 0.5),
+      plot.margin=unit(c(.2,.5,.2,.2),"cm")
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+
+ggsave("figures_for_paper/intervals/axes_labels_int.png", width=10, height=4)
+```
+
+``` {r}
+axeslabels_means <- data %>% 
+  select(c(axes_labels, mean_human_complexity_rating)) %>% 
+  group_by(axes_labels) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+data %>% 
+  mutate(axes_labels = as.factor(axes_labels)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram(aes(fill=axes_labels),show.legend=F) +
+    geom_point(data = axeslabels_means, aes(x = mean_complexity, y = 0), color = "red", size = 3) +
+    geom_vline(data = axeslabels_means, aes(xintercept = mean_complexity), color = "red", size = 1, alpha = 0.75) +
+    facet_wrap(~factor(axes_labels, levels =c("1", "0")), ncol=1) +
+    theme_minimal() +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0)) +
+    scale_fill_manual(values = c("grey50","grey25")) +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      strip.text.x = element_blank(),
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+ggsave("figures_for_paper/axeslabels_distributions.png", width=4, height=4)
+
+```
+
+```{r}
+axeslabels_agg <- axeslabels_means %>% 
+  mutate(label="axes labels",
+         label_group="Text") %>% 
+  rename("applies" = "axes_labels") %>% 
+  select(c(label_group,label,applies,everything()))
+
+data_agg <- data_agg %>% 
+  rbind(axeslabels_agg)
+
+```
+
+## Color
+
+### Black and White
+
+```{r}
+data %>% 
+  select(c(black_and_white, mean_human_complexity_rating)) %>% 
+  group_by(black_and_white) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+```
+
+Significant variance difference
+
+```{r}
+data %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram() +
+    facet_wrap(~black_and_white) +
+    theme_minimal()
+
+bw_ftest <- var.test(mean_human_complexity_rating ~ black_and_white, data = data)
+bw_ftest
+```
+
+Conduct the t-test
+
+``` {r}
+
+t.test(mean_human_complexity_rating ~ black_and_white, data=data, var.equal=F)
+
+```
+
+```{r}
+data %>% 
+  group_by(black_and_white) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd_complexity = sd(mean_human_complexity_rating),
+    se_complexity = sd_complexity / sqrt(n)
+  ) %>% 
+  ggplot(aes(x = reorder(black_and_white, -mean_complexity), y = mean_complexity, fill = black_and_white)) +
+    geom_col(show.legend=F) +
+    geom_errorbar(aes(ymin=mean_complexity-se_complexity, ymax=mean_complexity+se_complexity), width=.2) +
+    theme_minimal() +
+    scale_y_continuous(limits = c(0,100), expand = c(0, 0)) +
+    labs(
+      title = "Black and White",
+      x = "Black and White",
+      y = "Mean Complexity"
+    ) +
+    theme(
+      axis.ticks.x = element_blank()
+    )
+
+data %>% 
+  ggplot(aes(x = reorder(black_and_white, -mean_human_complexity_rating), y = mean_human_complexity_rating, fill = black_and_white)) +
+    geom_boxplot(show.legend=F) +
+    theme_minimal() +
+    scale_y_continuous(limits = c(0,100), expand = c(0, 0)) +
+    labs(
+      title = "Black and White",
+      x = "Black and White",
+      y = "Mean Complexity"
+    ) +
+    theme(
+      axis.ticks.x = element_blank()
+    )
+
+
+```
+
+``` {r}
+blackwhite_means <- data %>% 
+  select(c(black_and_white, mean_human_complexity_rating)) %>% 
+  group_by(black_and_white) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+data %>% 
+  mutate(black_and_white = as.factor(black_and_white)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram(aes(fill=black_and_white),show.legend=F) +
+    geom_point(data = blackwhite_means, aes(x = mean_complexity, y = 0), color = "red", size = 3) +
+    geom_vline(data = blackwhite_means, aes(xintercept = mean_complexity), color = "red", size = 1, alpha = 0.75) +
+    facet_wrap(~factor(black_and_white, levels =c("1", "0")), ncol=1) +
+    theme_minimal() +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0)) +
+    scale_fill_manual(values = c("grey50","grey25")) +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      strip.text.x = element_blank(),
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+ggsave("figures_for_paper/blackwhite_distributions.png", width=4, height=4)
+
+```
+
+```{r}
+data %>% 
+  mutate(black_and_white = as.factor(black_and_white)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating,y=reorder(black_and_white,mean_human_complexity_rating)))+
+  stat_interval(aes(alpha=black_and_white),position=position_dodge(),
+                        show.legend=F, height=3,linewidth=15) +
+  scale_color_manual(values = c("#ffccb6","#fdae8d","#f99e77")) +
+  stat_pointinterval(aes(alpha=black_and_white), position=position_dodge(), 
+                     point_size = 12,linewidth=NA,color="#BF572A", shape=18,
+                        show.legend=F) +
+  new_scale_color() +
+  # scale_color_manual(values = c("gray60","gray20")) +
+  # geom_point(data=means, aes(x = mean_complexity, y = panel_s,color=panel_s)) +
+    # geom_hline(yintercept=mean_comp$mean_comp, color = "red",linewidth=1) +
+    # geom_text(y = (mean_comp$mean_comp + 5), x =310, label = mean_comp$mean_comp, color = "red") +
+    theme_minimal() +
+    scale_alpha_discrete(range = c(.15,1)) +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    # scale_y_discrete(expand = c(50, 50)) +
+    # scale_colour_grey() +
+    # scale_color_brewer() +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text.y = element_blank(),
+      # axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      panel.grid.major.x = element_blank(),
+      # panel.border = element_rect(color = "gray50", 
+      #                               fill = NA, 
+      #                               size = 0.5),
+      plot.margin=unit(c(.2,.5,.2,.2),"cm")
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+
+ggsave("figures_for_paper/intervals/black_and_white_int.png", width=10, height=4)
+```
+
+```{r}
+bw_agg <- blackwhite_means %>% 
+  mutate(label="black and white",
+         label_group="Color") %>% 
+  rename("applies" = "black_and_white") %>% 
+  select(c(label_group,label,applies,everything()))
+
+data_agg <- data_agg %>% 
+  rbind(bw_agg)
+
+```
+
+
+### Background Color
+
+```{r}
+data %>% 
+  select(c(background_color, mean_human_complexity_rating)) %>% 
+  group_by(background_color) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+```
+
+Significant variance difference
+
+```{r}
+data %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram() +
+    facet_wrap(~background_color) +
+    theme_minimal()
+
+bgcolor_ftest <- var.test(mean_human_complexity_rating ~ background_color, data = data)
+bgcolor_ftest
+```
+
+Conduct the t-test
+
+``` {r}
+
+t.test(mean_human_complexity_rating ~ background_color, data=data, var.equal=F)
+
+```
+
+```{r}
+data %>% 
+  group_by(background_color) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd_complexity = sd(mean_human_complexity_rating),
+    se_complexity = sd_complexity / sqrt(n)
+  ) %>% 
+  ggplot(aes(x = reorder(background_color, -mean_complexity), y = mean_complexity, fill = background_color)) +
+    geom_col(show.legend=F) +
+    geom_errorbar(aes(ymin=mean_complexity-se_complexity, ymax=mean_complexity+se_complexity), width=.2) +
+    theme_minimal() +
+    scale_y_continuous(limits = c(0,100), expand = c(0, 0)) +
+    labs(
+      title = "Background Color",
+      x = "Background Color",
+      y = "Mean Complexity"
+    ) +
+    theme(
+      axis.ticks.x = element_blank()
+    )
+
+data %>% 
+  ggplot(aes(x = reorder(background_color, -mean_human_complexity_rating), y = mean_human_complexity_rating, fill = background_color)) +
+    geom_boxplot(show.legend=F) +
+    theme_minimal() +
+    scale_y_continuous(limits = c(0,100), expand = c(0, 0)) +
+    labs(
+      title = "Background Color",
+      x = "Background Color",
+      y = "Mean Complexity"
+    ) +
+    theme(
+      axis.ticks.x = element_blank()
+    )
+
+
+```
+
+``` {r}
+backgroundcolor_means <- data %>% 
+  select(c(background_color, mean_human_complexity_rating)) %>% 
+  group_by(background_color) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+data %>% 
+  mutate(background_color = as.factor(background_color)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram(aes(fill=background_color),show.legend=F) +
+    geom_point(data = backgroundcolor_means, aes(x = mean_complexity, y = 0), color = "red", size = 3) +
+    geom_vline(data = backgroundcolor_means, aes(xintercept = mean_complexity), color = "red", size = 1, alpha = 0.75) +
+    facet_wrap(~factor(background_color, levels =c("1", "0")), ncol=1) +
+    theme_minimal() +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0)) +
+    scale_fill_manual(values = c("grey25","grey50")) +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      strip.text.x = element_blank(),
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+ggsave("figures_for_paper/backgroundcolor_distributions.png", width=4, height=4)
+
+```
+
+```{r}
+data %>% 
+  mutate(background_color = as.factor(background_color)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating,y=reorder(background_color,-mean_human_complexity_rating)))+
+  stat_interval(aes(alpha=background_color),position=position_dodge(),
+                        show.legend=F, height=3,linewidth=15) +
+  scale_color_manual(values = c("#ffccb6","#fdae8d","#f99e77")) +
+  stat_pointinterval(aes(alpha=background_color), position=position_dodge(), 
+                     point_size = 12,linewidth=NA,color="#BF572A", shape=18,
+                        show.legend=F) +
+  new_scale_color() +
+  # scale_color_manual(values = c("gray60","gray20")) +
+  # geom_point(data=means, aes(x = mean_complexity, y = panel_s,color=panel_s)) +
+    # geom_hline(yintercept=mean_comp$mean_comp, color = "red",linewidth=1) +
+    # geom_text(y = (mean_comp$mean_comp + 5), x =310, label = mean_comp$mean_comp, color = "red") +
+    theme_minimal() +
+    scale_alpha_discrete(range = c(.15,1)) +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    # scale_y_discrete(expand = c(50, 50)) +
+    # scale_colour_grey() +
+    # scale_color_brewer() +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      # axis.text.y = element_blank(),
+      # axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      panel.grid.major.x = element_blank(),
+      # panel.border = element_rect(color = "gray50", 
+      #                               fill = NA, 
+      #                               size = 0.5),
+      plot.margin=unit(c(.2,.5,.2,.2),"cm")
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+
+ggsave("figures_for_paper/intervals/background_color_int.png", width=10, height=4)
+```
+
+
+```{r}
+bgcolor_agg <- backgroundcolor_means %>% 
+  mutate(label="background color",
+         label_group="Color") %>% 
+  rename("applies" = "background_color") %>% 
+  select(c(label_group,label,applies,everything()))
+
+data_agg <- data_agg %>% 
+  rbind(bgcolor_agg)
+
+```
+
+
+### Color Count
+
+Counts are continuous — create a scatterplot and get correlation
+
+```{r}
+cor.test(data$mean_human_complexity_rating, data$color_count, method = "pearson")
+```
+
+
+```{r}
+data %>% 
+  ggplot(aes(x = color_count, y = mean_human_complexity_rating)) +
+    geom_point() +
+    geom_smooth(method="lm", se =T, color="#F99E77",fill="#F99E77") +
+    theme_minimal() +
+    scale_y_continuous(limits = c(0,100), expand = c(0, 0)) +
+    scale_x_continuous(expand = c(0, 0)) +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text = element_blank(),
+      axis.line = element_line(size=0.5,color="black"),
+      panel.grid = element_blank()
+    ) +
+  coord_cartesian(clip = "off")
+
+
+cor.test(data$mean_human_complexity_rating,data$color_count)
+ggsave("figures_for_paper/scatters/colorcount_correlation.png", width=4, height=4)
+
+```
+
+
+
+## Data
+
+### Quantitative
+
+```{r}
+cor.test(data$mean_human_complexity_rating, data$quantitative, method = "pearson")
+```
+
+
+```{r}
+data %>% 
+  ggplot(aes(x = quantitative, y = mean_human_complexity_rating)) +
+    geom_point() +
+    geom_smooth(method="lm", se =T, color="#9AD990",fill="#9AD990") +
+    theme_minimal() +
+    scale_y_continuous(limits = c(0,100), expand = c(0, 0)) +
+    scale_x_continuous(expand = c(0, 0)) +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text = element_blank(),
+      axis.line = element_line(size=0.5,color="black"),
+      panel.grid = element_blank()
+    ) +
+  coord_cartesian(clip = "off")
+ggsave("figures_for_paper/scatters/quantitative_correlation.png", width=4, height=4)
+
+```
+
+
+### Categorical
+
+```{r}
+cor.test(data$mean_human_complexity_rating, data$categorical, method = "pearson")
+```
+
+```{r}
+data %>% 
+  ggplot(aes(x = categorical, y = mean_human_complexity_rating)) +
+    geom_point() +
+    geom_smooth(method="lm", se =T, color="#9AD990",fill="#9AD990") +
+    theme_minimal() +
+    scale_y_continuous(limits = c(0,100), expand = c(0, 0)) +
+    scale_x_continuous(expand = c(0, 0)) +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text = element_blank(),
+      axis.line = element_line(size=0.5,color="black"),
+      panel.grid = element_blank()
+    ) +
+  coord_cartesian(clip = "off")
+ggsave("figures_for_paper/scatters/categorical_correlation.png", width=4, height=4)
+
+```
+
+
+
+## Design (Chart Count/Types)
+
+
+### Chart Count
+
+```{r}
+cor.test(data$mean_human_complexity_rating, data$chart_count, method = "pearson")
+```
+
+```{r}
+data %>% 
+  ggplot(aes(x = chart_count, y = mean_human_complexity_rating)) +
+    geom_point() +
+    geom_smooth(method="lm", se =T, color="#A962CB",fill="#A962CB") +
+    theme_minimal() +
+    scale_y_continuous(limits = c(0,100), expand = c(0, 0)) +
+    scale_x_continuous(expand = c(0, 0)) +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text = element_blank(),
+      axis.line = element_line(size=0.5,color="black"),
+      panel.grid = element_blank()
+    ) +
+  coord_cartesian(clip = "off")
+ggsave("figures_for_paper/scatters/chartcount_correlation.png", width=4, height=4)
+
+```
+
+### Chart Types Count
+
+```{r}
+cor.test(data$mean_human_complexity_rating, data$chart_types_count, method = "pearson")
+```
+
+```{r}
+data %>% 
+  ggplot(aes(x = chart_types_count, y = mean_human_complexity_rating)) +
+    geom_point() +
+    geom_smooth(method="lm", se =T, color="#A962CB",fill="#A962CB") +
+    theme_minimal() +
+    scale_y_continuous(limits = c(0,100), expand = c(0, 0)) +
+    scale_x_continuous(expand = c(0, 0)) +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text = element_blank(),
+      axis.line = element_line(size=0.5,color="black"),
+      panel.grid = element_blank()
+    ) +
+  coord_cartesian(clip = "off")
+ggsave("figures_for_paper/scatters/charttypescount_correlation.png", width=4, height=4)
+
+```
+
+
+### Area
+
+```{r}
+data %>% 
+  select(c(area, mean_human_complexity_rating)) %>% 
+  group_by(area) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+```
+
+Significant variance difference
+
+```{r}
+data %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram() +
+    facet_wrap(~area) +
+    theme_minimal()
+
+bgcolor_ftest <- var.test(mean_human_complexity_rating ~ area, data = data)
+bgcolor_ftest
+```
+
+
+
+```{r}
+data %>% 
+  group_by(trees_or_networks) %>% 
+  count()
+```
+
+Conduct the t-test
+
+``` {r}
+
+t.test(mean_human_complexity_rating ~ area, data=data, var.equal=F)
+
+```
+
+``` {r}
+area_means <- data %>% 
+  select(c(area, mean_human_complexity_rating)) %>% 
+  group_by(area) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+data %>% 
+  mutate(area = as.factor(area)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram(aes(fill=area),show.legend=F) +
+    geom_point(data = area_means, aes(x = mean_complexity, y = 0), color = "red", size = 3) +
+    geom_vline(data = area_means, aes(xintercept = mean_complexity), color = "red", size = 1, alpha = 0.75) +
+    facet_wrap(~factor(area, levels =c("1", "0")), ncol=1) +
+    theme_minimal() +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0)) +
+    scale_fill_manual(values = c("grey50","grey25")) +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      strip.text.x = element_blank(),
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+ggsave("figures_for_paper/charts_dist/area_distributions.png", width=4, height=4)
+
+```
+
+```{r}
+data %>% 
+  mutate(area = as.factor(area)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating,y=reorder(area,mean_human_complexity_rating)))+
+  stat_interval(aes(alpha=area),position=position_dodge(),
+                        show.legend=F, height=3,linewidth=15) +
+  scale_color_manual(values = c("#c38dda","#b170d0","#a962cb")) +
+  stat_pointinterval(aes(alpha=area), position=position_dodge(), 
+                     point_size = 12,linewidth=NA,color="#751F9D", shape=18,
+                        show.legend=F) +
+  new_scale_color() +
+  # scale_color_manual(values = c("gray60","gray20")) +
+  # geom_point(data=means, aes(x = mean_complexity, y = panel_s,color=panel_s)) +
+    # geom_hline(yintercept=mean_comp$mean_comp, color = "red",linewidth=1) +
+    # geom_text(y = (mean_comp$mean_comp + 5), x =310, label = mean_comp$mean_comp, color = "red") +
+    theme_minimal() +
+    scale_alpha_discrete(range = c(.15,1)) +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    # scale_y_discrete(expand = c(50, 50)) +
+    # scale_colour_grey() +
+    # scale_color_brewer() +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text.y = element_blank(),
+      # axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      panel.grid.major.x = element_blank(),
+      # panel.border = element_rect(color = "gray50", 
+      #                               fill = NA, 
+      #                               size = 0.5),
+      plot.margin=unit(c(.2,.5,.2,.2),"cm")
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+
+ggsave("figures_for_paper/intervals/area_int.png", width=10, height=4)
+```
+
+
+```{r}
+area_agg <- area_means %>% 
+  mutate(label="Area",
+         label_group="Design") %>% 
+  rename("applies" = area) %>% 
+  select(c(label_group,label,applies,everything()))
+
+data_agg <- data_agg %>% 
+  rbind(area_agg)
+
+```
+
+### Bar
+
+```{r}
+data %>% 
+  select(c(bar, mean_human_complexity_rating)) %>% 
+  group_by(bar) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+```
+
+Significant variance difference
+
+```{r}
+data %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram() +
+    facet_wrap(~bar) +
+    theme_minimal()
+
+bgcolor_ftest <- var.test(mean_human_complexity_rating ~ bar, data = data)
+bgcolor_ftest
+```
+
+Conduct the t-test
+
+``` {r}
+
+t.test(mean_human_complexity_rating ~ bar, data=data, var.equal=F)
+
+```
+
+``` {r}
+bar_means <- data %>% 
+  select(c(bar, mean_human_complexity_rating)) %>% 
+  group_by(bar) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+data %>% 
+  mutate(bar = as.factor(bar)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram(aes(fill=bar),show.legend=F) +
+    geom_point(data = bar_means, aes(x = mean_complexity, y = 0), color = "red", size = 3) +
+    geom_vline(data = bar_means, aes(xintercept = mean_complexity), color = "red", size = 01, alpha = 0.75) +
+    facet_wrap(~factor(bar, levels =c("1", "0")), ncol=1) +
+    theme_minimal() +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0)) +
+    scale_fill_manual(values = c("grey25","grey50")) +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      strip.text.x = element_blank(),
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+ggsave("figures_for_paper/charts_dist/bar_distributions.png", width=4, height=4)
+
+```
+
+```{r}
+data %>% 
+  mutate(bar = as.factor(bar)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating,y=reorder(bar,-mean_human_complexity_rating)))+
+  stat_interval(aes(alpha=bar),position=position_dodge(),
+                        show.legend=F, height=3,linewidth=15) +
+  scale_color_manual(values = c("#c38dda","#b170d0","#a962cb")) +
+  stat_pointinterval(aes(alpha=bar), position=position_dodge(), 
+                     point_size = 12,linewidth=NA,color="#751F9D", shape=18,
+                        show.legend=F) +
+  new_scale_color() +
+  # scale_color_manual(values = c("gray60","gray20")) +
+  # geom_point(data=means, aes(x = mean_complexity, y = panel_s,color=panel_s)) +
+    # geom_hline(yintercept=mean_comp$mean_comp, color = "red",linewidth=1) +
+    # geom_text(y = (mean_comp$mean_comp + 5), x =310, label = mean_comp$mean_comp, color = "red") +
+    theme_minimal() +
+    scale_alpha_discrete(range = c(.15,1)) +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    # scale_y_discrete(expand = c(50, 50)) +
+    # scale_colour_grey() +
+    # scale_color_brewer() +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text.y = element_blank(),
+      # axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      panel.grid.major.x = element_blank(),
+      # panel.border = element_rect(color = "gray50", 
+      #                               fill = NA, 
+      #                               size = 0.5),
+      plot.margin=unit(c(.2,.5,.2,.2),"cm")
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+
+ggsave("figures_for_paper/intervals/bar_int.png", width=10, height=4)
+```
+
+```{r}
+bar_agg <- bar_means %>% 
+  mutate(label="Bar",
+         label_group="Design") %>% 
+  rename("applies" = bar) %>% 
+  select(c(label_group,label,applies,everything()))
+
+data_agg <- data_agg %>% 
+  rbind(bar_agg)
+
+```
+
+
+
+### Line
+
+```{r}
+data %>% 
+  select(c(line, mean_human_complexity_rating)) %>% 
+  group_by(line) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+```
+
+No significant variance difference
+
+```{r}
+data %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram() +
+    facet_wrap(~line) +
+    theme_minimal()
+
+bgcolor_ftest <- var.test(mean_human_complexity_rating ~ line, data = data)
+bgcolor_ftest
+```
+
+Conduct the t-test
+
+``` {r}
+
+t.test(mean_human_complexity_rating ~ line, data=data, var.equal=T)
+
+```
+
+``` {r}
+line_means <- data %>% 
+  select(c(line, mean_human_complexity_rating)) %>% 
+  group_by(line) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+data %>% 
+  mutate(line = as.factor(line)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram(aes(fill=line),show.legend=F) +
+    geom_point(data = line_means, aes(x = mean_complexity, y = 0), color = "red", size = 3) +
+    geom_vline(data = line_means, aes(xintercept = mean_complexity), color = "red", size = 01, alpha = 0.75) +
+    facet_wrap(~factor(line, levels =c("1", "0")), ncol=1) +
+    theme_minimal() +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0)) +
+    scale_fill_manual(values = c("grey50","grey25")) +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      strip.text.x = element_blank(),
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+ggsave("figures_for_paper/charts_dist/line_distributions.png", width=4, height=4)
+
+```
+
+```{r}
+data %>% 
+  mutate(line = as.factor(line)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating,y=reorder(line,mean_human_complexity_rating)))+
+  stat_interval(aes(alpha=line),position=position_dodge(),
+                        show.legend=F, height=3,linewidth=15) +
+  scale_color_manual(values = c("#c38dda","#b170d0","#a962cb")) +
+  stat_pointinterval(aes(alpha=line), position=position_dodge(), 
+                     point_size = 12,linewidth=NA,color="#751F9D", shape=18,
+                        show.legend=F) +
+  new_scale_color() +
+  # scale_color_manual(values = c("gray60","gray20")) +
+  # geom_point(data=means, aes(x = mean_complexity, y = panel_s,color=panel_s)) +
+    # geom_hline(yintercept=mean_comp$mean_comp, color = "red",linewidth=1) +
+    # geom_text(y = (mean_comp$mean_comp + 5), x =310, label = mean_comp$mean_comp, color = "red") +
+    theme_minimal() +
+    scale_alpha_discrete(range = c(.15,1)) +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    # scale_y_discrete(expand = c(50, 50)) +
+    # scale_colour_grey() +
+    # scale_color_brewer() +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text.y = element_blank(),
+      # axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      panel.grid.major.x = element_blank(),
+      # panel.border = element_rect(color = "gray50", 
+      #                               fill = NA, 
+      #                               size = 0.5),
+      plot.margin=unit(c(.2,.5,.2,.2),"cm")
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+
+ggsave("figures_for_paper/intervals/line_int.png", width=10, height=4)
+```
+
+```{r}
+line_agg <- line_means %>% 
+  mutate(label="Line",
+         label_group="Design") %>% 
+  rename("applies" = line) %>% 
+  select(c(label_group,label,applies,everything()))
+
+data_agg <- data_agg %>% 
+  rbind(line_agg)
+
+```
+
+### Point
+
+```{r}
+data %>% 
+  select(c(point, mean_human_complexity_rating)) %>% 
+  group_by(point) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+```
+
+Significant variance difference
+
+```{r}
+data %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram() +
+    facet_wrap(~point) +
+    theme_minimal()
+
+point_ftest <- var.test(mean_human_complexity_rating ~ point, data = data)
+point_ftest
+```
+
+Conduct the t-test
+
+``` {r}
+
+t.test(mean_human_complexity_rating ~ point, data=data, var.equal=F)
+
+```
+
+``` {r}
+point_means <- data %>% 
+  select(c(point, mean_human_complexity_rating)) %>% 
+  group_by(point) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+data %>% 
+  mutate(point = as.factor(point)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram(aes(fill=point),show.legend=F) +
+    geom_point(data = point_means, aes(x = mean_complexity, y = 0), color = "red", size = 3) +
+    geom_vline(data = point_means, aes(xintercept = mean_complexity), color = "red", size = 01, alpha = 0.75) +
+    facet_wrap(~factor(point, levels =c("1", "0")), ncol=1) +
+    theme_minimal() +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0)) +
+    scale_fill_manual(values = c("grey50","grey25")) +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      strip.text.x = element_blank(),
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+ggsave("figures_for_paper/charts_dist/point_distributions.png", width=4, height=4)
+
+```
+
+
+```{r}
+data %>% 
+  mutate(point = as.factor(point)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating,y=reorder(point,mean_human_complexity_rating)))+
+  stat_interval(aes(alpha=point),position=position_dodge(),
+                        show.legend=F, height=3,linewidth=15) +
+  scale_color_manual(values = c("#c38dda","#b170d0","#a962cb")) +
+  stat_pointinterval(aes(alpha=point), position=position_dodge(), 
+                     point_size = 12,linewidth=NA,color="#751F9D", shape=18,
+                        show.legend=F) +
+  new_scale_color() +
+  # scale_color_manual(values = c("gray60","gray20")) +
+  # geom_point(data=means, aes(x = mean_complexity, y = panel_s,color=panel_s)) +
+    # geom_hline(yintercept=mean_comp$mean_comp, color = "red",linewidth=1) +
+    # geom_text(y = (mean_comp$mean_comp + 5), x =310, label = mean_comp$mean_comp, color = "red") +
+    theme_minimal() +
+    scale_alpha_discrete(range = c(.15,1)) +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    # scale_y_discrete(expand = c(50, 50)) +
+    # scale_colour_grey() +
+    # scale_color_brewer() +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text.y = element_blank(),
+      # axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      panel.grid.major.x = element_blank(),
+      # panel.border = element_rect(color = "gray50", 
+      #                               fill = NA, 
+      #                               size = 0.5),
+      plot.margin=unit(c(.2,.5,.2,.2),"cm")
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+
+ggsave("figures_for_paper/intervals/point_int.png", width=10, height=4)
+```
+
+```{r}
+point_agg <- point_means %>% 
+  mutate(label="Point",
+         label_group="Design") %>% 
+  rename("applies" = point) %>% 
+  select(c(label_group,label,applies,everything()))
+
+data_agg <- data_agg %>% 
+  rbind(point_agg)
+
+```
+
+### Distribution
+
+
+```{r}
+data %>% 
+  select(c(distribution, mean_human_complexity_rating)) %>% 
+  group_by(distribution) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+```
+
+Significant variance difference
+
+```{r}
+data %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram() +
+    facet_wrap(~distribution) +
+    theme_minimal()
+
+distribution_ftest <- var.test(mean_human_complexity_rating ~ distribution, data = data)
+distribution_ftest
+```
+
+Conduct the t-test
+
+``` {r}
+
+t.test(mean_human_complexity_rating ~ distribution, data=data, var.equal=F)
+
+```
+
+``` {r}
+distribution_means <- data %>% 
+  select(c(distribution, mean_human_complexity_rating)) %>% 
+  group_by(distribution) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+data %>% 
+  mutate(distribution = as.factor(distribution)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram(aes(fill=distribution),show.legend=F) +
+    geom_point(data = distribution_means, aes(x = mean_complexity, y = 0), color = "red", size = 3) +
+    geom_vline(data = distribution_means, aes(xintercept = mean_complexity), color = "red", size = 01, alpha = 0.75) +
+    facet_wrap(~factor(distribution, levels =c("1", "0")), ncol=1) +
+    theme_minimal() +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0)) +
+    scale_fill_manual(values = c("grey50","grey25")) +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      strip.text.x = element_blank(),
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+ggsave("figures_for_paper/charts_dist/distribution_distributions.png", width=4, height=4)
+
+```
+
+```{r}
+data %>% 
+  mutate(distribution = as.factor(distribution)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating,y=reorder(distribution,mean_human_complexity_rating)))+
+  stat_interval(aes(alpha=distribution),position=position_dodge(),
+                        show.legend=F, height=3,linewidth=15) +
+  scale_color_manual(values = c("#c38dda","#b170d0","#a962cb")) +
+  stat_pointinterval(aes(alpha=distribution), position=position_dodge(), 
+                     point_size = 12,linewidth=NA,color="#751F9D", shape=18,
+                        show.legend=F) +
+  new_scale_color() +
+  # scale_color_manual(values = c("gray60","gray20")) +
+  # geom_point(data=means, aes(x = mean_complexity, y = panel_s,color=panel_s)) +
+    # geom_hline(yintercept=mean_comp$mean_comp, color = "red",linewidth=1) +
+    # geom_text(y = (mean_comp$mean_comp + 5), x =310, label = mean_comp$mean_comp, color = "red") +
+    theme_minimal() +
+    scale_alpha_discrete(range = c(.15,1)) +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    # scale_y_discrete(expand = c(50, 50)) +
+    # scale_colour_grey() +
+    # scale_color_brewer() +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text.y = element_blank(),
+      # axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      panel.grid.major.x = element_blank(),
+      # panel.border = element_rect(color = "gray50", 
+      #                               fill = NA, 
+      #                               size = 0.5),
+      plot.margin=unit(c(.2,.5,.2,.2),"cm")
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+
+ggsave("figures_for_paper/intervals/distribution_int.png", width=10, height=4)
+```
+
+```{r}
+dist_agg <- distribution_means %>% 
+  mutate(label="Distribution",
+         label_group="Design") %>% 
+  rename("applies" = distribution) %>% 
+  select(c(label_group,label,applies,everything()))
+
+data_agg <- data_agg %>% 
+  rbind(dist_agg)
+
+```
+
+
+
+### Diagram
+
+```{r}
+data %>% 
+  select(c(diagram, mean_human_complexity_rating)) %>% 
+  group_by(diagram) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+```
+
+Significant variance difference
+
+```{r}
+data %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram() +
+    facet_wrap(~diagram) +
+    theme_minimal()
+
+diagram_ftest <- var.test(mean_human_complexity_rating ~ diagram, data = data)
+diagram_ftest
+```
+
+Conduct the t-test
+
+``` {r}
+
+t.test(mean_human_complexity_rating ~ diagram, data=data, var.equal=F)
+
+```
+
+``` {r}
+diagram_means <- data %>% 
+  select(c(diagram, mean_human_complexity_rating)) %>% 
+  group_by(diagram) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+data %>% 
+  mutate(diagram = as.factor(diagram)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram(aes(fill=diagram),show.legend=F) +
+    geom_point(data = diagram_means, aes(x = mean_complexity, y = 0), color = "red", size = 3) +
+    geom_vline(data = diagram_means, aes(xintercept = mean_complexity), color = "red", size = 01, alpha = 0.75) +
+    facet_wrap(~factor(diagram, levels =c("1", "0")), ncol=1) +
+    theme_minimal() +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0)) +
+    scale_fill_manual(values = c("grey50","grey25")) +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      strip.text.x = element_blank(),
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+ggsave("figures_for_paper/charts_dist/diagram_distributions.png", width=4, height=4)
+
+```
+
+
+```{r}
+data %>% 
+  mutate(diagram = as.factor(diagram)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating,y=reorder(diagram,mean_human_complexity_rating)))+
+  stat_interval(aes(alpha=diagram),position=position_dodge(),
+                        show.legend=F, height=3,linewidth=15) +
+  scale_color_manual(values = c("#c38dda","#b170d0","#a962cb")) +
+  stat_pointinterval(aes(alpha=diagram), position=position_dodge(), 
+                     point_size = 12,linewidth=NA,color="#751F9D", shape=18,
+                        show.legend=F) +
+  new_scale_color() +
+  # scale_color_manual(values = c("gray60","gray20")) +
+  # geom_point(data=means, aes(x = mean_complexity, y = panel_s,color=panel_s)) +
+    # geom_hline(yintercept=mean_comp$mean_comp, color = "red",linewidth=1) +
+    # geom_text(y = (mean_comp$mean_comp + 5), x =310, label = mean_comp$mean_comp, color = "red") +
+    theme_minimal() +
+    scale_alpha_discrete(range = c(.15,1)) +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    # scale_y_discrete(expand = c(50, 50)) +
+    # scale_colour_grey() +
+    # scale_color_brewer() +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text.y = element_blank(),
+      # axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      panel.grid.major.x = element_blank(),
+      # panel.border = element_rect(color = "gray50", 
+      #                               fill = NA, 
+      #                               size = 0.5),
+      plot.margin=unit(c(.2,.5,.2,.2),"cm")
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+
+ggsave("figures_for_paper/intervals/diagram_int.png", width=10, height=4)
+```
+
+```{r}
+diagram_agg <- diagram_means %>% 
+  mutate(label="Diagram",
+         label_group="Design") %>% 
+  rename("applies" = diagram) %>% 
+  select(c(label_group,label,applies,everything()))
+
+data_agg <- data_agg %>% 
+  rbind(diagram_agg)
+
+```
+
+
+### Grid & Matrix
+
+```{r}
+data %>% 
+  select(c(grid_or_matrix, mean_human_complexity_rating)) %>% 
+  group_by(grid_or_matrix) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+```
+
+Significant variance difference
+
+```{r}
+data %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram() +
+    facet_wrap(~grid_or_matrix) +
+    theme_minimal()
+
+gridmatrix_ftest <- var.test(mean_human_complexity_rating ~ grid_or_matrix, data = data)
+gridmatrix_ftest
+```
+
+Conduct the t-test
+
+``` {r}
+
+t.test(mean_human_complexity_rating ~ grid_or_matrix, data=data, var.equal=F)
+
+# Another way of doing the same t-test
+# w_grid <- data %>% filter(grid_or_matrix == 1)
+# wo_grid  <- data %>% filter(grid_or_matrix == 0)
+# t.test(w_grid$mean_human_complexity_rating, wo_grid$mean_human_complexity_rating, data=data, var.equal=F)
+
+```
+
+``` {r}
+gridmatrix_means <- data %>% 
+  select(c(grid_or_matrix, mean_human_complexity_rating)) %>% 
+  group_by(grid_or_matrix) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+data %>% 
+  mutate(grid_or_matrix = as.factor(grid_or_matrix)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram(aes(fill=grid_or_matrix),show.legend=F) +
+    geom_point(data = gridmatrix_means, aes(x = mean_complexity, y = 0), color = "red", size = 3) +
+    geom_vline(data = gridmatrix_means, aes(xintercept = mean_complexity), color = "red", size = 01, alpha = 0.75) +
+    facet_wrap(~factor(grid_or_matrix, levels =c("1", "0")), ncol=1) +
+    theme_minimal() +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0)) +
+    scale_fill_manual(values = c("grey50","grey25")) +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      strip.text.x = element_blank(),
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+ggsave("figures_for_paper/charts_dist/gridmatrix_distributions.png", width=4, height=4)
+
+```
+
+```{r}
+data %>% 
+  mutate(grid_or_matrix = as.factor(grid_or_matrix)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating,y=reorder(grid_or_matrix,mean_human_complexity_rating)))+
+  stat_interval(aes(alpha=grid_or_matrix),position=position_dodge(),
+                        show.legend=F, height=3,linewidth=15) +
+  scale_color_manual(values = c("#c38dda","#b170d0","#a962cb")) +
+  stat_pointinterval(aes(alpha=grid_or_matrix), position=position_dodge(), 
+                     point_size = 12,linewidth=NA,color="#751F9D", shape=18,
+                        show.legend=F) +
+  new_scale_color() +
+  # scale_color_manual(values = c("gray60","gray20")) +
+  # geom_point(data=means, aes(x = mean_complexity, y = panel_s,color=panel_s)) +
+    # geom_hline(yintercept=mean_comp$mean_comp, color = "red",linewidth=1) +
+    # geom_text(y = (mean_comp$mean_comp + 5), x =310, label = mean_comp$mean_comp, color = "red") +
+    theme_minimal() +
+    scale_alpha_discrete(range = c(.15,1)) +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    # scale_y_discrete(expand = c(50, 50)) +
+    # scale_colour_grey() +
+    # scale_color_brewer() +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text.y = element_blank(),
+      # axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      panel.grid.major.x = element_blank(),
+      # panel.border = element_rect(color = "gray50", 
+      #                               fill = NA, 
+      #                               size = 0.5),
+      plot.margin=unit(c(.2,.5,.2,.2),"cm")
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+
+ggsave("figures_for_paper/intervals/grid_or_matrix_int.png", width=10, height=4)
+```
+
+```{r}
+gridmatrix_agg <- gridmatrix_means %>% 
+  mutate(label="Grid & Matrix",
+         label_group="Design") %>% 
+  rename("applies" = grid_or_matrix) %>% 
+  select(c(label_group,label,applies,everything()))
+
+data_agg <- data_agg %>% 
+  rbind(gridmatrix_agg)
+
+```
+
+
+### Trees & Networks
+
+```{r}
+data %>% 
+  select(c(trees_or_networks, mean_human_complexity_rating)) %>% 
+  group_by(trees_or_networks) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+```
+
+Significant variance difference
+
+```{r}
+data %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram() +
+    facet_wrap(~trees_or_networks) +
+    theme_minimal()
+
+treesnetworks_ftest <- var.test(mean_human_complexity_rating ~ trees_or_networks, data = data)
+treesnetworks_ftest
+```
+
+Conduct the t-test
+
+``` {r}
+
+t.test(mean_human_complexity_rating ~ trees_or_networks, data=data, var.equal=F)
+
+# Another way of doing the same t-test
+# w_grid <- data %>% filter(grid_or_matrix == 1)
+# wo_grid  <- data %>% filter(grid_or_matrix == 0)
+# t.test(w_grid$mean_human_complexity_rating, wo_grid$mean_human_complexity_rating, data=data, var.equal=F)
+
+```
+
+``` {r}
+treesnetworks_means <- data %>% 
+  select(c(trees_or_networks, mean_human_complexity_rating)) %>% 
+  group_by(trees_or_networks) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+data %>% 
+  mutate(trees_or_networks = as.factor(trees_or_networks)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram(aes(fill=trees_or_networks),show.legend=F) +
+    geom_point(data = treesnetworks_means, aes(x = mean_complexity, y = 0), color = "red", size = 3) +
+    geom_vline(data = treesnetworks_means, aes(xintercept = mean_complexity), color = "red", size = 01, alpha = 0.75) +
+    facet_wrap(~factor(trees_or_networks, levels =c("1", "0")), ncol=1) +
+    theme_minimal() +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0)) +
+    scale_fill_manual(values = c("grey50","grey25")) +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      strip.text.x = element_blank(),
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+ggsave("figures_for_paper/charts_dist/treesnetworks_distributions.png", width=4, height=4)
+
+```
+
+```{r}
+data %>% 
+  mutate(trees_or_networks = as.factor(trees_or_networks)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating,y=reorder(trees_or_networks,mean_human_complexity_rating)))+
+  stat_interval(aes(alpha=trees_or_networks),position=position_dodge(),
+                        show.legend=F, height=3,linewidth=15) +
+  scale_color_manual(values = c("#c38dda","#b170d0","#a962cb")) +
+  stat_pointinterval(aes(alpha=trees_or_networks), position=position_dodge(), 
+                     point_size = 12,linewidth=NA,color="#751F9D", shape=18,
+                        show.legend=F) +
+  new_scale_color() +
+  # scale_color_manual(values = c("gray60","gray20")) +
+  # geom_point(data=means, aes(x = mean_complexity, y = panel_s,color=panel_s)) +
+    # geom_hline(yintercept=mean_comp$mean_comp, color = "red",linewidth=1) +
+    # geom_text(y = (mean_comp$mean_comp + 5), x =310, label = mean_comp$mean_comp, color = "red") +
+    theme_minimal() +
+    scale_alpha_discrete(range = c(.15,1)) +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    # scale_y_discrete(expand = c(50, 50)) +
+    # scale_colour_grey() +
+    # scale_color_brewer() +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text.y = element_blank(),
+      # axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      panel.grid.major.x = element_blank(),
+      # panel.border = element_rect(color = "gray50", 
+      #                               fill = NA, 
+      #                               size = 0.5),
+      plot.margin=unit(c(.2,.5,.2,.2),"cm")
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+
+ggsave("figures_for_paper/intervals/trees_or_networks_int.png", width=10, height=4)
+```
+
+```{r}
+treesnetworks_agg <- treesnetworks_means %>% 
+  mutate(label="Trees & Networks",
+         label_group="Design") %>% 
+  rename("applies" = trees_or_networks) %>% 
+  select(c(label_group,label,applies,everything()))
+
+data_agg <- data_agg %>% 
+  rbind(treesnetworks_agg)
+
+```
+
+
+### Table
+
+```{r}
+data %>% 
+  select(c(table, mean_human_complexity_rating)) %>% 
+  group_by(table) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+```
+
+Significant variance difference
+
+```{r}
+data %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram() +
+    facet_wrap(~table) +
+    theme_minimal()
+
+table_ftest <- var.test(mean_human_complexity_rating ~ table, data = data)
+table_ftest
+```
+
+Conduct the t-test
+
+``` {r}
+
+t.test(mean_human_complexity_rating ~ table, data=data, var.equal=F)
+
+# Another way of doing the same t-test
+# w_grid <- data %>% filter(grid_or_matrix == 1)
+# wo_grid  <- data %>% filter(grid_or_matrix == 0)
+# t.test(w_grid$mean_human_complexity_rating, wo_grid$mean_human_complexity_rating, data=data, var.equal=F)
+
+```
+
+``` {r}
+table_means <- data %>% 
+  select(c(table, mean_human_complexity_rating)) %>% 
+  group_by(table) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+data %>% 
+  mutate(table = as.factor(table)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram(aes(fill=table),show.legend=F) +
+    geom_point(data = table_means, aes(x = mean_complexity, y = 0), color = "red", size = 3) +
+    geom_vline(data = table_means, aes(xintercept = mean_complexity), color = "red", size = 01, alpha = 0.75) +
+    facet_wrap(~factor(table, levels =c("1", "0")), ncol=1) +
+    theme_minimal() +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0)) +
+    scale_fill_manual(values = c("grey50","grey25")) +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      strip.text.x = element_blank(),
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+ggsave("figures_for_paper/charts_dist/table_distributions.png", width=4, height=4)
+
+```
+
+```{r}
+data %>% 
+  mutate(table = as.factor(table)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating,y=reorder(table,mean_human_complexity_rating)))+
+  stat_interval(aes(alpha=table),position=position_dodge(),
+                        show.legend=F, height=3,linewidth=15) +
+  scale_color_manual(values = c("#c38dda","#b170d0","#a962cb")) +
+  stat_pointinterval(aes(alpha=table), position=position_dodge(), 
+                     point_size = 12,linewidth=NA,color="#751F9D", shape=18,
+                        show.legend=F) +
+  new_scale_color() +
+  # scale_color_manual(values = c("gray60","gray20")) +
+  # geom_point(data=means, aes(x = mean_complexity, y = panel_s,color=panel_s)) +
+    # geom_hline(yintercept=mean_comp$mean_comp, color = "red",linewidth=1) +
+    # geom_text(y = (mean_comp$mean_comp + 5), x =310, label = mean_comp$mean_comp, color = "red") +
+    theme_minimal() +
+    scale_alpha_discrete(range = c(.15,1)) +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    # scale_y_discrete(expand = c(50, 50)) +
+    # scale_colour_grey() +
+    # scale_color_brewer() +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text.y = element_blank(),
+      # axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      panel.grid.major.x = element_blank(),
+      # panel.border = element_rect(color = "gray50", 
+      #                               fill = NA, 
+      #                               size = 0.5),
+      plot.margin=unit(c(.2,.5,.2,.2),"cm")
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+
+ggsave("figures_for_paper/intervals/table_int.png", width=10, height=4)
+```
+
+```{r}
+table_agg <- table_means %>% 
+  mutate(label="Table",
+         label_group="Design") %>% 
+  rename("applies" = table) %>% 
+  select(c(label_group,label,applies,everything()))
+
+data_agg <- data_agg %>% 
+  rbind(table_agg)
+
+```
+
+### Map
+
+```{r}
+data %>% 
+  select(c(map, mean_human_complexity_rating)) %>% 
+  group_by(map) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+```
+
+Significant variance difference
+
+```{r}
+data %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram() +
+    facet_wrap(~map) +
+    theme_minimal()
+
+map_ftest <- var.test(mean_human_complexity_rating ~ map, data = data)
+map_ftest
+```
+
+Conduct the t-test
+
+``` {r}
+
+t.test(mean_human_complexity_rating ~ map, data=data, var.equal=F)
+
+# Another way of doing the same t-test
+# w_grid <- data %>% filter(grid_or_matrix == 1)
+# wo_grid  <- data %>% filter(grid_or_matrix == 0)
+# t.test(w_grid$mean_human_complexity_rating, wo_grid$mean_human_complexity_rating, data=data, var.equal=F)
+
+```
+
+``` {r}
+map_means <- data %>% 
+  select(c(map, mean_human_complexity_rating)) %>% 
+  group_by(map) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+data %>% 
+  mutate(map = as.factor(map)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram(aes(fill=map),show.legend=F) +
+    geom_point(data = map_means, aes(x = mean_complexity, y = 0), color = "red", size = 3) +
+    geom_vline(data = map_means, aes(xintercept = mean_complexity), color = "red", size = 01, alpha = 0.75) +
+    facet_wrap(~factor(map, levels =c("1", "0")), ncol=1) +
+    theme_minimal() +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0)) +
+    scale_fill_manual(values = c("grey25","grey50")) +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      strip.text.x = element_blank(),
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+ggsave("figures_for_paper/charts_dist/map_distributions.png", width=4, height=4)
+
+```
+
+```{r}
+data %>% 
+  mutate(map = as.factor(map)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating,y=reorder(map,-mean_human_complexity_rating)))+
+  stat_interval(aes(alpha=map),position=position_dodge(),
+                        show.legend=F, height=3,linewidth=15) +
+  scale_color_manual(values = c("#c38dda","#b170d0","#a962cb")) +
+  stat_pointinterval(aes(alpha=map), position=position_dodge(), 
+                     point_size = 12,linewidth=NA,color="#751F9D", shape=18,
+                        show.legend=F) +
+  new_scale_color() +
+  # scale_color_manual(values = c("gray60","gray20")) +
+  # geom_point(data=means, aes(x = mean_complexity, y = panel_s,color=panel_s)) +
+    # geom_hline(yintercept=mean_comp$mean_comp, color = "red",linewidth=1) +
+    # geom_text(y = (mean_comp$mean_comp + 5), x =310, label = mean_comp$mean_comp, color = "red") +
+    theme_minimal() +
+    scale_alpha_discrete(range = c(.15,1)) +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    # scale_y_discrete(expand = c(50, 50)) +
+    # scale_colour_grey() +
+    # scale_color_brewer() +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text.y = element_blank(),
+      # axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      panel.grid.major.x = element_blank(),
+      # panel.border = element_rect(color = "gray50", 
+      #                               fill = NA, 
+      #                               size = 0.5),
+      plot.margin=unit(c(.2,.5,.2,.2),"cm")
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+
+ggsave("figures_for_paper/intervals/map_int.png", width=10, height=4)
+```
+
+```{r}
+map_agg <- map_means %>% 
+  mutate(label="Map",
+         label_group="Design") %>% 
+  rename("applies" = map) %>% 
+  select(c(label_group,label,applies,everything()))
+
+data_agg <- data_agg %>% 
+  rbind(map_agg)
+
+```
+
+### Circle
+
+```{r}
+data %>% 
+  select(c(circle, mean_human_complexity_rating)) %>% 
+  group_by(circle) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+```
+
+Significant variance difference
+
+```{r}
+data %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram() +
+    facet_wrap(~circle) +
+    theme_minimal()
+
+circle_ftest <- var.test(mean_human_complexity_rating ~ circle, data = data)
+circle_ftest
+```
+
+Conduct the t-test
+
+``` {r}
+
+t.test(mean_human_complexity_rating ~ circle, data=data, var.equal=F)
+
+# Another way of doing the same t-test
+# w_grid <- data %>% filter(grid_or_matrix == 1)
+# wo_grid  <- data %>% filter(grid_or_matrix == 0)
+# t.test(w_grid$mean_human_complexity_rating, wo_grid$mean_human_complexity_rating, data=data, var.equal=F)
+
+```
+
+``` {r}
+circle_means <- data %>% 
+  select(c(circle, mean_human_complexity_rating)) %>% 
+  group_by(circle) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+data %>% 
+  mutate(circle = as.factor(circle)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram(aes(fill=circle),show.legend=F) +
+    geom_point(data = circle_means, aes(x = mean_complexity, y = 0), color = "red", size = 3) +
+    geom_vline(data = circle_means, aes(xintercept = mean_complexity), color = "red", size = 01, alpha = 0.75) +
+    facet_wrap(~factor(circle, levels =c("1", "0")), ncol=1) +
+    theme_minimal() +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0)) +
+    scale_fill_manual(values = c("grey25","grey50")) +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      strip.text.x = element_blank(),
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+ggsave("figures_for_paper/charts_dist/circle_distributions.png", width=4, height=4)
+
+```
+
+
+```{r}
+data %>% 
+  mutate(circle = as.factor(circle)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating,y=reorder(circle,-mean_human_complexity_rating)))+
+  stat_interval(aes(alpha=circle),position=position_dodge(),
+                        show.legend=F, height=3,linewidth=15) +
+  scale_color_manual(values = c("#c38dda","#b170d0","#a962cb")) +
+  stat_pointinterval(aes(alpha=circle), position=position_dodge(), 
+                     point_size = 12,linewidth=NA,color="#751F9D", shape=18,
+                        show.legend=F) +
+  new_scale_color() +
+  # scale_color_manual(values = c("gray60","gray20")) +
+  # geom_point(data=means, aes(x = mean_complexity, y = panel_s,color=panel_s)) +
+    # geom_hline(yintercept=mean_comp$mean_comp, color = "red",linewidth=1) +
+    # geom_text(y = (mean_comp$mean_comp + 5), x =310, label = mean_comp$mean_comp, color = "red") +
+    theme_minimal() +
+    scale_alpha_discrete(range = c(.15,1)) +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    # scale_y_discrete(expand = c(50, 50)) +
+    # scale_colour_grey() +
+    # scale_color_brewer() +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text.y = element_blank(),
+      # axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      panel.grid.major.x = element_blank(),
+      # panel.border = element_rect(color = "gray50", 
+      #                               fill = NA, 
+      #                               size = 0.5),
+      plot.margin=unit(c(.2,.5,.2,.2),"cm")
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+
+ggsave("figures_for_paper/intervals/circle_int.png", width=10, height=4)
+```
+
+```{r}
+circle_agg <- circle_means %>% 
+  mutate(label="Circle",
+         label_group="Design") %>% 
+  rename("applies" = circle) %>% 
+  select(c(label_group,label,applies,everything()))
+
+data_agg <- data_agg %>% 
+  rbind(circle_agg)
+
+```
+
+
+### Text
+
+```{r}
+data %>% 
+  select(c(text, mean_human_complexity_rating)) %>% 
+  group_by(text) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+```
+
+Significant variance difference
+
+```{r}
+data %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram() +
+    facet_wrap(~text) +
+    theme_minimal()
+
+text_ftest <- var.test(mean_human_complexity_rating ~ text, data = data)
+text_ftest
+```
+
+Conduct the t-test
+
+``` {r}
+
+t.test(mean_human_complexity_rating ~ text, data=data, var.equal=F)
+
+# Another way of doing the same t-test
+# w_grid <- data %>% filter(grid_or_matrix == 1)
+# wo_grid  <- data %>% filter(grid_or_matrix == 0)
+# t.test(w_grid$mean_human_complexity_rating, wo_grid$mean_human_complexity_rating, data=data, var.equal=F)
+
+```
+
+``` {r}
+text_means <- data %>% 
+  select(c(text, mean_human_complexity_rating)) %>% 
+  group_by(text) %>% 
+  summarise(
+    n = n(),
+    mean_complexity = mean(mean_human_complexity_rating),
+    sd = sd(mean_human_complexity_rating),
+    se = sd / sqrt(n)
+  )
+data %>% 
+  mutate(text = as.factor(text)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating)) +
+    geom_histogram(aes(fill=text),show.legend=F) +
+    geom_point(data = text_means, aes(x = mean_complexity, y = 0), color = "red", size = 3) +
+    geom_vline(data = text_means, aes(xintercept = mean_complexity), color = "red", size = 01, alpha = 0.75) +
+    facet_wrap(~factor(text, levels =c("1", "0")), ncol=1) +
+    theme_minimal() +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0)) +
+    scale_fill_manual(values = c("grey50","grey25")) +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      strip.text.x = element_blank(),
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+ggsave("figures_for_paper/charts_dist/text_distributions.png", width=4, height=4)
+
+```
+
+```{r}
+data %>% 
+  mutate(text = as.factor(text)) %>% 
+  ggplot(aes(x = mean_human_complexity_rating,y=reorder(text,mean_human_complexity_rating)))+
+  stat_interval(aes(alpha=text),position=position_dodge(),
+                        show.legend=F, height=3,linewidth=15) +
+  scale_color_manual(values = c("#c38dda","#b170d0","#a962cb")) +
+  stat_pointinterval(aes(alpha=text), position=position_dodge(), 
+                     point_size = 12,linewidth=NA,color="#751F9D", shape=18,
+                        show.legend=F) +
+  new_scale_color() +
+  # scale_color_manual(values = c("gray60","gray20")) +
+  # geom_point(data=means, aes(x = mean_complexity, y = panel_s,color=panel_s)) +
+    # geom_hline(yintercept=mean_comp$mean_comp, color = "red",linewidth=1) +
+    # geom_text(y = (mean_comp$mean_comp + 5), x =310, label = mean_comp$mean_comp, color = "red") +
+    theme_minimal() +
+    scale_alpha_discrete(range = c(.15,1)) +
+    scale_x_continuous(limits = c(0,100),expand = c(0, 0)) +
+    # scale_y_discrete(expand = c(50, 50)) +
+    # scale_colour_grey() +
+    # scale_color_brewer() +
+    labs(
+      x = "",
+      y = ""
+    ) +
+    theme(
+      axis.ticks.x = element_blank(),
+      axis.text.y = element_blank(),
+      # axis.text = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      panel.grid.major.x = element_blank(),
+      # panel.border = element_rect(color = "gray50", 
+      #                               fill = NA, 
+      #                               size = 0.5),
+      plot.margin=unit(c(.2,.5,.2,.2),"cm")
+      # axis.line.y = element_line(color = "black", size = 0.5)
+    )
+
+ggsave("figures_for_paper/intervals/text_int.png", width=10, height=4)
+```
+
+```{r}
+text_agg <- text_means %>% 
+  mutate(label="Text",
+         label_group="Design") %>% 
+  rename("applies" = text) %>% 
+  select(c(label_group,label,applies,everything()))
+
+data_agg <- data_agg %>% 
+  rbind(text_agg)
+
+```
+
+
+
+
+# Aggregate Data
+
+```{r}
+data_agg %>% 
+  filter(label_group == "Source") %>% 
+  arrange(desc(mean_complexity))
+
+data_agg %>% 
+  filter(label_group == "Multiplicity") %>% 
+  arrange(desc(mean_complexity))
+
+# get higher mean values
+data_agg %>% 
+  filter(label_group != "Source") %>% 
+  filter(label_group != "Multiplicity") %>% 
+  group_by(label) %>% 
+  slice_min(mean_complexity)
+# get higher mean values — LABEL APPLIES
+data_agg %>% 
+  filter(label_group != "Source") %>% 
+  filter(label_group != "Multiplicity") %>% 
+  group_by(label) %>% 
+  slice_max(mean_complexity) %>% 
+  filter(applies == 1)
+
+# get lower mean values
+data_agg %>% 
+  filter(label_group != "Source") %>% 
+  filter(label_group != "Multiplicity") %>% 
+  group_by(label) %>% 
+  slice_min(mean_complexity)
+# get higher mean values — LABEL APPLIES
+data_agg %>% 
+  filter(label_group != "Source") %>% 
+  filter(label_group != "Multiplicity") %>% 
+  group_by(label) %>% 
+  slice_min(mean_complexity) %>% 
+  filter(applies == 1)
+  
+```
+
+
+
+
+
+

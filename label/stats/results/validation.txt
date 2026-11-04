@@ -1,0 +1,19 @@
+test_exact_published_partition_is_disjoint_and_complete (test_replicate.CompletedReplicationTests.test_exact_published_partition_is_disjoint_and_complete) ... ok
+test_model_reload_and_both_input_schemas_preserve_predictions (test_replicate.CompletedReplicationTests.test_model_reload_and_both_input_schemas_preserve_predictions) ... ok
+test_no_fitting_warnings (test_replicate.CompletedReplicationTests.test_no_fitting_warnings) ... ok
+test_original_permutation_scope_and_scores_are_preserved (test_replicate.CompletedReplicationTests.test_original_permutation_scope_and_scores_are_preserved) ... ok
+test_paper_hyperparameter_discrepancies_are_visible (test_replicate.CompletedReplicationTests.test_paper_hyperparameter_discrepancies_are_visible) ... ok
+test_recorded_code_and_model_checksums_match_artifacts (test_replicate.CompletedReplicationTests.test_recorded_code_and_model_checksums_match_artifacts) ... ok
+test_saved_predictions_reproduce_every_metric (test_replicate.CompletedReplicationTests.test_saved_predictions_reproduce_every_metric) ... ok
+test_statistics_match_source_contrasts_and_untransformed_correlations (test_replicate.CompletedReplicationTests.test_statistics_match_source_contrasts_and_untransformed_correlations) ... ok
+test_supplement_matches_all_published_metrics_and_importances (test_replicate.CompletedReplicationTests.test_supplement_matches_all_published_metrics_and_importances) ... ok
+test_data_cover_all_published_images_and_ratings (test_replicate.DataAndPreprocessingTests.test_data_cover_all_published_images_and_ratings) ... ok
+test_missing_and_malformed_features_fail (test_replicate.DataAndPreprocessingTests.test_missing_and_malformed_features_fail) ... ok
+test_preprocessing_is_once_per_call_without_mutating_raw_labels (test_replicate.DataAndPreprocessingTests.test_preprocessing_is_once_per_call_without_mutating_raw_labels) ... ok
+test_reference_archive_extracts_are_unchanged (test_replicate.DataAndPreprocessingTests.test_reference_archive_extracts_are_unchanged) ... ok
+test_target_cannot_be_configured_as_predictor (test_replicate.DataAndPreprocessingTests.test_target_cannot_be_configured_as_predictor) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.195s
+
+OK

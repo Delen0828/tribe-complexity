@@ -1,0 +1,11 @@
+.conda/
+cache/
+upstream/
+checkpoints/
+logs/
+__pycache__/
+*.tmp
+*.tmp.*
+*.log
+results/runs/*/candidates/
+results/runs/*/candidate_history/

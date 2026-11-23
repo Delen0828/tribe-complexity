@@ -3,13 +3,14 @@ import csv
 import random
 import tempfile
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 from pathlib import Path
 import numpy as np
 from common import CV, ROOT, encode_mask, decode_mask, deduplicate, mask_iou, read_json, write_json, validate_preparation, digest
 from backends import candidate
 from render import render_figure, read_decisions
 from carry_review import carry
+from run import process_figure
 
 
 class MaskTests(unittest.TestCase):
@@ -107,6 +108,23 @@ class ReviewTransferTests(unittest.TestCase):
                 self.assertEqual(result['pending_candidate_ids'],['p01-00002'])
                 current['source_sha256']='source-b';write_json(directory/'candidates/unit.png.json',current)
                 with self.assertRaisesRegex(ValueError,'Source image changed'):carry(str(previous),{'p01'})
+
+    def test_resume_skips_valid_receipt_and_changed_preparation_recomputes(self):
+        from types import SimpleNamespace
+        row=next(r for r in read_json(CV/'selection.json')['records'] if r['image_id']=='2225.png')
+        prep=read_json(CV/'preparation/figures/2225.png.json')
+        with tempfile.TemporaryDirectory() as tmp:
+            directory=Path(tmp);path=directory/'candidates/2225.png.json'
+            previous={'preparation_sha256':digest(prep),'errors':[],'status':'segmented','cached_marker':'unchanged'}
+            write_json(path,previous)
+            backend=SimpleNamespace(segment=Mock(return_value=iter(())))
+            self.assertEqual(process_figure(row,prep,backend,directory,read_json(CV/'config.json')),previous)
+            backend.segment.assert_not_called()
+            changed=prep|{'notes':prep.get('notes','')+' Updated preparation.'}
+            result=process_figure(row,changed,backend,directory,read_json(CV/'config.json'))
+            self.assertEqual(result['preparation_sha256'],digest(changed))
+            self.assertEqual(result['status'],'segmented')
+            self.assertTrue(backend.segment.called)
 
 
 if __name__=='__main__':unittest.main()

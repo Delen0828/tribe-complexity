@@ -193,6 +193,11 @@ def render(args):
         counted = [e["count"] for e in members if e["count"] is not None]
         bands.append({"band":band,"selected":len(members),"counted":len(counted),"total_retained":sum(counted),"mean_count":sum(counted)/len(counted) if counted else None,"ambiguous":sum(e["ambiguous_count"] for e in members)})
     summary = {"selected":len(rows),"statuses":dict(statuses),"total_retained":sum(e["known_retained_count"] for e in entries),"ambiguous":sum(e["ambiguous_count"] for e in entries),"pending_candidates":sum(e["pending_count"] for e in entries),"runtime_seconds":sum(e["runtime_seconds"] for e in entries),"bands":bands}
+    family_counts = Counter(c["family"] for r in results for c in r["instances"] if c["decision"] == "retain")
+    summary["retained_by_family"] = dict(sorted(family_counts.items()))
+    summary["unresolved_preparation_panels"] = sum(r.get("unresolved_panels",0) for r in results)
+    corrections_path = CV/"results/preparation-corrections.json"
+    summary["preparation_correction_events"] = len(read_json(corrections_path)["corrections"]) if corrections_path.exists() else 0
     analysis_run_id = digest({"run_id":directory.name,"results":[r.get("result_id") for r in results]})
     data = {"schema_version":1,"run_id":analysis_run_id,"base_run_id":directory.name,"selection_id":selection["selection_id"],"model":read_json(directory/"run.json")["model"],"generated_at":now(),"summary":summary,"entries":entries,"provenance":read_json(directory/"run.json").get("provenance",{}),"count_definition":"Retained single discrete graphical data marks; continuous graphics, text, legends, axes, decoration and photographic imagery excluded. Ambiguous masks excluded from counts."}
     write_json(directory/"summary.json",summary)
@@ -207,5 +212,8 @@ def render(args):
     for b in bands:
         mean=f"{b['mean_count']:.2f}" if b["mean_count"] is not None else "N/A"
         report.append(f"| {b['band']*10}–{(b['band']+1)*10} | {b['selected']} | {b['counted']} | {b['total_retained']} | {mean} | {b['ambiguous']} |")
+    report += ["", "## Retained mark families", "", "These are graphical units, not unique underlying observations. Units differ across families.", "", "| Family | Retained masks |", "|---|---:|"]
+    report += [f"| {family} | {n} |" for family,n in sorted(family_counts.items())]
+    report += ["",f"Unresolved preparation panels: {summary['unresolved_preparation_panels']}. Preparation correction events: {summary['preparation_correction_events']}.","", "Panel/exemplar preparation was visually revised when candidate inspection exposed source-coordinate or chart-type errors. Older raw receipts and the correction audit are preserved. Mask confidence/stability defaults were not tuned to reference counts. Known omitted marks and unresolved instance boundaries are flagged for human post-hoc assessment."]
     (CV/"results/summary.md").write_text("\n".join(report)+"\n")
     print(f"Rendered {len(rows)} figures: {dict(statuses)}; retained {summary['total_retained']}",flush=True)

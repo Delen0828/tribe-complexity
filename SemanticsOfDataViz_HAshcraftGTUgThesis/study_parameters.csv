@@ -1,0 +1,27 @@
+parameter,value,evidence
+authoritative_stimuli,72 pilot-4 PNGs referenced by stimSetPilot_4.xlsx,workbook and PNGs
+chart_type,Scatterplots only; bar/line/violin occur only in a notebook heading,generator code
+generator_seed_in_current_notebook,1; not the pilot-4 image seed,generator cell 3
+base_points,250 plus 1 appended point; 251 total,generator cell 3
+target_correlations,72 evenly spaced values from +1 to -1; zero is absent,generator cell 3
+correlation_labels,"Strong positive >=0.7; positive (0,0.7); negative (-0.7,0); strong negative <=-0.7",generator cell 3
+correlation_metadata_precision,Filename values rounded to 3 decimals; target r and final r differ,generator cell 3
+outliers,"36 of 72; randomly allocated, not a balanced direction-by-outlier factorial",generator and workbook
+current_generator_outlier_rule,"Cauchy candidate; Mahalanobis-distance z in [6,10]; retain target sign",generator cell 3
+pilot4_outlier_z_range,3.042 to 7.968; differs from current generator,published filenames
+ink_density,Unknown for all 72; not an implemented factor in the supplied set,RSA metadata and generator
+raster,732 x 732 RGBA; 2.44 inches square at 300 dpi; blue s=5 markers; bottom/left axes; no ticks or labels,PNG metadata and generator
+matlab_rng_seed,1234; NumPy and MATLAB RNG calls are not interchangeable,MATLAB rng(1234)
+first_run_block_order,XPQMOPMXQOPQMOX,MATLAB block1
+later_run_block_order,XOMQPOQXMPOMQPX,MATLAB block2
+fixation_blocks,3 per run; code X; 12 seconds each,MATLAB block loop
+task_blocks,12 per run; 6 stimuli each; 3-second prompt per block,MATLAB block loop
+nominal_run_duration_seconds,324 excluding scanner wait and frame timing,3*12 + 12*3 + 72*(3+0.5)
+stimulus_reuse,Each of 72 appears once per run; each task has 18 trials,MATLAB stimulus/task pools
+later_run_task_assignment,"All runs after the first use firstRunTaskRows([end,1:end-1]); repeated runs do not further rotate",MATLAB run loop
+image_scale,Fit within 80% of screen width and height; white background,MATLAB imgScale
+motion,All tasks: left/right linear travel of 0.005*screen_width in 3 seconds; no >3 consecutive identical directions,MATLAB motionVec and totalTravelPixels
+task_prompt_appearance,Times New Roman 80; black on white; prompt displayed before each block,MATLAB PTB setup
+simulation_protocol,"Existing TRIBE: independent silent static 3s clips, 16fps, 292px canvas/256px crop, FP32, t=0 means",tribe/README.md
+interpretation,"Descriptive model predictions; no task contrast, participant fMRI validation, or human complexity score",supplied resources and simulation scope
+proposal_status,Proposal describes 2 main tasks and future localizers; executable MATLAB implements P/Q/M/O; no localizer stimuli supplied,proposal versus executable script

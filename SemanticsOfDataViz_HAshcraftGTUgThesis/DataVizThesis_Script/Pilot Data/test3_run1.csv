@@ -1,0 +1,81 @@
+Seed = 1234
+runOrder = XPQMOPMXQOPQMOX
+Trial,Block,TrialCode,Stimulus,r,z,Question,Direction,Response,CorrectAns,RT,Correct
+1,1,"Passive (P)","scatter_plot28_posCor(r=0.231)_out(MD=3.628,z=3.729).png",0.231000,3.729000,"Press 1 when you see the figure.","Right (2)",,,0.667988,
+2,1,"Passive (P)","scatter_plot14_posCor(r=0.634).png",0.634000,,"Press 1 when you see the figure.","Left (1)",,,0.459251,
+3,1,"Passive (P)","scatter_plot67_negSrngCor(r=-0.860)_out(MD=3.869,z=4.091).png",-0.860000,4.091000,"Press 1 when you see the figure.","Right (2)",,,0.642418,
+4,1,"Passive (P)","scatter_plot41_negCor(r=-0.125).png",-0.125000,,"Press 1 when you see the figure.","Right (2)",,,0.434164,
+5,1,"Passive (P)","scatter_plot9_posSrngCor(r=0.780).png",0.780000,,"Press 1 when you see the figure.","Left (1)",,,0.509173,
+6,1,"Passive (P)","scatter_plot64_negSrngCor(r=-0.741).png",-0.741000,,"Press 1 when you see the figure.","Left (1)",,,0.800550,
+7,2,"Question (Q)","scatter_plot31_posCor(r=0.139).png",0.139000,,"What is trend in the data?\n1 = positive trend, 2 = negative trend","Right (2)",2,1,1.472035,0
+8,2,"Question (Q)","scatter_plot37_negCor(r=-0.025).png",-0.025000,,"What is trend in the data?\n1 = positive trend, 2 = negative trend","Right (2)",2,2,1.017793,1
+9,2,"Question (Q)","scatter_plot59_negCor(r=-0.623).png",-0.623000,,"What is trend in the data?\n1 = positive trend, 2 = negative trend","Right (2)",2,2,0.784622,1
+10,2,"Question (Q)","scatter_plot11_posSrngCor(r=0.728)_out(MD=6.112,z=7.968).png",0.728000,7.968000,"What is trend in the data?\n1 = positive trend, 2 = negative trend","Left (1)",1,1,0.625927,1
+11,2,"Question (Q)","scatter_plot18_posCor(r=0.537)_out(MD=5.179,z=6.293).png",0.537000,6.293000,"What is trend in the data?\n1 = positive trend, 2 = negative trend","Right (2)",1,1,1.075416,1
+12,2,"Question (Q)","scatter_plot29_posCor(r=0.185).png",0.185000,,"What is trend in the data?\n1 = positive trend, 2 = negative trend","Right (2)",1,1,2.225394,1
+13,3,"Movement (M)","scatter_plot53_negCor(r=-0.451)_out(MD=3.638,z=3.953).png",-0.451000,3.953000,"Which direction is the figure moving?\n1 = left, 2 = right","Right (2)",2,2,0.989720,1
+14,3,"Movement (M)","scatter_plot39_negCor(r=-0.070).png",-0.070000,,"Which direction is the figure moving?\n1 = left, 2 = right","Left (1)",1,1,0.792041,1
+15,3,"Movement (M)","scatter_plot44_negCor(r=-0.205).png",-0.205000,,"Which direction is the figure moving?\n1 = left, 2 = right","Left (1)",1,1,0.817404,1
+16,3,"Movement (M)","scatter_plot72_negSrngCor(r=-0.998).png",-0.998000,,"Which direction is the figure moving?\n1 = left, 2 = right","Right (2)",2,2,0.801056,1
+17,3,"Movement (M)","scatter_plot15_posCor(r=0.589).png",0.589000,,"Which direction is the figure moving?\n1 = left, 2 = right","Right (2)",2,2,0.783992,1
+18,3,"Movement (M)","scatter_plot54_negCor(r=-0.446)_out(MD=5.726,z=6.738).png",-0.446000,6.738000,"Which direction is the figure moving?\n1 = left, 2 = right","Right (2)",2,2,1.525838,1
+19,4,"Outlier (O)","scatter_plot21_posCor(r=0.455)_out(MD=4.247,z=4.744).png",0.455000,4.744000,"Is there an outlier in the data?\n1 = yes, 2 = no","Left (1)",1,1,0.845303,1
+20,4,"Outlier (O)","scatter_plot52_negCor(r=-0.436).png",-0.436000,,"Is there an outlier in the data?\n1 = yes, 2 = no","Right (2)",2,2,0.750860,1
+21,4,"Outlier (O)","scatter_plot30_posCor(r=0.219)_out(MD=5.780,z=7.046).png",0.219000,7.046000,"Is there an outlier in the data?\n1 = yes, 2 = no","Right (2)",1,1,0.608591,1
+22,4,"Outlier (O)","scatter_plot56_negCor(r=-0.528).png",-0.528000,,"Is there an outlier in the data?\n1 = yes, 2 = no","Right (2)",2,2,1.050590,1
+23,4,"Outlier (O)","scatter_plot40_negCor(r=-0.117)_out(MD=3.488,z=3.513).png",-0.117000,3.513000,"Is there an outlier in the data?\n1 = yes, 2 = no","Left (1)",2,1,1.117044,0
+24,4,"Outlier (O)","scatter_plot60_negCor(r=-0.642).png",-0.642000,,"Is there an outlier in the data?\n1 = yes, 2 = no","Left (1)",2,2,1.108765,1
+25,5,"Passive (P)","scatter_plot27_posCor(r=0.279).png",0.279000,,"Press 1 when you see the figure.","Right (2)",,,0.363442,
+26,5,"Passive (P)","scatter_plot8_posSrngCor(r=0.796)_out(MD=3.637,z=3.646).png",0.796000,3.646000,"Press 1 when you see the figure.","Right (2)",,,0.666936,
+27,5,"Passive (P)","scatter_plot70_negSrngCor(r=-0.944).png",-0.944000,,"Press 1 when you see the figure.","Right (2)",,,0.617417,
+28,5,"Passive (P)","scatter_plot49_negCor(r=-0.353).png",-0.353000,,"Press 1 when you see the figure.","Left (1)",,,0.675497,
+29,5,"Passive (P)","scatter_plot45_negCor(r=-0.195)_out(MD=4.646,z=5.297).png",-0.195000,5.297000,"Press 1 when you see the figure.","Left (1)",,,0.725712,
+30,5,"Passive (P)","scatter_plot1_posSrngCor(r=0.986)_out(MD=4.302,z=5.871).png",0.986000,5.871000,"Press 1 when you see the figure.","Left (1)",,,0.533588,
+31,6,"Movement (M)","scatter_plot25_posCor(r=0.319).png",0.319000,,"Which direction is the figure moving?\n1 = left, 2 = right","Right (2)",2,2,1.230690,1
+32,6,"Movement (M)","scatter_plot4_posSrngCor(r=0.902)_out(MD=5.088,z=5.941).png",0.902000,5.941000,"Which direction is the figure moving?\n1 = left, 2 = right","Right (2)",2,2,1.808487,1
+33,6,"Movement (M)","scatter_plot47_negCor(r=-0.289).png",-0.289000,,"Which direction is the figure moving?\n1 = left, 2 = right","Left (1)",1,1,0.842324,1
+34,6,"Movement (M)","scatter_plot61_negCor(r=-0.684).png",-0.684000,,"Which direction is the figure moving?\n1 = left, 2 = right","Right (2)",2,2,0.800559,1
+35,6,"Movement (M)","scatter_plot19_posCor(r=0.473)_out(MD=5.629,z=6.855).png",0.473000,6.855000,"Which direction is the figure moving?\n1 = left, 2 = right","Left (1)",1,1,0.633979,1
+36,6,"Movement (M)","scatter_plot34_posCor(r=0.078)_out(MD=3.561,z=3.605).png",0.078000,3.605000,"Which direction is the figure moving?\n1 = left, 2 = right","Right (2)",2,2,1.033821,1
+37,7,"Question (Q)","scatter_plot3_posSrngCor(r=0.942).png",0.942000,,"What is trend in the data?\n1 = positive trend, 2 = negative trend","Right (2)",1,1,0.834603,1
+38,7,"Question (Q)","scatter_plot42_negCor(r=-0.148)_out(MD=5.810,z=7.029).png",-0.148000,7.029000,"What is trend in the data?\n1 = positive trend, 2 = negative trend","Right (2)",2,2,0.917163,1
+39,7,"Question (Q)","scatter_plot33_posCor(r=0.080)_out(MD=4.141,z=4.530).png",0.080000,4.530000,"What is trend in the data?\n1 = positive trend, 2 = negative trend","Left (1)",1,1,1.400612,1
+40,7,"Question (Q)","scatter_plot69_negSrngCor(r=-0.912)_out(MD=4.303,z=4.551).png",-0.912000,4.551000,"What is trend in the data?\n1 = positive trend, 2 = negative trend","Right (2)",2,2,0.617208,1
+41,7,"Question (Q)","scatter_plot63_negSrngCor(r=-0.744).png",-0.744000,,"What is trend in the data?\n1 = positive trend, 2 = negative trend","Left (1)",2,2,0.625468,1
+42,7,"Question (Q)","scatter_plot65_negSrngCor(r=-0.802).png",-0.802000,,"What is trend in the data?\n1 = positive trend, 2 = negative trend","Right (2)",2,2,0.650488,1
+43,8,"Outlier (O)","scatter_plot6_posSrngCor(r=0.852)_out(MD=5.770,z=7.092).png",0.852000,7.092000,"Is there an outlier in the data?\n1 = yes, 2 = no","Right (2)",1,1,0.680064,1
+44,8,"Outlier (O)","scatter_plot66_negSrngCor(r=-0.824).png",-0.824000,,"Is there an outlier in the data?\n1 = yes, 2 = no","Left (1)",2,2,0.767213,1
+45,8,"Outlier (O)","scatter_plot71_negSrngCor(r=-0.971).png",-0.971000,,"Is there an outlier in the data?\n1 = yes, 2 = no","Left (1)",2,2,0.758976,1
+46,8,"Outlier (O)","scatter_plot32_posCor(r=0.087)_out(MD=6.159,z=7.543).png",0.087000,7.543000,"Is there an outlier in the data?\n1 = yes, 2 = no","Left (1)",1,1,0.717134,1
+47,8,"Outlier (O)","scatter_plot2_posSrngCor(r=0.968).png",0.968000,,"Is there an outlier in the data?\n1 = yes, 2 = no","Right (2)",2,2,1.008811,1
+48,8,"Outlier (O)","scatter_plot58_negCor(r=-0.599).png",-0.599000,,"Is there an outlier in the data?\n1 = yes, 2 = no","Right (2)",2,2,0.850488,1
+49,9,"Passive (P)","scatter_plot35_posCor(r=0.016)_out(MD=4.918,z=5.682).png",0.016000,5.682000,"Press 1 when you see the figure.","Left (1)",,,0.314582,
+50,9,"Passive (P)","scatter_plot13_posCor(r=0.662).png",0.662000,,"Press 1 when you see the figure.","Left (1)",,,0.525770,
+51,9,"Passive (P)","scatter_plot38_negCor(r=-0.004)_out(MD=4.218,z=4.774).png",-0.004000,4.774000,"Press 1 when you see the figure.","Right (2)",,,0.308943,
+52,9,"Passive (P)","scatter_plot46_negCor(r=-0.255)_out(MD=3.675,z=3.596).png",-0.255000,3.596000,"Press 1 when you see the figure.","Left (1)",,,0.583686,
+53,9,"Passive (P)","scatter_plot48_negCor(r=-0.305)_out(MD=3.349,z=3.376).png",-0.305000,3.376000,"Press 1 when you see the figure.","Left (1)",,,0.717142,
+54,9,"Passive (P)","scatter_plot22_posCor(r=0.395).png",0.395000,,"Press 1 when you see the figure.","Right (2)",,,0.625566,
+55,10,"Question (Q)","scatter_plot68_negSrngCor(r=-0.879).png",-0.879000,,"What is trend in the data?\n1 = positive trend, 2 = negative trend","Left (1)",2,2,0.631255,1
+56,10,"Question (Q)","scatter_plot36_posCor(r=0.002)_out(MD=3.678,z=3.791).png",0.002000,3.791000,"What is trend in the data?\n1 = positive trend, 2 = negative trend","Left (1)",1,1,1.425432,1
+57,10,"Question (Q)","scatter_plot62_negSrngCor(r=-0.715).png",-0.715000,,"What is trend in the data?\n1 = positive trend, 2 = negative trend","Right (2)",2,2,0.592053,1
+58,10,"Question (Q)","scatter_plot23_posCor(r=0.400)_out(MD=3.462,z=3.386).png",0.400000,3.386000,"What is trend in the data?\n1 = positive trend, 2 = negative trend","Left (1)",1,1,0.626963,1
+59,10,"Question (Q)","scatter_plot55_negCor(r=-0.487)_out(MD=5.324,z=6.080).png",-0.487000,6.080000,"What is trend in the data?\n1 = positive trend, 2 = negative trend","Right (2)",2,2,0.767143,1
+60,10,"Question (Q)","scatter_plot5_posSrngCor(r=0.881)_out(MD=3.353,z=3.345).png",0.881000,3.345000,"What is trend in the data?\n1 = positive trend, 2 = negative trend","Right (2)",1,1,0.500644,1
+61,11,"Movement (M)","scatter_plot10_posSrngCor(r=0.742).png",0.742000,,"Which direction is the figure moving?\n1 = left, 2 = right","Right (2)",2,2,0.722604,1
+62,11,"Movement (M)","scatter_plot20_posCor(r=0.484)_out(MD=4.915,z=5.743).png",0.484000,5.743000,"Which direction is the figure moving?\n1 = left, 2 = right","Left (1)",1,1,0.566974,1
+63,11,"Movement (M)","scatter_plot50_negCor(r=-0.371).png",-0.371000,,"Which direction is the figure moving?\n1 = left, 2 = right","Right (2)",2,2,0.658586,1
+64,11,"Movement (M)","scatter_plot24_posCor(r=0.313)_out(MD=3.754,z=3.887).png",0.313000,3.887000,"Which direction is the figure moving?\n1 = left, 2 = right","Right (2)",2,2,1.508811,1
+65,11,"Movement (M)","scatter_plot43_negCor(r=-0.198)_out(MD=4.892,z=5.891).png",-0.198000,5.891000,"Which direction is the figure moving?\n1 = left, 2 = right","Right (2)",2,2,0.858865,1
+66,11,"Movement (M)","scatter_plot26_posCor(r=0.239)_out(MD=5.031,z=5.588).png",0.239000,5.588000,"Which direction is the figure moving?\n1 = left, 2 = right","Left (1)",1,1,1.058813,1
+67,12,"Outlier (O)","scatter_plot51_negCor(r=-0.408).png",-0.408000,,"Is there an outlier in the data?\n1 = yes, 2 = no","Right (2)",2,2,0.839420,1
+68,12,"Outlier (O)","scatter_plot12_posCor(r=0.683)_out(MD=3.180,z=3.042).png",0.683000,3.042000,"Is there an outlier in the data?\n1 = yes, 2 = no","Right (2)",2,1,0.900216,0
+69,12,"Outlier (O)","scatter_plot57_negCor(r=-0.575).png",-0.575000,,"Is there an outlier in the data?\n1 = yes, 2 = no","Left (1)",2,2,1.075922,1
+70,12,"Outlier (O)","scatter_plot17_posCor(r=0.509)_out(MD=5.465,z=6.463).png",0.509000,6.463000,"Is there an outlier in the data?\n1 = yes, 2 = no","Left (1)",1,1,0.650225,1
+71,12,"Outlier (O)","scatter_plot16_posCor(r=0.530)_out(MD=5.267,z=6.009).png",0.530000,6.009000,"Is there an outlier in the data?\n1 = yes, 2 = no","Left (1)",1,1,0.708843,1
+72,12,"Outlier (O)","scatter_plot7_posSrngCor(r=0.805)_out(MD=4.658,z=5.198).png",0.805000,5.198000,"Is there an outlier in the data?\n1 = yes, 2 = no","Right (2)",1,1,1.967061,1
+
+Movement Accuracy,100.0%
+
+Question Accuracy,94.4%
+
+Outlier Accuracy,88.9%

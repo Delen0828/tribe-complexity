@@ -39,6 +39,11 @@ For manual startup in an activated environment, use
 The home page puts the MassVis and Arunkumar dataset explorers first, followed by
 four simulation result links: MassVis, Kylie, Hayeong, and Arunkumar.
 The MassVis annotation viewer is at `data.html`; existing `?index=42` bookmarks redirect there.
+The MassVis rating agreement page is at `agreement.html`. It plots the individual
+human ratings by ascending image mean, with image indices breaking ties. The
+second chart shows each image's sample standard deviation and the median within
+each group of 200 ranks. Select or enter a rank to inspect its scores, or narrow
+the rank window to see individual points more clearly.
 
 Arunkumar's dataset explorer is at `arunkumar.html`. It reads the published study
 manifest and original images directly, so it also works without predictions.

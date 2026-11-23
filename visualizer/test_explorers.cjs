@@ -29,8 +29,9 @@ async function main() {
     await page.goto(url('visualizer/'));
     assert.deepEqual(await page.locator('.home-grid a').evaluateAll(links =>
       links.map(link => link.getAttribute('href'))), [
-      'data.html', 'arunkumar.html', 'brain.html?dataset=massvis_sample',
-      'brain.html?dataset=kylie', 'brain.html?dataset=hayeong', 'brain.html?dataset=arunkumar']);
+      'data.html', 'arunkumar.html', 'agreement.html', 'brain.html?dataset=massvis_sample',
+      'brain.html?dataset=kylie', 'brain.html?dataset=hayeong', 'brain.html?dataset=arunkumar',
+      'brain.html?dataset=ashcraft&x=correlation_direction&y=has_outlier']);
     const datasetCards = await page.locator('nav[aria-label="Dataset explorers"]').boundingBox();
     const simulationCards = await page.locator('nav[aria-label="Simulation results"]').boundingBox();
     assert(simulationCards.y > datasetCards.y + datasetCards.height);
@@ -39,6 +40,38 @@ async function main() {
     await lookup(42);
     assert.equal(await page.locator('#image-id').innerText(), 'Study ID 42.png');
     assert.equal(await page.locator('.hist-bar').count(), 20);
+
+    await page.getByRole('link', {name: 'Rating agreement'}).click();
+    await page.waitForSelector('#ratings-plot:visible');
+    assert.equal(await page.locator('#status').innerText(), '5,800 visualizations · 58,000 ratings · Showing ranks 1–5,800');
+    async function inspectRank(rank) {
+      await page.fill('#rank', String(rank));
+      await page.locator('#rank-lookup button').click();
+      return page.locator('#rank-details').innerText();
+    }
+    assert.equal(await inspectRank(1), 'Rank 1 · Image 304.png · Mean 1.70 · SD 2.21 · 10 ratings (0, 0, 0, 0, 0, 0, 4, 4, 4, 5)');
+    await page.selectOption('#rank-window', '10');
+    assert(await page.locator('#previous-window').isDisabled());
+    const plot = await page.locator('#ratings-plot').boundingBox();
+    await page.locator('#ratings-plot').click({position: {x: plot.width - 26, y: plot.height / 2}});
+    assert.equal(await page.locator('#rank').inputValue(), '10');
+    await page.locator('#next-window').click();
+    assert.match(await page.locator('#status').innerText(), /11–20$/);
+    await page.locator('#previous-window').click();
+    assert.match(await page.locator('#status').innerText(), /1–10$/);
+    await page.setViewportSize({width: 390, height: 844});
+    assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+    const spreadPlot = await page.locator('#spread-plot').boundingBox();
+    await page.locator('#spread-plot').click({position: {x: 42, y: spreadPlot.height / 2}});
+    assert.equal(await page.locator('#rank').inputValue(), '1');
+    await page.setViewportSize({width: 1440, height: 1000});
+    assert.match(await inspectRank(1234), /Image 3525\.png · Mean 30\.30/);
+    assert.match(await inspectRank(1236), /Image 5718\.png · Mean 30\.30/);
+    assert.match(await inspectRank(5800), /Image 2567\.png · Mean 96\.70 · SD 6\.31/);
+    assert(await page.locator('#next-window').isDisabled());
+    await page.locator('#image-link').click();
+    await page.waitForSelector('#workspace:visible');
+    assert.equal(await page.locator('#image-id').innerText(), 'Study ID 2567.png');
 
     await page.goto(url('visualizer/arunkumar.html'));
     await page.waitForSelector('#workspace:visible');
@@ -136,7 +169,7 @@ async function main() {
     await page.setViewportSize({width: 1440, height: 1000});
     await page.screenshot({path: '/tmp/tribe-portal.png', fullPage: true});
     assert.deepEqual(errors, []);
-    process.stdout.write('Dataset explorers: portal, annotations, histogram, experiments, images, keyboard, URLs and mobile PASS\n');
+    process.stdout.write('Dataset explorers: portal, annotations, rating agreement, histogram, experiments, images, keyboard, URLs and mobile PASS\n');
   } finally {
     await browser.close();
   }

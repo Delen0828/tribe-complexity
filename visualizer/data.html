@@ -9,7 +9,10 @@
   <script src="app.js" defer></script>
 </head>
 <body>
-  <header><a class="brand" href="./">TRIBE <span>/ MassVis data</span></a><a href="./">Home</a></header>
+  <header>
+    <a class="brand" href="./">TRIBE <span>/ MassVis data</span></a>
+    <nav aria-label="MassVis"><a href="agreement.html">Rating agreement</a><a href="./">Home</a></nav>
+  </header>
   <main>
     <div class="toolbar">
       <form id="lookup"><label for="index">Visualization index <span>0–5799</span></label><div class="controls"><input id="index" name="index" type="number" min="0" max="5799" step="1" value="0" required><button type="submit">Explore →</button></div></form>

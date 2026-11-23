@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Explore individual MASSVIS complexity ratings and how rating agreement varies by mean perceived complexity.">
+  <title>MASSVIS · Rating agreement</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="agreement.css">
+  <script src="agreement.js" defer></script>
+</head>
+<body>
+  <header>
+    <a class="brand" href="./">TRIBE <span>/ MassVis data</span></a>
+    <nav aria-label="MassVis"><a href="data.html">Dataset explorer</a><a href="./">Home</a></nav>
+  </header>
+  <main class="agreement">
+    <h1>Perceived complexity and rating agreement</h1>
+    <p class="intro">Images are ranked from lowest to highest mean perceived complexity. Each blue dot is one human rating on the 0–100 scale.</p>
+    <p id="status" role="status">Loading ratings…</p>
+    <div id="rating-workspace" hidden>
+      <div class="rank-controls">
+        <div>
+          <label for="rank-window">Rank window</label>
+          <div class="window-controls">
+            <select id="rank-window">
+              <option value="0">All ranks</option>
+              <option value="1000">1,000 ranks</option>
+              <option value="100">100 ranks</option>
+              <option value="10">10 ranks</option>
+            </select>
+            <button type="button" id="previous-window" aria-label="Previous ranks">Previous</button>
+            <button type="button" id="next-window" aria-label="Next ranks">Next</button>
+          </div>
+        </div>
+        <form id="rank-lookup">
+          <label for="rank">Go to rank</label>
+          <div class="controls">
+            <input id="rank" type="number" min="1" step="1" required>
+            <button type="submit">Go</button>
+          </div>
+        </form>
+      </div>
+      <section class="rating-panel" aria-labelledby="ratings-title">
+        <div class="panel-heading">
+          <h2 id="ratings-title">Individual ratings</h2>
+          <div class="chart-legend"><span><i class="rating-key" aria-hidden="true"></i>Individual rating</span><span><i class="summary-key" aria-hidden="true"></i>Image mean</span></div>
+        </div>
+        <p class="axis-label">Rated perceived complexity (0–100)</p>
+        <canvas class="rank-plot" id="ratings-plot" role="img" aria-label="Individual ratings and mean ratings plotted by image rank" aria-describedby="ratings-help"></canvas>
+        <p class="x-axis-label">Visualization rank by mean perceived complexity</p>
+        <p class="plot-note" id="ratings-help">Select a rank on either chart or use the rank lookup to see its scores. Matching ratings within an image are offset horizontally to make them easier to see when zoomed in.</p>
+        <section class="selection-panel" aria-labelledby="selection-title">
+          <h3 id="selection-title">Selected visualization</h3>
+          <p id="rank-details" aria-live="polite">Choose a rank to inspect its ratings.</p>
+          <a id="image-link" hidden>Open in the MassVis dataset explorer</a>
+        </section>
+      </section>
+      <section class="rating-panel" aria-labelledby="spread-title">
+        <div class="panel-heading">
+          <h2 id="spread-title">Rating spread</h2>
+          <div class="chart-legend"><span><i class="rating-key" aria-hidden="true"></i>Image SD</span><span><i class="summary-key" aria-hidden="true"></i>Median SD per 200 ranks</span></div>
+        </div>
+        <p class="axis-label">Sample standard deviation (rating points)</p>
+        <canvas class="rank-plot" id="spread-plot" role="img" aria-label="Within-image rating standard deviations by image rank" aria-describedby="spread-help"></canvas>
+        <p class="plot-note" id="spread-help">Lower SD means closer agreement. The 0–100 scale limits how spread out ratings can be near the lowest and highest means.</p>
+      </section>
+    </div>
+    <footer>Lin et al. · CHI EA 2025 <span>MASSVIS human ratings</span></footer>
+  </main>
+</body>
+</html>

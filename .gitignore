@@ -14,4 +14,4 @@ tribe/*.log
 tribe/outputs/
 
 # Thesis raster exports and independently regenerated stimuli
-SemanticsOfDataViz_HAshcraftGTUgThesis/reproduced/
+SemanticsOfDataViz_HAshcraftGTUgThesis

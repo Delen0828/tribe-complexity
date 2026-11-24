@@ -9,6 +9,7 @@ import io
 import json
 import os
 from pathlib import Path
+import re
 import sys
 import threading
 import webbrowser
@@ -34,11 +35,27 @@ TITLES = {'massvis_sample': 'MassVis · Sample', 'massvis_all': 'MassVis · All'
           'kylie': "Kylie's study", 'hayeong': "Hayeong's study",
           'arunkumar': "Arunkumar's study · Both experiments",
           'ashcraft': 'Ashcraft · Controlled scatterplots'}
+PUBLIC_FILES = {
+    'index.html', 'label/output/labels.json', 'label/source/ratings.csv',
+    'tribe/inputs/4849.png', 'tribe/studies/manifests/arunkumar.json',
+    'tribe/outputs/complexity_comparison/ridge_interpretability/report.json',
+    *(f'SemanticsOfDataViz_HAshcraftGTUgThesis/{name}' for name in (
+        'study_conditions.csv', 'visual_conditions.csv', 'study_parameters.csv', 'REPRODUCTION.md',
+    )),
+}
+PUBLIC_ASSETS = re.compile(
+    r'visualizer/[\w-]+\.(?:html|css|js)'
+    r'|data/(?:government|news|science|vis[123])/[^/]+\.png'
+    r'|data/Arunkumar/Stimuli/(?:Expt 1 - 500 stimuli|Expt 2 - 100 stimuli)/[^/]+\.(?i:png|jpe?g)'
+    r'|tribe/outputs/(?:' + '|'.join(TITLES) + r')/inputs/\d+\.png'
+    r'|tribe/outputs/complexity_comparison/ridge_interpretability/[a-f0-9]{64}/[\w-]+\.png'
+)
 
 
 class Visualizer:
-    def __init__(self, root=ROOT):
+    def __init__(self, root=ROOT, *, public=False):
         self.root = Path(root).resolve()
+        self.public = public
         self.outputs = self.root / 'tribe/outputs'
         self.snapshots = OrderedDict()
         self.grids = OrderedDict()
@@ -56,6 +73,8 @@ class Visualizer:
                 raise ValueError('Invalid dataset')
             folder = (self.outputs / STUDIES.get(dataset, (dataset,))[0]).resolve()
         if not folder.is_relative_to(self.root) or not folder.is_dir():
+            raise FileNotFoundError('Report unavailable')
+        if self.public and (folder.parent != self.outputs or folder.name not in TITLES):
             raise FileNotFoundError('Report unavailable')
         return folder
 
@@ -128,7 +147,7 @@ class Visualizer:
                             description=selection.get('description', ''), sampling=selection.get('sampling', ''),
                             count=len(rows), selected_count=selected_count, complete=len(rows) == selected_count,
                             attributes=attributes, rows=public_rows, revision=revision,
-                            selection=prefix + '/selection.json')
+                            selection=None if self.public else prefix + '/selection.json')
             return metadata, maps
 
     def analysis(self, dataset, data, x, y, statistic):
@@ -214,10 +233,20 @@ class Handler(SimpleHTTPRequestHandler):
 
     def send_head(self):
         path = unquote(urlsplit(self.path).path)
-        resolved = (self.visualizer.root / path.lstrip('/')).resolve()
-        if any(p.startswith('.') for p in Path(path).parts) or not resolved.is_relative_to(self.visualizer.root):
+        root = self.visualizer.root
+        requested = Path(self.translate_path(self.path))
+        resolved = requested.resolve()
+        if any(p.startswith('.') for p in Path(path).parts) or not resolved.is_relative_to(root):
             self.send_error(404)
             return None
+        if self.visualizer.public:
+            if requested == root or requested == root / 'visualizer':
+                requested /= 'index.html'
+            asset = requested.relative_to(root).as_posix()
+            if (requested.resolve() != requested or not requested.is_file() or
+                    not (asset in PUBLIC_FILES or PUBLIC_ASSETS.fullmatch(asset))):
+                self.send_error(404)
+                return None
         return super().send_head()
 
     def list_directory(self, path):
@@ -255,14 +284,15 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--port', type=int, default=8000)
     parser.add_argument('--host', default='127.0.0.1')
+    parser.add_argument('--public', action='store_true', help='Serve only published visualizer assets and studies')
     parser.add_argument('--open', action='store_true', dest='open_browser', help='Open the frontend in your browser')
     args = parser.parse_args()
     if not 0 <= args.port <= 65535:
         parser.error('--port must be between 0 and 65535 (0 selects a free port)')
     try:
-        server = ThreadingHTTPServer((args.host, args.port), partial(Handler, visualizer=Visualizer()))
+        server = ThreadingHTTPServer((args.host, args.port), partial(Handler, visualizer=Visualizer(public=args.public)))
     except OSError as error:
-        hint = ('Choose another port with ./start-visualizer.sh --port 8001.\n'
+        hint = ('Choose another port with --port 8001.\n'
                 if error.errno == errno.EADDRINUSE else '')
         parser.exit(1, f'Cannot start visualizer on {args.host}:{args.port}: {error}\n' + hint)
     host = '127.0.0.1' if args.host == '0.0.0.0' else args.host

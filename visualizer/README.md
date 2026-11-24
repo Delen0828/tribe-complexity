@@ -3,7 +3,7 @@
 From the repository root:
 
 ```sh
-./start-visualizer.sh
+./start-visualizer-dev.sh
 ```
 
 The launcher selects the active Python environment, a local `.venv`, or the
@@ -13,9 +13,9 @@ Keep the terminal open; **Ctrl+C** stops the server. It can also be called by it
 absolute path from another directory.
 
 ```sh
-./start-visualizer.sh --port 8001           # If port 8000 is already occupied
-./start-visualizer.sh --no-open             # Remote/headless machine
-./start-visualizer.sh --python /path/to/environment/bin/python
+./start-visualizer-dev.sh --port 8001       # If port 8000 is already occupied
+./start-visualizer-dev.sh --no-open         # Remote/headless machine
+./start-visualizer-dev.sh --python /path/to/environment/bin/python
 ```
 
 The same Python server serves the frontend and `/api/` on the selected port.
@@ -35,6 +35,25 @@ missing ones using the commands in [tribe/README.md](../tribe/README.md).
 
 For manual startup in an activated environment, use
 `python visualizer/server.py --port 8000`.
+
+## Publish on `tribe.songwen.dev`
+
+```sh
+./start-visualizer.sh --port 5501
+```
+
+Run this on the Linux host with `cloudflared` installed and access to the
+`songwen.dev` Cloudflare zone. The launcher prompts for Cloudflare sign-in if
+needed, configures the dedicated tunnel and DNS, and starts both systemd user
+services. The services start again after reboot. The public URL is
+**https://tribe.songwen.dev/visualizer/**. The development launcher defaults to
+port 8000 so you can run it alongside the published instance.
+
+Check both services with `systemctl --user status tribe-visualizer.service
+cloudflared-tribe.service`. Use `journalctl --user -u tribe-visualizer.service
+-u cloudflared-tribe.service` for their logs.
+
+## Study pages
 
 The home page puts the MassVis and Arunkumar dataset explorers first, followed by
 four simulation result links: MassVis, Kylie, Hayeong, and Arunkumar.

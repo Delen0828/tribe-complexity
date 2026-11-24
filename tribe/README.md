@@ -66,7 +66,7 @@ require separate outputs.
 ## View
 
 ```sh
-./start-visualizer.sh
+./start-visualizer-dev.sh
 ```
 
 The launcher starts the frontend and backend on the same port, checks the

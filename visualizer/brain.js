@@ -15,7 +15,7 @@ function sourceParams() {
   return params;
 }
 async function json(url, signal) {
-  const startupHint = 'Run ./start-visualizer.sh and open the URL it prints.';
+  const startupHint = 'Check that the visualizer service is running.';
   let response;
   try {
     response = await fetch(url, {signal, cache: 'no-store'});
@@ -248,7 +248,10 @@ async function loadReport() {
     el('statistic').value = params.get('statistic') === 'contrast' ? 'contrast' : 'mean';
     el('views').value = ['four', 'all'].includes(params.get('views')) ? params.get('views') : 'inferior';
     el('statistic').disabled = false; el('views').disabled = false;
-    el('selection-link').href = report.selection; el('selection-link').hidden = false;
+    if (report.selection) {
+      el('selection-link').href = report.selection;
+      el('selection-link').hidden = false;
+    }
     el('sample-summary').textContent = report.complete ? `n = ${report.count.toLocaleString()}`
       : `Partial · ${report.count.toLocaleString()} / ${report.selected_count.toLocaleString()}`;
     el('brain-workspace').hidden = false;

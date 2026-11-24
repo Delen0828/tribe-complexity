@@ -183,21 +183,26 @@ def aggregate_maps(rows, maps, attributes=None):
     return groups, grand_mean
 
 
+def load_prediction(row, output, background_rgb, precision='fp32'):
+    index = row['index']
+    path = output / f'prediction_{index}.npz'
+    receipt = json.loads((output / f'prediction_{index}.json').read_text())
+    expected = prediction_identity(PROTOCOL, row['sha256'], background_rgb, precision)
+    if receipt['identity'] != expected or hashlib.sha256(path.read_bytes()).hexdigest() != receipt['prediction_sha256']:
+        raise ValueError(f'Stale or corrupted prediction for {index}')
+    with np.load(path, allow_pickle=False) as saved:
+        values = saved['predictions']
+        if values.shape != (3, 20484) or not np.isfinite(values).all():
+            raise ValueError(f'Invalid prediction for {index}')
+        np.testing.assert_array_equal(saved['times'], [0, 1, 2])
+    return values, receipt
+
+
 def load_predictions(rows, output, background_rgb, precision='fp32'):
     maps, receipts = [], []
     for row in rows:
-        index = row['index']
-        path = output / f'prediction_{index}.npz'
-        receipt = json.loads((output / f'prediction_{index}.json').read_text())
-        expected = prediction_identity(PROTOCOL, row['sha256'], background_rgb, precision)
-        if receipt['identity'] != expected or hashlib.sha256(path.read_bytes()).hexdigest() != receipt['prediction_sha256']:
-            raise ValueError(f'Stale or corrupted prediction for {index}')
-        with np.load(path) as saved:
-            values = saved['predictions']
-            if values.shape != (3, 20484) or not np.isfinite(values).all():
-                raise ValueError(f'Invalid prediction for {index}')
-            np.testing.assert_array_equal(saved['times'], [0, 1, 2])
-            maps.append(values[0].copy())
+        values, receipt = load_prediction(row, output, background_rgb, precision)
+        maps.append(values[0].copy())
         receipts.append(receipt)
     return np.asarray(maps), receipts
 

@@ -6,6 +6,160 @@ Tables 1–2 and Sections 4–5, using the preprocessed labels in `label/`.
 All scripts, configuration, reference extracts, models, plots and results live here.
 The primary results and any discrepancies are in [results/summary.md](results/summary.md).
 
+## Full-resolution TRIBE comparison
+
+Each image contributes the saved **3 × 20,484** TRIBE predictions in time ×
+fsaverage5 vertex order, with the left hemisphere first. The input has **61,452**
+values per image. Each time–vertex coordinate is standardized with training-fold
+statistics. Ridge and RBF-SVR flatten the tensor in time-major order. Ridge solves
+the linear objective in sample space, and RBF-SVR reuses the fold's exact
+pairwise distances across the kernel grid. Ridge can weight every coordinate but
+models a linear response. RBF-SVR models nonlinear responses with one shared
+distance scale, so many weak or redundant coordinates can affect its similarity
+measure.
+
+The cortical Transformer uses a [Perceiver-style cross-attention](https://proceedings.mlr.press/v139/jaegle21a.html)
+architecture with random initialization. It reindexes vertices into 324 spherical neighborhoods and projects
+each neighborhood's full vector of vertex responses across all three time points
+into a token with its spatial position. Sixteen learned latent vectors attend to
+these tokens, then two self-attention layers support interactions across cortex
+before the scalar readout. This gives the model spatial structure and keeps the
+attention problem small for 5,800 images. The patch projection and latent readout
+are learned during regression.
+
+Run the reference comparison below first if `full/` does not exist. The raw
+comparison verifies the exact reference cohort, held-outs, folds, and prediction
+checksums. It selects Ridge regularization, RBF-SVR hyperparameters, and the
+Transformer epoch count in the same five training folds. GPU acceleration is
+optional, and the smoke mode uses a small train-only subset.
+
+```sh
+python label/stats/compare_raw_tribe.py --device cuda
+python label/stats/compare_raw_tribe.py --device cpu --smoke
+```
+
+Reports, test predictions, CV scores, paired bootstrap results, and provenance
+are under `tribe/outputs/complexity_comparison/raw_comparison`. The original
+parcel comparison remains available in `full`. The simulator supplies a shared
+visual encoder for both image representations.
+
+## ResNet-50 and ViT-B/16 on full-resolution TRIBE
+
+Both torchvision architectures are trained end to end from random initialization
+with a scalar regression head. They see the same 61,452 TRIBE values per image
+as the other cortical models. A deterministic spatial mapping assigns each
+fsaverage5 vertex to a unique pixel on a 160 × 160 raster shared by the two
+models. The three time points are distinct input channels. The model input
+uses training-fold standardization and zero padding at unoccupied pixels.
+The ViT uses 16 × 16 patches at the study's raster resolution.
+
+The comparison uses the same published and SHA-256-grouped holdouts and five
+training folds as the raw comparison above. It selects from 4, 8, and 16
+epochs by validation MAE and resumes from completed folds. Run from the
+repository root with the `tribe` Conda environment.
+
+```sh
+conda run -n tribe python label/stats/compare_vision_models.py --device cuda --smoke
+conda run --no-capture-output -n tribe python label/stats/compare_vision_models.py --device cuda
+```
+
+`tribe/outputs/complexity_comparison/vision_models/summary.md` reports one table
+per metric, with models as rows and metadata, V-JEPA 2, and TRIBE v2 as columns.
+Cells show published and SHA-256-grouped test scores in that order. The directory
+also contains the metric tables as CSVs, aligned test predictions, training-fold
+scores, and an environment and model manifest.
+
+## ResNet-50 and ViT-B/16 on the original chart images
+
+ResNet-50 and ViT-B/16 initialize their visual backbones from torchvision
+ImageNet weights (`IMAGENET1K_V2` and `IMAGENET1K_V1`, respectively). Each
+classification head is replaced with a scalar regression head. ImageNet RGB
+normalization follows proportional resizing and white padding to 224 × 224.
+The backbone and head are fine-tuned together on the training-fold ratings.
+Training uses the same held-out image IDs and five folds as the TRIBE v2
+comparison. Validation MAE selects from 2, 4, 8, and 12 epochs.
+
+```sh
+conda run --no-capture-output -n tribe python label/stats/compare_chart_models.py --device cuda
+work=tribe/outputs/complexity_comparison
+conda run -n tribe python label/stats/report_model_comparison.py \
+  --metrics "$work/vision_models/metrics.csv" \
+  --image-metrics "$work/chart_models/metrics.csv" --output "$work/model_comparison"
+```
+
+The combined report adds direct image scores to the ResNet-50 and ViT-B/16
+rows. The three-column report under `vision_models` compares TRIBE v2 with
+V-JEPA 2 and metadata. Predictions, epoch selection, and initialization
+provenance for the original-image models are under `chart_models`.
+
+## Parcel control and matched baselines
+
+The comparison uses two regressors, Ridge and RBF-SVR, for each input. It
+keeps the published holdout as the main comparison and repeats it with exact
+source-image duplicates grouped by SHA-256. Model selection uses 5-fold
+training-set MAE. The fixed published metadata fits are reported separately.
+
+- **Metadata** uses the same 29 published predictors and count transformation.
+- **TRIBE v2** uses the first predicted population response from the static clip.
+  Nilearn pools the signed fsaverage5 vertices within each Destrieux parcel,
+  separately by hemisphere. Three-time-point means and vertex features with
+  128-component PCA test sensitivity to these choices.
+- **V-JEPA 2** uses the same decoded static window and layer groups fed into
+  TRIBE. The direct input concatenates the two 1,408-dimensional layer groups.
+  Both image representations are standardized inside each training fold.
+
+The first-time-point choice follows the [static-image decoding study](https://arxiv.org/html/2606.06345v1#S3)
+and [the visualization study](https://arxiv.org/html/2609.15685v1#S3). The
+per-image features come from simulated cortical responses in model units.
+GLMsingle estimates trial betas from a recorded time series and experimental
+design. Here the released model already provides the per-image response.
+
+Use the existing `tribe` Conda environment from the repository root. The smoke
+run validates cached features and runs the train-only comparison on 256 images.
+The first run fetches the two public Destrieux atlas annotations when needed.
+
+```sh
+python label/stats/compare_representations.py --cohort smoke
+
+work=tribe/outputs/complexity_comparison
+python label/stats/complexity_features.py prepare-replay
+python tribe/run.py --device cuda --resume --manifest "$work/replay/manifest.json" \
+  --inputs-dir "$work/replay/inputs" --outputs-dir "$work/replay"
+python label/stats/complexity_features.py check-replay
+python label/stats/complexity_features.py prepare
+python tribe/run.py --device cuda --resume --manifest "$work/completed/manifest.json" \
+  --inputs-dir "$work/completed/inputs" --outputs-dir "$work/completed"
+python label/stats/complexity_features.py embed --device cuda
+python label/stats/compare_representations.py --jobs 2
+```
+
+`prepare` reuses validated predictions from `massvis_all`, `massvis_sample`,
+`gpu_smoke`, and previous completion runs. It stages missing decodable images
+and lists unreadable files in `completed/unreadable_sources.json`. The two
+GPU paths share the same FP32 encoder, and the comparison reads the embeddings
+created by TRIBE's Neuralset cache. `embed` only encodes images that already have
+fMRI but lack a matching embedding.
+
+Evaluation requires paired coverage for all 5,800 images. The local archive's
+`visMost775.png` (MASSVIS index 4259) is truncated. The
+[archived original](https://web.archive.org/web/20121109210747id_/http://thumbnails.visually.netdna-cdn.com/fantasy-football-sacks-productivity_50290a732bd02.png)
+preserves every byte of the local file as a prefix. To register the downloaded
+PNG on a fresh checkout, run this before preparing the missing inputs.
+
+```sh
+python label/stats/complexity_features.py recover --index 4259 --image /path/to/archived.png \
+  --source-url 'https://web.archive.org/web/20121109210747id_/http://thumbnails.visually.netdna-cdn.com/fantasy-football-sacks-productivity_50290a732bd02.png'
+```
+
+The command verifies the byte prefix and full decode, records both hashes, and
+stages a separate copy in the comparison workspace. The default `prepare`
+command includes the recovered stimulus in a fresh inference run.
+
+Outputs under `tribe/outputs/complexity_comparison/full` include
+`summary.md`, metrics, paired MAE differences with bootstrap intervals,
+per-image test predictions, split and fold assignments, CV results, and a
+manifest of input hashes and feature provenance.
+
 ## Run
 
 Use Python 3.11+ and install the pinned analysis dependencies in an environment:

@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MASSVIS · Complexity prediction pipeline</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="prediction.css">
+</head>
+<body class="prediction-page">
+  <header>
+    <a class="brand" href="./">TRIBE <span>/ MassVis</span></a>
+    <nav aria-label="MassVis"><a href="data.html">Dataset explorer</a><a href="./">Studies</a></nav>
+  </header>
+  <main class="prediction">
+    <h1>From chart to complexity</h1>
+    <p class="prediction-intro">Both prediction paths use features from the same V-JEPA 2 encoder.</p>
+
+    <figure class="prediction-flow" aria-label="V-JEPA 2 and TRIBE v2 preprocessing and regression inputs">
+      <h2 class="flow-section-label">Shared visual encoding</h2>
+      <ol class="shared-flow">
+        <li>
+          <svg class="flow-art" viewBox="0 0 160 96" aria-hidden="true">
+            <rect class="art-paper" x="43" y="8" width="74" height="76" rx="3"/>
+            <image href="../tribe/inputs/4849.png" x="47" y="12" width="66" height="68"/>
+            <path class="art-edge" d="M47 88h65"/>
+          </svg>
+          <div><h3>Chart image</h3><p>One MASSVIS raster, shown here as image 4849.</p></div>
+        </li>
+        <li>
+          <svg class="flow-art" viewBox="0 0 160 96" aria-hidden="true">
+            <path class="art-layer" d="M55 10h68v63H55z M46 17h68v63H46z"/>
+            <rect class="art-paper" x="37" y="24" width="68" height="63" rx="2"/>
+            <rect class="art-guide" x="43" y="29" width="56" height="53"/>
+            <image href="../tribe/inputs/4849.png" x="47" y="33" width="48" height="45"/>
+          </svg>
+          <div><h3>Static clip</h3><p>Fit the chart in 256 × 256, centered on a white 292 × 292 canvas. Make a silent 3-second clip at 16 fps.</p></div>
+        </li>
+        <li>
+          <svg class="flow-art" viewBox="0 0 160 96" aria-hidden="true">
+            <g transform="matrix(1 .20 -.48 .74 70 9)">
+              <path class="art-layer" d="M0 5h73v59H0z M0 10h73v59H0z"/>
+              <path class="art-paper" d="M0 0h73v59H0z"/>
+              <path class="art-grid" d="M8 8h57v43H8z M8 19h57 M8 30h57 M8 41h57 M22 8v43 M37 8v43 M51 8v43"/>
+              <path class="art-feature" d="M23 20h13v9H23z M38 31h12v9H38z M52 9h12v9H52z"/>
+            </g>
+            <path class="art-edge" d="M26 76h108 M26 81h108 M26 86h108"/>
+          </svg>
+          <div><h3>V-JEPA 2 visual features</h3><p>Repeat a decoded frame to make the 64-frame input. Average patch tokens and group layers into two 1,408-d vectors per window. Keep 6 windows at 2 Hz.</p></div>
+        </li>
+      </ol>
+
+      <svg class="flow-split" viewBox="0 0 1000 66" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M840 0v20H245v38 M755 20v38 M240 52l5 6 5-6 M750 52l5 6 5-6"/>
+      </svg>
+
+      <div class="prediction-paths">
+        <section class="prediction-path image-path" aria-labelledby="embedding-title">
+          <h2 id="embedding-title">V-JEPA 2 <span>Image embedding</span></h2>
+          <div class="path-operation">
+            <svg class="path-art" viewBox="0 0 142 90" aria-hidden="true">
+              <path class="art-paper" d="M12 8h94v50H12z"/>
+              <path class="art-grid" d="M12 16h94 M12 24h94 M12 32h94 M12 41h94 M12 49h94 M59 8v50"/>
+              <path class="art-feature" d="M18 9h34v6H18z M67 17h23v6H67z M25 25h21v6H25z M64 33h33v7H64z M20 42h28v6H20z M71 50h13v7H71z"/>
+              <path class="art-edge" d="M114 11h6v44h-6 M120 33h9v43h-15m4-4-4 4 4 4"/>
+              <path class="art-feature" d="M12 72h45v10H12z M61 72h45v10H61z"/>
+            </svg>
+            <div><h3>Pool across time</h3><p>Average the 6 windows and concatenate the two layer groups into one vector per image.</p></div>
+          </div>
+          <div class="input-matrix">
+            <p class="matrix-label">Ridge / RBF-SVR input</p>
+            <p class="matrix-size" aria-label="5,800 images by 2,816 embedding features">5,800 <span>×</span> 2,816</p>
+            <p class="matrix-columns">Columns · embedding features</p>
+            <svg class="matrix-art" viewBox="0 0 360 56" preserveAspectRatio="none" aria-hidden="true">
+              <defs><pattern id="embedding-cells" width="15" height="11" patternUnits="userSpaceOnUse"><path class="matrix-rule" d="M15 0H0V11"/></pattern></defs>
+              <rect class="matrix-face" width="360" height="56"/>
+              <rect class="matrix-row" y="22" width="360" height="11"/>
+              <rect width="360" height="56" fill="url(#embedding-cells)"/>
+              <path class="matrix-divider" d="M180 0v56"/>
+            </svg>
+            <p class="matrix-rows">One row per image</p>
+          </div>
+        </section>
+
+        <section class="prediction-path cortex-path" aria-labelledby="cortex-title">
+          <h2 id="cortex-title">TRIBE v2 <span>Simulated fMRI</span></h2>
+          <div class="path-operation">
+            <svg class="path-art" viewBox="0 0 142 90" aria-hidden="true">
+              <path class="art-paper" d="M28 10h100v15H28z M22 32h100v15H22z M16 54h100v15H16z"/>
+              <path class="art-grid" d="M36 10v15 M52 10v15 M68 10v15 M84 10v15 M100 10v15 M116 10v15 M30 32v15 M46 32v15 M62 32v15 M78 32v15 M94 32v15 M110 32v15 M24 54v15 M40 54v15 M56 54v15 M72 54v15 M88 54v15 M104 54v15"/>
+              <path class="art-feature" d="M29 11h6v13h-6z M53 11h14v13H53z M85 11h14v13H85z M23 33h6v13h-6z M47 33h14v13H47z M95 33h14v13H95z M17 55h6v13h-6z M41 55h14v13H41z M73 55h14v13H73z M105 55h10v13h-10z"/>
+              <path class="art-edge" d="M16 76h100 M16 73v6 M116 73v6"/>
+            </svg>
+            <div><h3>Keep the native cortical response</h3><p>Retain all three 1 Hz time points and all 20,484 fsaverage5 vertices, ordered left hemisphere then right.</p></div>
+          </div>
+          <div class="input-matrix">
+            <p class="matrix-label">Ridge / RBF-SVR input</p>
+            <p class="matrix-size" aria-label="5,800 images by 61,452 time–vertex features">5,800 <span>×</span> 61,452</p>
+            <p class="matrix-columns">Columns · 3 time points × 20,484 vertices</p>
+            <svg class="matrix-art" viewBox="0 0 360 56" preserveAspectRatio="none" aria-hidden="true">
+              <defs><pattern id="cortex-cells" width="10" height="11" patternUnits="userSpaceOnUse"><path class="matrix-rule" d="M10 0H0V11"/></pattern></defs>
+              <rect class="matrix-face" width="360" height="56"/>
+              <rect class="matrix-row" y="22" width="360" height="11"/>
+              <rect width="360" height="56" fill="url(#cortex-cells)"/>
+              <path class="matrix-divider" d="M120 0v56 M240 0v56"/>
+            </svg>
+            <p class="matrix-rows">One row per image</p>
+            <div class="tensor-input">
+              <p class="matrix-label">Cortical Transformer input</p>
+              <p class="tensor-size" aria-label="5,800 images by 3 time points by 20,484 vertices">5,800 × 3 × 20,484</p>
+              <p class="matrix-columns">Image × time × vertex. Reindex vertices into 324 spatial patches.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <figcaption class="prediction-readout">
+        <div><strong>Standardize columns</strong><span>Use means and scales fitted on the training fold.</span></div>
+        <div><strong>Fit a regressor</strong><span>Compare Ridge, RBF-SVR, and the cortical Transformer.</span></div>
+        <div><strong>Predicted complexity</strong><span>Estimate each image’s mean human rating (0–100).</span></div>
+      </figcaption>
+    </figure>
+  </main>
+</body>
+</html>

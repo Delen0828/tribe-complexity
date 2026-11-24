@@ -244,8 +244,8 @@ def main():
         'crop_policy': 'Full image fit within centered 256x256 on 292x292 padded canvas',
         'prepared_inputs': prepared,
         'source_documents': {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in [
-            ROOT.parent/'Can_a_Neural_Encoding_Model_Replicate_an_fMRI_Visu.pdf',
-            ROOT.parent/'supplemental_materials.pdf']},
+            ROOT.parent/'paper'/'Can_a_Neural_Encoding_Model_Replicate_an_fMRI_Visu.pdf',
+            ROOT.parent/'paper'/'supplemental_materials.pdf']},
         'code_commit': 'af58661791a351a448a489042a28f6c37e1c14b7',
         'weight_revisions': {p.parent.parent.name: p.name for p in
                              (ROOT/'cache/huggingface/hub').glob('models--*/snapshots/*')},

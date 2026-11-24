@@ -1,5 +1,9 @@
 .home {max-width:1080px;margin:60px auto}
 .home h1 {font-size:2.4rem;letter-spacing:-.04em;margin-bottom:32px}
+.home-methods {display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 20px;margin-bottom:32px;border:1px solid var(--line);border-radius:8px;background:white;text-decoration:none}
+.home-methods:hover {border-color:var(--blue)}
+.home-methods strong,.home-methods small {display:block}
+.home-methods small {color:#52667d;margin-top:4px}
 .home-section + .home-section {margin-top:44px}
 .home-section > h2 {font-size:1.1rem;margin:0 0 16px;color:#52667d}
 .home-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}

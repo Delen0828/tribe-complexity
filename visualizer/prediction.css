@@ -1,0 +1,156 @@
+.prediction-page {
+  --surface: #f7f9fc;
+  --paper: #fff;
+  --ink: #16283e;
+  --muted: #4c6179;
+  --rule: #d3dce7;
+  --feature: #5b42ab;
+  --cortex: #126c65;
+  color: var(--ink);
+  background: var(--surface);
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  .prediction-page {
+    --surface: #131e2b;
+    --paper: #1c2b3c;
+    --ink: #edf3fa;
+    --muted: #b3c4d7;
+    --rule: #3a4c60;
+    --feature: #bba8ff;
+    --cortex: #7ad9c9;
+  }
+}
+
+.prediction {max-width: 1170px; padding-block: 42px 48px}
+.prediction h1 {font-size: clamp(2rem, 5vw, 3.6rem); letter-spacing: -.055em; line-height: 1.05}
+.prediction-intro {max-width: 60ch; margin: 12px 0 26px; color: var(--muted); line-height: 1.55}
+.prediction-flow {margin: 0; border-top: 1px solid var(--rule); padding-top: 18px}
+.prediction-flow h2,.prediction-flow h3,.prediction-flow p {margin: 0}
+.flow-section-label,.prediction-flow .matrix-label {font-size: .72rem; font-weight: 700; letter-spacing: .11em; text-transform: uppercase}
+.flow-section-label {color: var(--muted)}
+
+.shared-flow {
+  --flow-gap: 24px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--flow-gap);
+  padding: 0;
+  margin: 9px 0 0;
+  list-style: none;
+}
+.shared-flow li {position: relative; min-width: 0; text-align: center}
+.shared-flow li:not(:last-child)::after,.shared-flow li:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  display: block;
+  pointer-events: none;
+}
+.shared-flow li:not(:last-child)::after {
+  top: 43px;
+  left: calc(50% + 61px);
+  width: calc(100% + var(--flow-gap) - 122px);
+  height: 1px;
+  background: var(--rule);
+}
+.shared-flow li:not(:last-child)::before {
+  top: 39px;
+  left: calc(150% + var(--flow-gap) - 70px);
+  width: 8px;
+  height: 8px;
+  transform: rotate(45deg);
+  border-top: 1px solid var(--muted);
+  border-right: 1px solid var(--muted);
+}
+.flow-art {display: block; width: min(100%, 147px); height: auto; margin: 0 auto 4px; color: var(--feature)}
+.shared-flow li > div {margin-inline: auto; max-width: 32ch}
+.prediction-flow h3 {font-size: 1rem; font-weight: 650; line-height: 1.25}
+.shared-flow p,.path-operation p {color: var(--muted); font-size: .875rem; line-height: 1.5; margin-top: 5px}
+
+.flow-art .art-paper,.path-art .art-paper {fill: var(--paper); stroke: var(--muted); stroke-width: 1}
+.flow-art .art-layer,.path-art .art-layer {fill: color-mix(in srgb, var(--ink) 6%, var(--paper)); stroke: var(--muted); stroke-width: 1}
+.flow-art .art-grid,.path-art .art-grid {fill: none; stroke: var(--rule); stroke-width: 1}
+.flow-art .art-edge,.path-art .art-edge {fill: none; stroke: var(--muted); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round}
+.flow-art .art-guide {fill: var(--paper); stroke: var(--rule); stroke-width: 1; stroke-dasharray: 3 2}
+.flow-art .art-feature,.path-art .art-feature {fill: currentColor; fill-opacity: .54}
+.flow-split {display: block; width: 100%; height: 54px; margin-top: 10px}
+.flow-split path {fill: none; stroke: var(--muted); stroke-width: 1.2; vector-effect: non-scaling-stroke; stroke-linecap: round; stroke-linejoin: round}
+
+.prediction-paths {display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px}
+.prediction-path {display: grid; grid-template-rows: subgrid; grid-row: span 3; row-gap: 12px; min-width: 0}
+.image-path {--path-color: var(--feature)}
+.cortex-path {--path-color: var(--cortex)}
+.prediction-path h2 {display: flex; align-items: baseline; flex-wrap: wrap; gap: 3px 10px; color: var(--path-color); font-size: 1.28rem; letter-spacing: -.02em}
+.prediction-path h2 span {font-size: .82rem; letter-spacing: 0; color: var(--muted); font-weight: 500}
+.path-operation {display: grid; grid-template-columns: minmax(85px, 116px) minmax(0, 1fr); align-items: center; gap: 12px}
+.path-art {width: 100%; height: auto; color: var(--path-color)}
+
+.input-matrix {
+  position: relative;
+  align-self: start;
+  min-width: 0;
+  padding: 15px 18px 14px;
+  border-top: 3px solid var(--path-color);
+  border-radius: 0 0 8px 8px;
+  background: color-mix(in srgb, var(--path-color) 9%, var(--paper));
+  color: var(--path-color);
+}
+.input-matrix .matrix-size {
+  margin-block: 5px 3px;
+  color: var(--ink);
+  font: 650 clamp(1.45rem, 4vw, 2.45rem)/1.12 ui-monospace, "SFMono-Regular", Consolas, monospace;
+  letter-spacing: -.065em;
+  white-space: nowrap;
+}
+.matrix-size span {color: var(--path-color); font-weight: 450}
+.input-matrix .matrix-columns,.input-matrix .matrix-rows {color: var(--muted); font-size: .76rem; line-height: 1.4}
+.matrix-art {display: block; width: 100%; height: 46px; margin: 9px 0 6px}
+.matrix-face {fill: color-mix(in srgb, var(--path-color) 8%, var(--paper))}
+.matrix-row {fill: var(--path-color); fill-opacity: .37}
+.matrix-rule,.matrix-divider {fill: none; stroke: var(--path-color); vector-effect: non-scaling-stroke}
+.matrix-rule {stroke-width: 1; stroke-opacity: .30}
+.matrix-divider {stroke-width: 1; stroke-opacity: .75}
+.tensor-input {margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--rule)}
+.input-matrix .tensor-size {
+  margin: 4px 0 3px;
+  color: var(--ink);
+  font: 650 clamp(1.05rem, 2.4vw, 1.35rem)/1.15 ui-monospace, "SFMono-Regular", Consolas, monospace;
+}
+
+.prediction-readout {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 22px;
+  border-block: 1px solid var(--rule);
+  padding-block: 13px;
+}
+.prediction-readout strong,.prediction-readout span {display: block; line-height: 1.45}
+.prediction-readout strong {font-size: .875rem}
+.prediction-readout span {margin-top: 2px; color: var(--muted); font-size: .8rem}
+
+@media (max-width: 650px) {
+  .prediction {padding-block: 28px 38px}
+  .prediction-page header nav {flex-wrap: wrap; justify-content: end; column-gap: 12px}
+  .prediction-page header nav a {display: inline-flex; align-items: center; min-height: 32px}
+  .shared-flow {grid-template-columns: 1fr; gap: 16px; margin-top: 12px}
+  .shared-flow li {display: grid; grid-template-columns: 108px minmax(0, 1fr); align-items: center; gap: 14px; text-align: start}
+  .shared-flow li > div {margin: 0; max-width: none}
+  .flow-art {width: 100%; margin: 0}
+  .shared-flow li:not(:last-child)::after {top: auto; bottom: -18px; left: 54px; width: 1px; height: 18px}
+  .shared-flow li:not(:last-child)::before {top: auto; bottom: -18px; left: 50px; transform: rotate(135deg)}
+  .flow-split {display: none}
+  .prediction-paths {position: relative; grid-template-columns: 1fr; padding-left: 18px; margin-top: 22px}
+  .prediction-path {position: relative; grid-template-rows: auto; grid-row: auto}
+  .prediction-path::before {content: ""; position: absolute; top: 15px; left: -18px; width: 12px; border-top: 1px solid var(--muted)}
+  .prediction-path:first-child::after {content: ""; position: absolute; inset: -11px auto -40px -18px; border-left: 1px solid var(--muted)}
+  .path-operation {grid-template-columns: minmax(72px, 96px) minmax(0, 1fr); gap: 10px}
+  .prediction-readout {grid-template-columns: 1fr; gap: 11px}
+}
+
+@media (max-width: 370px) {
+  .shared-flow li {grid-template-columns: 80px minmax(0, 1fr); gap: 10px}
+  .shared-flow li:not(:last-child)::after {left: 40px}
+  .shared-flow li:not(:last-child)::before {left: 36px}
+}

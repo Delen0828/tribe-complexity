@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MassVis · Ridge interpretability</title>
+  <link rel="stylesheet" href="style.css"><link rel="stylesheet" href="prediction.css">
+  <script src="interpretability.js" defer></script>
+</head>
+<body class="prediction-page">
+  <header><a class="brand" href="./">TRIBE <span>/ MassVis</span></a>
+    <nav aria-label="MassVis"><a href="data.html">Dataset explorer</a><a href="./">Studies</a></nav></header>
+  <main class="prediction interpretation">
+    <nav class="prediction-tabs" aria-label="Prediction analysis"><a href="prediction.html">Prediction pipeline</a><a href="interpretability.html" aria-current="page">Ridge interpretability</a></nav>
+    <h1>Ridge interpretability</h1>
+    <p class="prediction-intro">Which cortical signals help predict a chart’s perceived complexity?</p>
+    <p id="status" role="status">Loading MassVis results…</p>
+    <section id="results" hidden>
+      <p id="summary"></p>
+      <div class="map-controls">
+        <label>Metric<select id="metric"><option value="ablation">ROI ablation ΔR²</option><option value="permutation">Grouped permutation ΔR²</option><option value="haufe">Haufe pattern</option></select></label>
+        <label>Cortical view<select id="view"><option value="inferior">Inferior / ventral</option><option value="four">Lateral / medial</option><option value="all">All views</option></select></label>
+        <label id="time-control" hidden>TRIBE time point<select id="time"><option value="0">t = 0</option><option value="1">t = 1</option><option value="2">t = 2</option></select></label>
+      </div>
+      <p id="description"></p>
+      <figure class="interpret-map"><div id="panels"></div><figcaption><div class="signed-scale"></div><div class="scale-labels"><span id="low"></span><span>0</span><span id="high"></span></div><span id="units"></span></figcaption></figure>
+      <section id="region-section"><h2>Regions</h2>
+        <label>Sort regions<select id="sort"><option value="desc">Highest score first</option><option value="asc">Lowest score first</option><option value="name">Hemisphere and name</option></select></label>
+        <div class="region-scroll"><table><thead><tr><th>Hemisphere</th><th>Destrieux ROI</th><th>ΔR²</th></tr></thead><tbody id="regions"></tbody></table></div>
+      </section>
+      <details><summary>Evaluation protocol</summary><p>Each chart contributes three simulated TRIBE v2 responses at 20,484 fsaverage5 vertices. Five outer folds group images by source SHA-256. Different files can share a template. Each fit standardizes features using its training data and selects Ridge α by mean validation MAE across five grouped inner folds. R² pools the held-out predictions across all five outer folds.</p></details>
+    </section>
+  </main>
+</body></html>

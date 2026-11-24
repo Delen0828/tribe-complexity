@@ -154,3 +154,26 @@
   .shared-flow li:not(:last-child)::after {left: 40px}
   .shared-flow li:not(:last-child)::before {left: 36px}
 }
+
+.prediction-tabs {display:flex; flex-wrap:wrap; gap:1.2rem; margin-bottom:1.8rem; border-bottom:1px solid var(--rule)}
+.prediction-tabs a {color:var(--muted); text-decoration:none; padding:.55rem 0}
+.prediction-tabs [aria-current] {color:var(--ink); border-bottom:3px solid var(--cortex)}
+.interpretation [hidden] {display:none}
+.interpretation #summary {color:var(--cortex); font-weight:650; margin:1rem 0}
+.map-controls {display:flex; flex-wrap:wrap; gap:1rem; margin:1.5rem 0}
+.interpretation label {display:grid; gap:.35rem; width:fit-content; color:var(--muted)}
+.interpretation select {font:inherit; padding:.45rem}
+.interpretation #description,.interpretation details p {max-width:80ch; line-height:1.55}
+.interpret-map {margin:1rem 0 2rem; border:1px solid var(--rule); background:white; color:#16283e; padding:1rem}
+#panels {display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); justify-items:center}
+#panels img {display:block; width:100%; max-width:450px}
+#panels img:only-child,#panels img:first-child:nth-last-child(5) {grid-column:1/-1}
+.interpret-map figcaption {max-width:340px; margin:.4rem auto; text-align:center; font-size:.9rem}
+.signed-scale {height:10px; background:linear-gradient(to right,#053061,#2166ac,#4393c3,#92c5de,#d1e5f0,#f7f7f7,#fddbc7,#f4a582,#d6604d,#b2182b,#67001f)}
+.scale-labels {display:flex; justify-content:space-between; font-variant-numeric:tabular-nums}
+.region-scroll {max-height:25rem; overflow:auto; margin:1rem 0}
+.region-scroll table {width:100%; border-collapse:collapse; font-variant-numeric:tabular-nums}
+.region-scroll td,.region-scroll th {padding:.45rem; border-bottom:1px solid var(--rule); text-align:left}
+.region-scroll th {position:sticky; top:0; background:var(--paper)}
+.region-scroll td:last-child,.region-scroll th:last-child {text-align:right}
+.interpretation summary {cursor:pointer}

@@ -128,3 +128,26 @@ NODE_PATH="$HOME/browser-tool/node_modules" node visualizer/test_studies.cjs htt
 Browser tests use the installed Playwright Firefox and the running backend.
 They cover navigation, study comparisons, X/Y aggregation, tick and cell examples,
 gallery scrolling, URLs, all cortical layouts, both map modes, and mobile layout.
+
+## MassVis Ridge interpretability
+
+Open **Ridge interpretability** from the home page or the prediction pipeline.
+The page reads precomputed full-resolution MassVis results. To generate them
+from the existing TRIBE predictions, activate the tribe environment and run
+`python label/stats/interpret_ridge.py` from the repository root. CUDA is used
+when available. Pass `--device cpu` for a CPU run.
+
+The default map shows the pooled out-of-fold R² lost after removing and
+retuning one left or right Destrieux ROI. The other maps show the mean loss
+from 30 joint test-fold permutations, and the training-size-weighted signed
+Haufe pattern for each time point. All folds group by source image hash.
+Unlabeled vertices remain available to every model.
+
+Results live under `tribe/outputs/complexity_comparison/ridge_interpretability/`.
+The published report points to one input-fingerprinted run. Its `oof.npz`
+contains image IDs, observed ratings, outer fold assignments, full and ablated
+predictions, vertex labels, aggregate patterns and permutation squared errors.
+Inner checkpoints record validation indices and MAE by ROI and candidate α.
+Outer checkpoints include selected α (full model first, then ROI order), per-ROI
+additive predictions for replaying the seeded shuffles, and per-fold patterns.
+Rerunning resumes compatible checkpoints and publishes the report after rendering.

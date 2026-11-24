@@ -304,13 +304,10 @@ def fill_embeddings(records, workspace, cache, device, cpu_threads):
         print(f"Saved V-JEPA embedding for {record.index}", flush=True)
 
 
-def cortical_features(t0, mean, atlas_dir):
-    from nilearn.datasets import fetch_atlas_surf_destrieux, load_fsaverage
-    from nilearn.maskers import SurfaceLabelsMasker
-    from nilearn.surface import SurfaceImage
+def cortical_regions(atlas_dir):
+    from nilearn.datasets import fetch_atlas_surf_destrieux
 
     atlas = fetch_atlas_surf_destrieux(data_dir=atlas_dir)
-    mesh = load_fsaverage(mesh="fsaverage5", data_dir=atlas_dir)["pial"]
     labels = {}
     names = {0: "Background"}
     for hemi, mapping in (("left", atlas.map_left), ("right", atlas.map_right)):
@@ -323,6 +320,16 @@ def cortical_features(t0, mean, atlas_dir):
             label_id = len(names)
             names[label_id] = f"{hemi}:{atlas.labels[index]}"
             labels[hemi][mapping == index] = label_id
+    return labels, names
+
+
+def cortical_features(t0, mean, atlas_dir):
+    from nilearn.datasets import load_fsaverage
+    from nilearn.maskers import SurfaceLabelsMasker
+    from nilearn.surface import SurfaceImage
+
+    labels, names = cortical_regions(atlas_dir)
+    mesh = load_fsaverage(mesh="fsaverage5", data_dir=atlas_dir)["pial"]
     lut = pd.DataFrame({"index": list(names), "name": list(names.values())})
     atlas_image = SurfaceImage(mesh, labels)
     masker = SurfaceLabelsMasker(labels_img=atlas_image, lut=lut, strategy="mean",
